@@ -1,0 +1,43 @@
+<?php
+
+/*
+ * @file
+ * Contains tests for the past modules
+ */
+
+class PastTest extends DrupalWebTestCase {
+
+  static function getInfo() {
+    return array(
+      'name' => 'Client tests',
+      'description' => 'Test for client fatures',
+      'group' => 'Shared Content',
+    );
+  }
+
+  function setUp() {
+    parent::setUp(array('past', 'past_db'));
+  }
+
+  function testSave() {
+    past_event_save('past', 'test', 'A test log entry');
+    past_event_save('past', 'test1', 'Another test log entry');
+    past_event_save('past', 'test2', 'Yet another');
+    past_event_save('past', 'test_argument', 'A test log entry with arguments', array('test' => 'test', 'test2' => 5));
+
+    $array_argument = array(
+      'key1' => $this->randomString(),
+      'key2' => $this->randomString(),
+    );
+    past_event_save('past', 'test_array', 'Array argument', array('array' => $array_argument));
+
+    $user = $this->drupalCreateUser();
+    past_event_save('past', 'test_user', 'Object argument', array('user' => $user));
+
+    $exception = new Exception('An exception', 500);
+    past_event_save('past', 'test_exception', 'An exception', array('exception' => $exception));
+
+    past_event_save('past', 'test_timestamp', array(), array('timestamp' => REQUEST_TIME - 1));
+  }
+
+}

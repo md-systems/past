@@ -1,0 +1,63 @@
+<?php
+
+/**
+ * @file
+ * Module file for the past project.
+ */
+
+define('PAST_SEVERITY_ERROR', 1);
+define('PAST_SEVERITY_WARNING', 2);
+define('PAST_SEVERITY_INFO', 4);
+define('PAST_SEVERITY_DEBUG', 8);
+
+/**
+ * Creates and saves a past event.
+ *
+ * @param string $module
+ *   The name of the module which is logging the event.
+ * @param $machine_name
+ *   The machine name of the event.
+ * @param type $text
+ *   A description of the event.
+ * @param array $arguments
+ *   An array of arguments to be saved with the event. They array key is used
+ *   as the argument key and the value is the argument data.
+ * @param array $options
+ *   An array of additional options. Any of the following:
+ *     - timestamp: Override the timestamp, defaults to REQUEST_TIME
+ *     - severity: One of PAST_SEVERITY_DEBUG, PAST_SEVERITY_INFO,
+ *         PAST_SEVERITY_WARNING and PAST_SEVERITY_ERROR.
+ *
+ * @return PastEventInterface
+ *
+ * @see past_event_create()
+ */
+function past_event_save($module, $machine_name, $text, array $arguments = array(), array $options = array()) {
+
+}
+
+/**
+ * Creates a past event.
+ *
+ * @param string $module
+ *   The name of the module which is logging the event.
+ * @param $machine_name
+ *   The machine name of the event.
+ * @param type $text
+ *   A description of the event.
+ * @param array $arguments
+ *   An array of arguments to be saved with the event. They array key is used
+ *   as the argument key and the value is the argument data.
+ * @param array $options
+ *   An array of additional options. Any of the following:
+ *     - timestamp: Override the timestamp, defaults to REQUEST_TIME
+ *     - severity: One of PAST_SEVERITY_DEBUG, PAST_SEVERITY_INFO,
+ *         PAST_SEVERITY_WARNING and PAST_SEVERITY_ERROR.
+ *
+ * @return PastEventInterface
+ *
+ * @see past_event_save()
+ */
+function past_event_create($module, $machine_name, $text, array $options = array()) {
+}
+
