@@ -2,4 +2,7 @@ name=Past
 description=Provides logging capabilities to log events with arguments in a normalized way.
 core=7.x
 
+dependencies[]=past_db
+
 files[]=past.api.inc
+files[]=past.test

@@ -11,28 +11,45 @@
 interface PastEventInterface {
 
   /**
-   *
-   * @param type $module
-   * @param type $machine_name
+   * Returns the id of the event, if saved.
    */
-  public function __construct($module, $machine_name);
+  public function id();
 
   /**
    *
-   * @param type $text
+   * @param type $module
    *
    * @return PastEventInterface
    */
-  public function setText($text);
+  public function setModule($module);
 
   /**
    *
-   * @param type $text
+   * @param type $machine_name
+   *
+   * @return PastEventInterface
+   */
+  public function setMachineName($machine_name);
+
+  /**
+   *
+   * @param type $message
+   *
+   * @return PastEventInterface
+   */
+  public function setMessage($message);
+
+  /**
    *
    * @return string
    */
-  public function getText($text);
+  public function getMessage();
 
+  /**
+   * Returns the severity of this event.
+   *
+   * @return integer
+   */
   public function getSeverity();
 
   /**
@@ -77,16 +94,30 @@ interface PastEventInterface {
   /**
    * @return PastEventInterface
    */
-  public function setTimestamp();
+  public function setTimestamp($timestamp);
 
   /**
    * @return integer
    */
   public function getTimestamp();
 
+  /**
+   * Returns the machine name of this event.
+   */
   public function getMachineName();
 
+  /**
+   * Returns the module that created this event.
+   */
   public function getModule();
+
+  /**
+   * Saves the event.
+   *
+   * @return integer
+   *   The event id of the event.
+   */
+  public function save();
 }
 
 /**

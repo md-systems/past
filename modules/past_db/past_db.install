@@ -1,0 +1,136 @@
+<?php
+
+/**
+ * @file
+ * Installation hooks.
+ */
+
+
+/**
+ * Implements hook_schema().
+ */
+function past_db_schema() {
+  $schema['past_event'] = array(
+    'description' => 'A logged event',
+    'fields' => array(
+      'event_id' => array(
+        'description' => 'The identifier of the event.',
+        'type' => 'serial',
+        'not null' => TRUE,
+      ),
+      'module' => array(
+        'description' => 'The module that logged this event',
+        'type' => 'varchar',
+        'length' => '128',
+        'not null' => TRUE,
+      ),
+      'machine_name' => array(
+        'description' => 'The machine name of this event',
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+      ),
+      'severity' => array(
+        'description' => 'The severity of the event',
+        'type' => 'int',
+        'size' => 'small',
+        'not null' => TRUE,
+      ),
+      'message' => array(
+        'description' => 'The event message',
+        'type' => 'text',
+      ),
+      'parent_event_id' => array(
+        'description' => 'An existing event that this relates to',
+        'type' => 'int',
+      ),
+      'timestamp' => array(
+        'description' => 'Timestamp of the event',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('event_id'),
+    'indexes' => array(
+      'severity' => array('severity'),
+      'module' => array('module'),
+      'machine_name' => array('machine_name'),
+    ),
+  );
+  $schema['past_event_argument'] = array(
+    'description' => 'An event argument',
+    'fields' => array(
+      'argument_id' => array(
+        'description' => 'The identifier of the event argument.',
+        'type' => 'serial',
+        'not null' => TRUE,
+      ),
+      'event_id' => array(
+        'description' => 'The identifier of the event.',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'name' => array(
+        'description' => 'The name of this argument',
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+      ),
+      'type' => array(
+        'description' => 'The type of this argument',
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+      ),
+      'raw' => array(
+        'description' => 'The raw data of this argument',
+        'type' => 'text',
+      ),
+    ),
+    'primary key' => array('argument_id'),
+    'indexes' => array(
+      'event_id' => array('event_id'),
+    ),
+  );
+    $schema['past_event_data'] = array(
+    'description' => 'An event argument',
+    'fields' => array(
+      'data_id' => array(
+        'description' => 'The identifier of the data item',
+        'type' => 'serial',
+        'not null' => TRUE,
+      ),
+      'argument_id' => array(
+        'description' => 'The identifier of the event argument.',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'parent_data_id' => array(
+        'description' => 'The identifier of the parent data item.',
+        'type' => 'int',
+      ),
+      'name' => array(
+        'description' => 'The name of this data item',
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+      ),
+      'type' => array(
+        'description' => 'The type of this argument',
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+      ),
+      'value' => array(
+        'description' => 'The value of this data item',
+        'type' => 'text',
+      ),
+    ),
+    'primary key' => array('data_id'),
+    'indexes' => array(
+      'argument_id' => array('argument_id'),
+    ),
+  );
+
+  return $schema;
+}
