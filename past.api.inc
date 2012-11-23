@@ -66,7 +66,7 @@ interface PastEventInterface {
    * @param type $data
    * @param array $options
    *
-   * @return PastEventInterface
+   * @return PastEventArgumentInterface
    */
   public function addArgument($key, $data, array $options = array());
 
@@ -133,5 +133,5 @@ interface PastEventArgumentInterface {
 
   public function getRaw();
 
-  public function setRaw();
+  public function setRaw($raw, $json_encode = TRUE);
 }

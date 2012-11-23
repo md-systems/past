@@ -109,6 +109,11 @@ function past_db_schema() {
         'description' => 'The identifier of the parent data item.',
         'type' => 'int',
       ),
+      'serialized' => array(
+        'description' => 'If the value is serialized or not.',
+        'type' => 'int',
+        'size' => 'tiny',
+      ),
       'name' => array(
         'description' => 'The name of this data item',
         'type' => 'varchar',

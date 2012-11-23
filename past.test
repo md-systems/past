@@ -66,12 +66,20 @@ class PastTest extends DrupalWebTestCase {
     $exception = new Exception('An exception', 500);
     past_event_save('past', 'test_exception', 'An exception', array('exception' => $exception));
     $event = $this->getLastEventByMachinename('test_exception');
-    $this->assertEqual($exception, $event->getArgument('exception'));
+    debug($event->getArgument('exception')->getData());
+    $this->assertEqual((array)$exception, $event->getArgument('exception')->getData());
     $this->assertEqual('Exception', $event->getArgument('exception')->getType());
 
     past_event_save('past', 'test_timestamp', 'Event with a timestamp', array(), array('timestamp' => REQUEST_TIME - 1));
     $event = $this->getLastEventByMachinename('test_timestamp');
     $this->assertEqual(REQUEST_TIME - 1, $event->getTimestamp());
+  }
+
+  public function dtestObjectOrientedInterface() {
+    $event = past_event_create('past', 'test1', 'Message with arguments');
+    $argument = $event->addArgument('first', array('data' => array('sub' => 'value')));
+    $argument->setRaw(array('data' => array('sub' => 'value')));
+    $event->save();
   }
 
   /**

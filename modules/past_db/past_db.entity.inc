@@ -116,12 +116,11 @@ class PastEventArgument extends Entity implements PastEventArgumentInterface {
     elseif ($this->type == 'stdClass') {
       $return = new stdClass();
       foreach ($result as $row) {
-        $return->{$row->name} = $row->value;
+        $return->{$row->name} = $row->serialized ? unserialize($row->value) : $row->value;
       }
     }
     else {
       if ($row = $result->fetchObject()) {
-        debug($row);
         $return = $row->value;
       }
     }
@@ -140,7 +139,7 @@ class PastEventArgument extends Entity implements PastEventArgumentInterface {
     return $this->type;
   }
 
-  public function setRaw() {
+  public function setRaw($data, $json_encode = TRUE) {
 
   }
 

@@ -10,6 +10,12 @@
  */
 class PastEventController extends EntityAPIController {
 
+  /**
+   *
+   * @var InsertQuery
+   */
+  protected $insert;
+
   public function create(array $values = array()) {
     $entity = parent::create($values);
 
@@ -48,28 +54,41 @@ class PastEventArgumentController extends EntityAPIController {
 
     // Save data.
     if ($data = $entity->getOriginalData()) {
-      $insert = db_insert('past_event_data')
-        ->fields(array('argument_id', 'type', 'name', 'value'));
-      if (is_array($data) || is_object($data)) {
-        foreach ($data as $name => $value) {
-          $insert->values(array(
-            'argument_id' => $entity->argument_id,
-            'type' => gettype($value),
-            'name' => $name,
-            'value' => is_scalar($value) ? $value : NULl,
-          ));
-        }
-      }
-      else {
-        $insert->values(array(
-          'argument_id' => $entity->argument_id,
-          'type' => gettype($data),
-          'name' => '',
-          'value' => $data,
+      $this->insert = db_insert('past_event_data')
+        ->fields(array('argument_id', 'parent_data_id', 'type', 'name', 'value', 'serialized'));
+      $this->normalizeData($entity->argument_id, $data);
+      $this->insert->execute();
+    }
+  }
+
+  /**
+   *
+   * @param type $data
+   */
+  protected function normalizeData($argument_id, $data, $parent_data_id = 0) {
+    if (is_array($data) || is_object($data)) {
+      foreach ($data as $name => $value) {
+        $this->insert->values(array(
+          'argument_id' => $argument_id,
+          'parent_data_id' => $parent_data_id,
+          'type' => is_object($value) ? get_class($value) : gettype($value),
+          'name' => $name,
+          // @todo: Support recursive inserts.
+          'value' => is_scalar($value) ? $value : serialize($value),
+          'serialized' => is_scalar($value) ? 0 : 1,
         ));
       }
     }
-    $insert->execute();
+    else {
+      $this->insert->values(array(
+        'argument_id' => $argument_id,
+        'parent_data_id' => 0,
+        'type' => gettype($data),
+        'name' => '',
+        'value' => $data,
+        'serialized' => 0,
+      ));
+    }
   }
 
 }
