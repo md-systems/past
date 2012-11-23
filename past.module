@@ -64,14 +64,16 @@ function past_event_save($module, $machine_name, $message, array $arguments = ar
  *
  * @see past_event_save()
  */
-function past_event_create($module, $machine_name, $message, array $options = array()) {
+function past_event_create($module, $machine_name, $message = NULL, array $options = array()) {
   // @todo: Make this pluggable.
   $event = entity_create('past_event', array());
 
   /* @var $event PastEventInterface */
   $event->setModule($module);
   $event->setMachineName($machine_name);
-  $event->setMessage($message);
+  if ($message) {
+    $event->setMessage($message);
+  }
 
   foreach ($options as $key => $value) {
     switch ($key) {

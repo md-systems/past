@@ -47,11 +47,6 @@ class PastEventArgumentController extends EntityAPIController {
 
   public function create(array $values = array()) {
 
-    // Special support for exceptions, convert them to something that can be
-    // stored.
-    if (isset($values['original_data']) && $values['original_data'] instanceof Exception) {
-      $values['original_data'] = _drupal_decode_exception($values['original_data']) + array('backtrace' => $values['original_data']->getTraceAsString());
-    }
     $entity = parent::create($values);
 
     return $entity;

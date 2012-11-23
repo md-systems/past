@@ -76,16 +76,28 @@ class PastTest extends DrupalWebTestCase {
     $this->assertEqual(REQUEST_TIME - 1, $event->getTimestamp());
   }
 
-  public function dtestObjectOrientedInterface() {
-    $event = past_event_create('past', 'test1', 'Message with arguments');
-    $argument = $event->addArgument('first', array('data' => array('sub' => 'value'), 'something' => 'else'));
+  public function testObjectOrientedInterface() {
+    $event = past_event_create('past', 'test_raw', 'Message with arguments');
+    $array_argument = array('data' => array('sub' => 'value'), 'something' => 'else');
+    $argument = $event->addArgument('first', $array_argument);
     $argument->setRaw(array('data' => array('sub' => 'value')));
     $event->addArgument('second', 'simple');
     $event->save();
 
-    $event = $this->getLastEventByMachinename('test_user');
-    $this->assertEqual($user, $event->getArgument('user')->getData());
-    $this->assertEqual('stdClass', $event->getArgument('user')->getType());
+    $event = $this->getLastEventByMachinename('test_raw');
+    $this->assertEqual($array_argument, $event->getArgument('first')->getData());
+    $this->assertEqual('simple', $event->getArgument('second')->getData());
+
+    // Test the exclude filter.
+    $event = past_event_create('past', 'test_exclude', 'Exclude filter');
+    $event->addArgument('array', $array_argument, array('exclude' => array('something')));
+    $event->save();
+    $excluded_array = $array_argument;
+    unset($excluded_array['something']);
+
+    $event = $this->getLastEventByMachinename('test_exclude');
+    $this->assertEqual(1, count($event->getArguments()));
+    $this->assertEqual($excluded_array, $event->getArgument('array')->getData());
   }
 
   /**

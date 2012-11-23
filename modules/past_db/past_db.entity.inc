@@ -18,6 +18,26 @@ class PastEvent extends Entity implements PastEventInterface {
     if (!is_array($this->arguments)) {
       $this->arguments = array();
     }
+
+    // Special support for exceptions, convert them to something that can be
+    // stored.
+    if (isset($data) && $data instanceof Exception) {
+      $data = _drupal_decode_exception($data) + array('backtrace' => $data->getTraceAsString());
+    }
+
+    // Remove values which were explicitly added to the exclude filter.
+    if (!empty($options['exclude'])) {
+      foreach ($options['exclude'] as $exclude) {
+        if (is_array($data)) {
+          unset($data[$exclude]);
+        }
+        elseif (is_object($data)) {
+          unset($data->$exclude);
+        }
+      }
+      unset($options['exclude']);
+    }
+
     $this->arguments[$key] = entity_create('past_event_argument', array('name' => $key, 'original_data' => $data) + $options);
     return $this->arguments[$key];
   }
@@ -109,7 +129,7 @@ class PastEventArgument extends Entity implements PastEventArgumentInterface {
     if ($this->type == 'array') {
       $return = array();
       foreach ($result as $row) {
-        $return[$row->name] = $row->value;
+        $return[$row->name] = $row->serialized ? unserialize($row->value) : $row->value;
       }
     }
     elseif (!in_array($this->type, array('integer', 'string', 'float', 'boolean'))) {
