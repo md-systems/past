@@ -27,6 +27,12 @@ class PastEvent extends Entity implements PastEventInterface {
 
     // Remove values which were explicitly added to the exclude filter.
     if (!empty($options['exclude'])) {
+
+      // If it is an object, clone it to avoid changing the original.
+      if (is_object($data)) {
+        $data = clone $data;
+      }
+
       foreach ($options['exclude'] as $exclude) {
         if (is_array($data)) {
           unset($data[$exclude]);

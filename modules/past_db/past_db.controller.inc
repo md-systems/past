@@ -75,6 +75,12 @@ class PastEventArgumentController extends EntityAPIController {
   protected function normalizeData($argument_id, $data, $parent_data_id = 0) {
     if (is_array($data) || is_object($data)) {
       foreach ($data as $name => $value) {
+
+        // @todo: Allow to make this configurable. Ignore NULL.
+        if ($value === NULL) {
+          continue;
+        }
+
         $this->insert->values(array(
           'argument_id' => $argument_id,
           'parent_data_id' => $parent_data_id,
