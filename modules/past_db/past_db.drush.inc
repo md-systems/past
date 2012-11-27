@@ -18,6 +18,7 @@ function past_db_drush_command() {
       'tail' => 'Continuously show new past events until interrupted.',
       'sleep-delay' => 'To be used in conjunction with --tail. This is the number of seconds to wait between each poll to the database. Delay is 1 second by default.',
       'full' => 'Return extended information about each message',
+      'nested' => 'Display nested argument data using print_r()',
     ),
     'examples' => array(
       'drush past-show' => 'Show a listing of most recent 10 messages.',
@@ -70,10 +71,11 @@ function drush_past_db_past_show($arg = NULL) {
  */
 function past_db_drush_show_one($event_id) {
   $event = entity_load_single('past_event', $event_id);
+  $nested = drush_get_option('nested', FALSE);
   if (!$event) {
     return drush_set_error(dt('Past event #!event_id not found.', array('!event_id' => $event_id)));
   }
-  $result = past_db_event_format_result($event, TRUE);
+  $result = past_db_event_format_result($event, TRUE, $nested);
   $upper = new stdClass();
   foreach ($result as $key => $value) {
     $uc = ucfirst(str_replace('_', ' ', $key));
@@ -173,7 +175,7 @@ function past_db_drush_show_many($filter = NULL) {
  * @return
  *   Array. The result object with some attributes themed.
  */
-function past_db_event_format_result($event, $full = FALSE) {
+function past_db_event_format_result($event, $full = FALSE, $nested = FALSE) {
   // Severity.
   $severities = past_event_severities();
   $event->severity = $severities[$event->severity];
@@ -192,6 +194,9 @@ function past_db_event_format_result($event, $full = FALSE) {
       $argument_data = $argument->getData();
       if (is_array($argument_data) || is_object($argument_data)) {
         foreach ($argument->getData() as $name => $value) {
+          if (!is_scalar($value) && $nested) {
+            $value = print_r($value, TRUE);
+          }
           $data[] = $name . ' => ' . $value;
         }
       }
