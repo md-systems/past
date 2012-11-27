@@ -89,3 +89,14 @@ function past_event_create($module, $machine_name, $message = NULL, array $optio
   return $event;
 }
 
+/**
+ * Returns an array of past event severities.
+ */
+function past_event_severities() {
+  return array(
+    PAST_SEVERITY_DEBUG => t('Debug'),
+    PAST_SEVERITY_INFO => t('Info'),
+    PAST_SEVERITY_WARNING => t('Warning'),
+    PAST_SEVERITY_ERROR => t('Error'),
+  );
+}
