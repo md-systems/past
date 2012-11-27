@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * @file
  * Contains the entity classes for Past DB.
  */
 class PastEvent extends Entity implements PastEventInterface {
