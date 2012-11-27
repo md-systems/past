@@ -276,6 +276,13 @@ function past_db_drush_query_events($severity = NULL, $filter = NULL, $module = 
   if ($filter) {
     $query->propertyCondition('message', '%' . $filter . '%', 'LIKE');
   }
+  if ($module) {
+    $query->propertyCondition('module', $module);
+  }
+  if ($machine_name) {
+    $query->propertyCondition('machine_name', $machine_name);
+  }
+
   $query->propertyOrderBy('timestamp', 'DESC');
   return $query;
 }
