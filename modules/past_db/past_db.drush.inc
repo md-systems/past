@@ -144,14 +144,16 @@ function past_db_drush_show_many($filter = NULL) {
       $tbl->_data = array();
       $query = past_db_drush_query_events($filter, $severity, $module, $machine_name);
       $query->propertyCondition('event_id', $last_event_id, '>');
-      $events = entity_load('past_event', array_keys($result['past_event']));
-      foreach ($events as $event) {
-        $row = past_db_event_format_result($event, $full);
-        $table[] = array($row->event_id, $row->date, $row->severity, $row->module, $row->machine_name, $row->message);
+      $result = $query->execute();
+      if ($results) {
+        $events = entity_load('past_event', array_keys($result['past_event']));
+        foreach ($events as $event) {
+          $row = past_db_event_format_result($event, $full);
+          $table[] = array($row->event_id, $row->date, $row->severity, $row->module, $row->machine_name, $row->message);
+        }
+        $tbl->addData($table);
+        print $tbl->_buildTable();
       }
-
-      $tbl->addData($table);
-      print $tbl->_buildTable();
       sleep($sleep_delay);
     }
   }
