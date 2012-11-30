@@ -146,8 +146,10 @@ function past_db_drush_show_many($filter = NULL) {
       $tbl->_data = array();
       $query = past_db_drush_query_events($filter, $severity, $module, $machine_name);
       $query->propertyCondition('event_id', $last_event_id, '>');
+      // Only load 10 new events each time to avoid an overload.
+      $query->range(0, 10);
       $result = $query->execute();
-      if ($results) {
+      if ($result) {
         $events = entity_load('past_event', array_keys($result['past_event']));
         foreach ($events as $event) {
           $row = past_db_event_format_result($event, $full);
@@ -155,6 +157,8 @@ function past_db_drush_show_many($filter = NULL) {
         }
         $tbl->addData($table);
         print $tbl->_buildTable();
+        $last = array_pop($table);
+        $last_event_id = $last[0];
       }
       sleep($sleep_delay);
     }
