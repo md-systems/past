@@ -68,6 +68,10 @@ class PastEvent extends Entity implements PastEventInterface {
     return $this->arguments;
   }
 
+  public function addException(Exception $exception, array $options = array()) {
+    $this->addArgument('exception', $exception, $options);
+  }
+
   public function getMachineName() {
     return $this->machine_name;
   }

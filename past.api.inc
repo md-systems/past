@@ -123,6 +123,21 @@ interface PastEventInterface {
   public function getArgument($key);
 
   /**
+   * Adds an exception.
+   *
+   * @param $exception
+   *   The exception.
+   * @param array $options
+   *   Options for the argument. Currently supported:
+   *     - exclude: Array of keys/properties that should be ignored on the data
+   *       structure and not logged.
+   *
+   * @return PastEventArgumentInterface
+   *   The created past event argument object.
+   */
+  public function addException(Exception $exception, array $options);
+
+  /**
    * Allows to reference this to a parent event.
    *
    * @param $event_id
