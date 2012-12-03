@@ -276,14 +276,14 @@ function drush_core_watchdog_delete($arg = NULL) {
  * @return
  *   False or array with structure ('where' => string, 'args' => array())
  **/
-function past_db_drush_query_events($severity = NULL, $filter = NULL, $module = NULL, $machine_name = NULL) {
+function past_db_drush_query_events($filter = NULL, $severity = NULL, $module = NULL, $machine_name = NULL) {
     $query = new EntityFieldQuery();
   $query->entityCondition('entity_type', 'past_event');
   if ($severity) {
     $query->propertyCondition('severity', $severity, '<=');
   }
   if ($filter) {
-    $query->propertyCondition('message', '%' . $filter . '%', 'LIKE');
+    $query->propertyCondition('message', $filter, 'CONTAINS');
   }
   if ($module) {
     $query->propertyCondition('module', $module);
