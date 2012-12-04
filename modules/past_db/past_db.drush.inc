@@ -126,7 +126,8 @@ function past_db_drush_show_many($filter = NULL) {
 
   drush_log(dt('Most recent !count past event messages:', array('!count' => $count)));
   if ($tail) {
-    $table = array_reverse($table);
+    // @todo this doesn't work on dev server!
+    //$table = array_reverse($table);
   }
   array_unshift($table, $header);
   $tbl = drush_print_table($table, TRUE);
@@ -292,6 +293,6 @@ function past_db_drush_query_events($filter = NULL, $severity = NULL, $module = 
     $query->propertyCondition('machine_name', $machine_name);
   }
 
-  $query->propertyOrderBy('timestamp', 'DESC');
+  $query->propertyOrderBy('event_id', 'ASC');
   return $query;
 }
