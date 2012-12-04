@@ -18,6 +18,7 @@ function past_db_drush_command() {
       'tail' => 'Continuously show new past events until interrupted.',
       'sleep-delay' => 'To be used in conjunction with --tail. This is the number of seconds to wait between each poll to the database. Delay is 1 second by default.',
       'full' => 'Return extended information about each message',
+      'full-filter' => 'Return extended information about messages containing filter',
       'nested' => 'Display nested argument data using print_r()',
     ),
     'examples' => array(
@@ -28,6 +29,7 @@ function past_db_drush_command() {
       'drush past-show --severity=notice' => 'Show a listing of most recent 10 messages with a severity of notice.',
       'drush past-show --type=php' => 'Show a listing of most recent 10 messages of type php.',
       'drush past-show --tail --full' => 'Show a listing of most recent 10 messages with extended information about each one and continue showing messages as they are registered in the past log.',
+      'drush past-show --tail --full-filter=debug' => 'Show a listing of most recent 10 messages with extended information about each containing "debug" items and continue showing messages as they are registered in the past log.',
       'drush past-show --tail --sleep-delay=2' => 'Do a tail of the past log with a delay of two seconds between each poll to the database.',
     ),
     'aliases' => array('ps'),
@@ -66,24 +68,34 @@ function drush_past_db_past_show($arg = NULL) {
 /**
  * Print a watchdog message.
  *
+ * Display message in ONE form.
+ * Key: Value
+ * Keys are ucfirst machine keys with removed underscores.
+ *
  * @param $event_id
  *    The id of the message to show.
  */
 function past_db_drush_show_one($event_id) {
   $event = entity_load_single('past_event', $event_id);
-  $nested = drush_get_option('nested', FALSE);
   if (!$event) {
     return drush_set_error(dt('Past event #!event_id not found.', array('!event_id' => $event_id)));
   }
+
+  // Preparing the event data.
+  $nested = drush_get_option('nested', FALSE);
   $result = past_db_event_format_result($event, TRUE, $nested);
+
+  // Preparing the ONE representation.
   $upper = new stdClass();
   foreach ($result as $key => $value) {
     $uc = ucfirst(str_replace('_', ' ', $key));
     if (is_array($value)) {
       $value = implode("\n", $value);
     }
-    $upper->$uc = $value;
+    //$upper->$uc = $value;
   }
+
+  // Yay, display!
   drush_print_table(drush_key_value_to_array_table($upper));
   print "\n";
 }
@@ -101,7 +113,10 @@ function past_db_drush_show_many($filter = NULL) {
   $severity = drush_get_option('severity');
   $tail = drush_get_option('tail', FALSE);
   $full = drush_get_option('full', FALSE);
+  $full_filter = drush_get_option('full-filter', NULL);
+  //$cols = ($full || $full_filter)?'full':'normal';
 
+  // Query data.
   $query = past_db_drush_query_events($filter, $severity, $module, $machine_name);
   $query->range(0, $count);
   $result = $query->execute();
@@ -109,23 +124,19 @@ function past_db_drush_show_many($filter = NULL) {
     return drush_log(dt('No past events available.'), 'ok');
   }
 
+  // Prepare header.
   $header = array(dt('Id'), dt('Date'), dt('Severity'), dt('Module'), dt('Machine name'), dt('Message'));
-  if ($full) {
+  if ($full || $full_filter) {
     $header[] = dt('Arguments');
   }
 
-  $events = entity_load('past_event', array_keys($result['past_event']));
-  foreach ($events as $event) {
-    $row = past_db_event_format_result($event, $full);
-    $row = array($row->event_id, $row->date, $row->severity, $row->module, $row->machine_name, $row->message);
-    if ($full) {
-      $row[] = 'Arguments...';
-    }
-    $table[] = $row;
-  }
+  // Prepare table data.
+  $table = array();
+  past_drush_lines($table, $result, $full, $full_filter);
 
   drush_log(dt('Most recent !count past event messages:', array('!count' => $count)));
   if ($tail) {
+    // newest last.
     $table = array_reverse($table);
   }
   array_unshift($table, $header);
@@ -150,11 +161,7 @@ function past_db_drush_show_many($filter = NULL) {
       $query->range(0, 10);
       $result = $query->execute();
       if ($result) {
-        $events = entity_load('past_event', array_keys($result['past_event']));
-        foreach ($events as $event) {
-          $row = past_db_event_format_result($event, $full);
-          $table[] = array($row->event_id, $row->date, $row->severity, $row->module, $row->machine_name, $row->message);
-        }
+        past_drush_lines($table, $result, $full, $full_line);
         $tbl->addData($table);
         print $tbl->_buildTable();
         $last = array_pop($table);
@@ -168,6 +175,41 @@ function past_db_drush_show_many($filter = NULL) {
   }
 }
 
+function past_drush_lines(&$table, $result, $full, $full_filter) {
+  $events = entity_load('past_event', array_keys($result['past_event']));
+  foreach ($events as $event) {
+    $full_line = $full;
+    $full_argument = $event->getArgument($full_filter);
+    if ($full_filter && isset($full_argument)) {
+      $full_line = TRUE;
+    }
+    $result = past_db_event_format_result($event, $full_line);
+
+    $row = array($result['event_id'], $result['date'], $result['severity'], $result['module'], $result['machine_name'], $result['message']);
+    if ($full || $full_line) {
+      // This is redundant to past_db_event_format_result()!
+      $args = array();
+      foreach ($event->getArguments() as $key => $argument) {
+        $args[$key] = past_db_argument($argument);
+      }
+
+      // Preparing the arguments representation.
+      $upper = new stdClass();
+      foreach ($args as $key => $value) {
+        $uc = ucfirst(str_replace('_', ' ', $key));
+        if (is_array($value)) {
+          $value = implode("\n", $value);
+        }
+        $upper->$uc = $value;
+      }
+      //drush_print_table(drush_key_value_to_array_table($upper));
+      $row[] = print_r($upper, TRUE);
+      //$row[] = json_encode($upper);
+    }
+    $table[] = $row;
+  }
+}
+
 
 /**
  * Format a past event entity.
@@ -178,46 +220,55 @@ function past_db_drush_show_many($filter = NULL) {
  *   Boolean. Return extended details.
  * @return
  *   Array. The result object with some attributes themed.
+ *
+ * Unsetting $event variables is unclean. Build a new array.
  */
 function past_db_event_format_result($event, $full = FALSE, $nested = FALSE) {
+  $result = (array)$event;
+
   // Severity.
   $severities = past_event_severities();
   if (isset($severities[$event->severity])) {
-    $event->severity = $severities[$event->severity];
+    $result['severity'] = $severities[$event->severity];
   }
 
   // Date.
-  $event->date = format_date($event->timestamp, 'custom', 'd/M H:i');
-  unset($event->timestamp);
+  //$result->date = format_date($event->timestamp, 'custom', 'd/M H:i');
+  $result['date'] = $event->timestamp;
+  unset($result['timestamp']);
 
   // Message.
   $message_length = 188;
 
-  // Print all the data available
   if ($full) {
+    // Print all the data available.
     foreach ($event->getArguments() as $key => $argument) {
-      $data = array();
-      $argument_data = $argument->getData();
-      if (is_array($argument_data) || is_object($argument_data)) {
-        foreach ($argument->getData() as $name => $value) {
-          if (!is_scalar($value) && $nested) {
-            $value = print_r($value, TRUE);
-          }
-          $data[] = $name . ' => ' . $value;
-        }
-      }
-      else {
-        $data = $argument_data;
-      }
-      $event->{argument_ . $key} = $data;
+      $result['argument_' . $key] = past_db_argument($argument);
     }
     $message_length = PHP_INT_MAX;
-
   }
 
-  $event->message = truncate_utf8(strip_tags(decode_entities($event->message)), $message_length, FALSE, FALSE);
-  unset($event->rdf_mapping);
-  return $event;
+  $result['message'] = truncate_utf8(strip_tags(decode_entities($result->message)), $message_length, FALSE, FALSE);
+  unset($result['rdf_mapping']);
+
+  return $result;
+}
+
+function past_db_argument($argument) {
+  $data = array();
+  $argument_data = $argument->getData();
+  if (is_array($argument_data) || is_object($argument_data)) {
+    foreach ($argument->getData() as $name => $value) {
+      if (!is_scalar($value) && $nested) {
+        $value = print_r($value, TRUE);
+      }
+      $data[] = $name . ' => ' . $value;
+    }
+  }
+  else {
+    $data = $argument_data;
+  }
+  return $data; 
 }
 
 /**
