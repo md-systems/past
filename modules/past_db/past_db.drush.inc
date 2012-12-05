@@ -199,13 +199,14 @@ function past_db_drush_show_many($filter = NULL) {
 }
 
 function past_drush_table($tbl, $table, $header, $last_format) {
+  // @todo for some reason the first header output is misaligned. fix!
   $tbl->setHeaders($header);
   if ($last_format == 'table') {
-    // @todo this is not possible with setHeaders();
+    // @todo this is not possible with setHeaders(); fix drush!
     $tbl->_headers = NULL;
   }
   $tbl->addData($table);
-  print $tbl->_buildTable();
+  print $tbl->getTable();
 }
 
 /**
