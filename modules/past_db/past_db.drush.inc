@@ -186,8 +186,8 @@ function past_drush_lines(&$table, $result, $full, $full_filter) {
   $events = entity_load('past_event', array_keys($result['past_event']));
   foreach ($events as $event) {
     $full_line = $full;
-    $full_argument = $event->getArgument($full_filter);
-    if ($full_filter && isset($full_argument)) {
+    $arguments = $event->getArguments();
+    if ($full_filter && ($arguments[$full_filter])) {
       $full_line = TRUE;
     }
     $result = past_db_event_format_result($event, $full_line);
@@ -227,8 +227,7 @@ function past_db_event_format_result($event, $full = FALSE, $nested = FALSE) {
   }
 
   // Date.
-  //$result->date = format_date($event->timestamp, 'custom', 'd/M H:i');
-  $result->date = $event->timestamp;
+  $result->date = format_date($event->timestamp, 'custom', 'd/M H:i');
   unset($result->timestamp);
 
   // Message.
