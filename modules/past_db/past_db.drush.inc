@@ -90,9 +90,9 @@ function past_db_drush_show_one($event_id) {
   foreach ($result as $key => $value) {
     $uc = ucfirst(str_replace('_', ' ', $key));
     if (is_array($value)) {
-      $value = implode("\n", $value);
+      $value = implode("      \n", $value);
     }
-    //$upper->$uc = $value;
+    $upper->$uc = $value;
   }
 
   // Yay, display!
@@ -116,6 +116,7 @@ function past_db_drush_show_many($filter = NULL) {
   $full_filter = drush_get_option('full-filter', NULL);
   //$cols = ($full || $full_filter)?'full':'normal';
 
+  // @todo move all this into the loop and terminate it if not $tail
   // Query data.
   $query = past_db_drush_query_events($filter, $severity, $module, $machine_name);
   $query->range(0, $count);
@@ -127,7 +128,7 @@ function past_db_drush_show_many($filter = NULL) {
   // Prepare header.
   $header = array(dt('Id'), dt('Date'), dt('Severity'), dt('Module'), dt('Machine name'), dt('Message'));
   if ($full || $full_filter) {
-    $header[] = dt('Arguments');
+    //$header[] = dt('Arguments');
   }
 
   // Prepare table data.
@@ -138,7 +139,10 @@ function past_db_drush_show_many($filter = NULL) {
   if ($tail) {
     // newest last.
     $table = array_reverse($table);
+    // Obtain the last wid.
+    $last = array_pop($table);
   }
+
   array_unshift($table, $header);
   $tbl = drush_print_table($table, TRUE);
 
@@ -146,26 +150,26 @@ function past_db_drush_show_many($filter = NULL) {
     // We will reuse the table object to display each line generated while in tail mode.
     // To make it possible some hacking is done on the object: remove the header and reset the rows on each iteration.
     $tbl->_headers = NULL;
-    // Obtain the last wid.
-    $last = array_pop($table);
     $last_event_id = $last[0];
     // sleep-delay
     $sleep_delay = drush_get_option('sleep-delay', 1);
     while (TRUE) {
-      $table = array();
-      // Reset table rows.
-      $tbl->_data = array();
       $query = past_db_drush_query_events($filter, $severity, $module, $machine_name);
       $query->propertyCondition('event_id', $last_event_id, '>');
       // Only load 10 new events each time to avoid an overload.
       $query->range(0, 10);
       $result = $query->execute();
       if ($result) {
+        $table = array();
+        // Reset table rows.
+        $tbl->_data = array();
         past_drush_lines($table, $result, $full, $full_line);
+        $table = array_reverse($table);
         $tbl->addData($table);
         print $tbl->_buildTable();
         $last = array_pop($table);
         $last_event_id = $last[0];
+        // output if something is remaining xxx
       }
       sleep($sleep_delay);
     }
@@ -175,6 +179,9 @@ function past_db_drush_show_many($filter = NULL) {
   }
 }
 
+/**
+ * Inject lines from result into table.
+ */
 function past_drush_lines(&$table, $result, $full, $full_filter) {
   $events = entity_load('past_event', array_keys($result['past_event']));
   foreach ($events as $event) {
@@ -185,28 +192,15 @@ function past_drush_lines(&$table, $result, $full, $full_filter) {
     }
     $result = past_db_event_format_result($event, $full_line);
 
-    $row = array($result['event_id'], $result['date'], $result['severity'], $result['module'], $result['machine_name'], $result['message']);
+    $row = array(
+      $result->event_id, $result->date, $result->severity, $result->module, $result->machine_name, $result->message
+    );
     if ($full || $full_line) {
-      // This is redundant to past_db_event_format_result()!
-      $args = array();
-      foreach ($event->getArguments() as $key => $argument) {
-        $args[$key] = past_db_argument($argument);
-      }
-
-      // Preparing the arguments representation.
-      $upper = new stdClass();
-      foreach ($args as $key => $value) {
-        $uc = ucfirst(str_replace('_', ' ', $key));
-        if (is_array($value)) {
-          $value = implode("\n", $value);
-        }
-        $upper->$uc = $value;
-      }
-      //drush_print_table(drush_key_value_to_array_table($upper));
-      $row[] = print_r($upper, TRUE);
-      //$row[] = json_encode($upper);
+      past_db_drush_show_one($event->event_id);
     }
-    $table[] = $row;
+    else {
+      $table[] = $row;
+    }
   }
 }
 
@@ -221,21 +215,21 @@ function past_drush_lines(&$table, $result, $full, $full_filter) {
  * @return
  *   Array. The result object with some attributes themed.
  *
- * Unsetting $event variables is unclean. Build a new array.
+ * @todo Unsetting $event variables is unclean. Build a new array.
+ * @todo Return currently is object, NOT array.
  */
 function past_db_event_format_result($event, $full = FALSE, $nested = FALSE) {
-  $result = (array)$event;
-
+  $result = clone $event;
   // Severity.
   $severities = past_event_severities();
   if (isset($severities[$event->severity])) {
-    $result['severity'] = $severities[$event->severity];
+    $result->severity = $severities[$event->severity];
   }
 
   // Date.
   //$result->date = format_date($event->timestamp, 'custom', 'd/M H:i');
-  $result['date'] = $event->timestamp;
-  unset($result['timestamp']);
+  $result->date = $event->timestamp;
+  unset($result->timestamp);
 
   // Message.
   $message_length = 188;
@@ -243,17 +237,20 @@ function past_db_event_format_result($event, $full = FALSE, $nested = FALSE) {
   if ($full) {
     // Print all the data available.
     foreach ($event->getArguments() as $key => $argument) {
-      $result['argument_' . $key] = past_db_argument($argument);
+      $result->{'argument_' . $key} = past_db_argument($argument);
     }
     $message_length = PHP_INT_MAX;
   }
 
-  $result['message'] = truncate_utf8(strip_tags(decode_entities($result->message)), $message_length, FALSE, FALSE);
-  unset($result['rdf_mapping']);
+  $result->message = truncate_utf8(strip_tags(decode_entities($result->message)), $message_length, FALSE, FALSE);
+  unset($result->rdf_mapping);
 
   return $result;
 }
 
+/**
+ * Prepare argument for presentation.
+ */
 function past_db_argument($argument) {
   $data = array();
   $argument_data = $argument->getData();
