@@ -21,8 +21,8 @@ class PastEvent extends Entity implements PastEventInterface {
     }
 
     // If it is an object, clone it to avoid changing the original and log it
-    // at the current state.
-    if (is_object($data)) {
+    // at the current state. Except when it can't, like e.g. exceptions.
+    if (is_object($data) && !($data instanceof Exception)) {
       $data = clone $data;
     }
 
