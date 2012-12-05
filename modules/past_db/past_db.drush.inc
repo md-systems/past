@@ -116,14 +116,7 @@ function past_db_drush_show_many($filter = NULL) {
   $full_filter = drush_get_option('full-filter', NULL);
   //$cols = ($full || $full_filter)?'full':'normal';
 
-  // @todo move all this into the loop and terminate it if not $tail
-  // Query data.
-  $query = past_db_drush_query_events($filter, $severity, $module, $machine_name);
-  $query->range(0, $count);
-  $result = $query->execute();
-  if (empty($result)) {
-    return drush_log(dt('No past events available.'), 'ok');
-  }
+  $none = TRUE;
 
   // Prepare header.
   $header = array(dt('Id'), dt('Date'), dt('Severity'), dt('Module'), dt('Machine name'), dt('Message'));
@@ -133,57 +126,60 @@ function past_db_drush_show_many($filter = NULL) {
 
   // Prepare table data.
   $table = array();
-  past_drush_lines($table, $result, $full, $full_filter);
 
   drush_log(dt('Most recent !count past event messages:', array('!count' => $count)));
-  if ($tail) {
-    // newest last.
-    $table = array_reverse($table);
-    // Obtain the last wid.
-    $last = array_pop($table);
-  }
 
   array_unshift($table, $header);
   $tbl = drush_print_table($table, TRUE);
 
-  if ($tail) {
-    // We will reuse the table object to display each line generated while in tail mode.
-    // To make it possible some hacking is done on the object: remove the header and reset the rows on each iteration.
-    $tbl->_headers = NULL;
-    $last_event_id = $last[0];
-    // sleep-delay
-    $sleep_delay = drush_get_option('sleep-delay', 1);
-    while (TRUE) {
-      $query = past_db_drush_query_events($filter, $severity, $module, $machine_name);
+  // We will reuse the table object to display each line generated while in tail mode.
+  // To make it possible some hacking is done on the object: remove the header and reset the rows on each iteration.
+  $last_event_id = 0;
+  // sleep-delay
+  $sleep_delay = drush_get_option('sleep-delay', 1);
+
+  while (TRUE) {
+    $query = past_db_drush_query_events($filter, $severity, $module, $machine_name);
+    if ($last_event_id) {
       $query->propertyCondition('event_id', $last_event_id, '>');
-      // Only load 10 new events each time to avoid an overload.
-      $query->range(0, 10);
-      $result = $query->execute();
-      if ($result) {
-        $table = array();
-        // Reset table rows.
-        $tbl->_data = array();
-        past_drush_lines($table, $result, $full, $full_line);
-        $table = array_reverse($table);
-        $tbl->addData($table);
-        print $tbl->_buildTable();
-        $last = array_pop($table);
-        $last_event_id = $last[0];
-        // output if something is remaining xxx
-      }
-      sleep($sleep_delay);
     }
+    $query->range(0, $count);
+    $result = $query->execute();
+    if ($result) {
+      $none = FALSE;
+      $table = array();
+      // Reset table rows.
+      $tbl->_data = array();
+      $events = entity_load('past_event', array_keys($result['past_event']));
+      past_drush_lines($table, $events, $full, $full_line);
+      if ($tail) {
+        // newest last.
+        $table = array_reverse($table);
+      }
+      $tbl->addData($table);
+      print $tbl->_buildTable();
+      $last = reset($events);
+      $last_event_id = $last->event_id;
+      // output if something is remaining xxx
+    }
+    if (!$tail) {
+      print "\n";
+      break;
+    }
+    // Only load 10 new events each time to avoid an overload.
+    $count = 10;
+    sleep($sleep_delay);
+    $tbl->_headers = NULL;
   }
-  else {
-    print "\n";
+  if ($none) {
+    return drush_log(dt('No past events available.'), 'ok');
   }
 }
 
 /**
  * Inject lines from result into table.
  */
-function past_drush_lines(&$table, $result, $full, $full_filter) {
-  $events = entity_load('past_event', array_keys($result['past_event']));
+function past_drush_lines(&$table, $events, $full, $full_filter) {
   foreach ($events as $event) {
     $full_line = $full;
     $arguments = $event->getArguments();
