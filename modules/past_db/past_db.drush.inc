@@ -1,4 +1,4 @@
-<?php
+    <?php
 
 /**
  * Implementation of hook_drush_command().
@@ -114,15 +114,11 @@ function past_db_drush_show_many($filter = NULL) {
   $tail = drush_get_option('tail', FALSE);
   $full = drush_get_option('full', FALSE);
   $full_filter = drush_get_option('full-filter', NULL);
-  //$cols = ($full || $full_filter)?'full':'normal';
 
   $none = TRUE;
 
   // Prepare header.
   $header = array(dt('Id'), dt('Date'), dt('Severity'), dt('Module'), dt('Machine name'), dt('Message'));
-  if ($full || $full_filter) {
-    //$header[] = dt('Arguments');
-  }
 
   // Prepare table data.
   $table = array();
@@ -130,11 +126,13 @@ function past_db_drush_show_many($filter = NULL) {
   drush_log(dt('Most recent !count past event messages:', array('!count' => $count)));
 
   array_unshift($table, $header);
-  $tbl = drush_print_table($table, TRUE);
+  $tbl = new Console_Table(CONSOLE_TABLE_ALIGN_LEFT, '');
+  $tbl->setHeaders($header);
 
   // We will reuse the table object to display each line generated while in tail mode.
   // To make it possible some hacking is done on the object: remove the header and reset the rows on each iteration.
   $last_event_id = 0;
+  $last_format = NULL;
   // sleep-delay
   $sleep_delay = drush_get_option('sleep-delay', 1);
 
@@ -151,16 +149,41 @@ function past_db_drush_show_many($filter = NULL) {
       // Reset table rows.
       $tbl->_data = array();
       $events = entity_load('past_event', array_keys($result['past_event']));
-      past_drush_lines($table, $events, $full, $full_line);
-      if ($tail) {
-        // newest last.
-        $table = array_reverse($table);
+      // Process oldest first!
+      $events = array_reverse($events);
+
+      foreach ($events as $event) {
+        $full_line = $full;
+        $arguments = $event->getArguments();
+        if ($full_filter && ($arguments[$full_filter])) {
+          $full_line = TRUE;
+        }
+        $result = past_db_event_format_result($event, $full_line);
+    
+        $row = array(
+          $result->event_id, $result->date, $result->severity, $result->module, $result->machine_name, $result->message
+        );
+        if ($full || $full_line) {
+          if (count($table)) {
+            // preflush table
+            past_drush_table($tbl, $table, $header, $last_format);
+            $table = array();
+          }
+          past_db_drush_show_one($event->event_id);
+          $last_format = 'full';
+        }
+        else {
+          // enqueue
+          $table[] = $row;
+        }
       }
-      $tbl->addData($table);
-      print $tbl->_buildTable();
-      $last = reset($events);
+
+      // display table
+      past_drush_table($tbl, $table, $header, $last_format);
+      $table = array();
+      $last = array_pop($events);
       $last_event_id = $last->event_id;
-      // output if something is remaining xxx
+      $last_format = 'table';
     }
     if (!$tail) {
       print "\n";
@@ -169,11 +192,20 @@ function past_db_drush_show_many($filter = NULL) {
     // Only load 10 new events each time to avoid an overload.
     $count = 10;
     sleep($sleep_delay);
-    $tbl->_headers = NULL;
   }
   if ($none) {
     return drush_log(dt('No past events available.'), 'ok');
   }
+}
+
+function past_drush_table($tbl, $table, $header, $last_format) {
+  $tbl->setHeaders($header);
+  if ($last_format == 'table') {
+    // @todo this is not possible with setHeaders();
+    $tbl->_headers = NULL;
+  }
+  $tbl->addData($table);
+  print $tbl->_buildTable();
 }
 
 /**
