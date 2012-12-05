@@ -158,7 +158,7 @@ function past_db_drush_show_many($filter = NULL) {
         if ($full_filter && ($arguments[$full_filter])) {
           $full_line = TRUE;
         }
-        $result = past_db_event_format_result($event, $full_line);
+        $result = past_db_event_format_result($event, $full_line, $nested);
     
         $row = array(
           $result->event_id, $result->date, $result->severity, $result->module, $result->machine_name, $result->message
@@ -209,31 +209,6 @@ function past_drush_table($tbl, $table, $header, $last_format) {
 }
 
 /**
- * Inject lines from result into table.
- */
-function past_drush_lines(&$table, $events, $full, $full_filter) {
-  foreach ($events as $event) {
-    $full_line = $full;
-    $arguments = $event->getArguments();
-    if ($full_filter && ($arguments[$full_filter])) {
-      $full_line = TRUE;
-    }
-    $result = past_db_event_format_result($event, $full_line);
-
-    $row = array(
-      $result->event_id, $result->date, $result->severity, $result->module, $result->machine_name, $result->message
-    );
-    if ($full || $full_line) {
-      past_db_drush_show_one($event->event_id);
-    }
-    else {
-      $table[] = $row;
-    }
-  }
-}
-
-
-/**
  * Format a past event entity.
  *
  * @param PastEventInterface $event
@@ -264,7 +239,7 @@ function past_db_event_format_result($event, $full = FALSE, $nested = FALSE) {
   if ($full) {
     // Print all the data available.
     foreach ($event->getArguments() as $key => $argument) {
-      $result->{'argument_' . $key} = past_db_argument($argument);
+      $result->{'argument_' . $key} = past_db_argument($argument, $nested);
     }
     $message_length = PHP_INT_MAX;
   }
@@ -278,7 +253,7 @@ function past_db_event_format_result($event, $full = FALSE, $nested = FALSE) {
 /**
  * Prepare argument for presentation.
  */
-function past_db_argument($argument) {
+function past_db_argument($argument, $nested) {
   $data = array();
   $argument_data = $argument->getData();
   if (is_array($argument_data) || is_object($argument_data)) {
