@@ -1,4 +1,4 @@
-    <?php
+<?php
 
 /**
  * Implementation of hook_drush_command().
@@ -11,25 +11,29 @@ function past_db_drush_command() {
       'event_id' => 'Optional id of a past event to show in detail. If not provided, a listing of most recent 10 events will be displayed.',
     ),
     'options' => array(
+      // Filter
       'count' => 'The number of messages to show. Defaults to 10.',
       'severity' => 'Restrict to messages of a given severity level.',
       'module' => 'Restrict to messages of a given module.',
       'machine_name' => 'Restrict to messages of a given machine name.',
       'tail' => 'Continuously show new past events until interrupted.',
       'sleep-delay' => 'To be used in conjunction with --tail. This is the number of seconds to wait between each poll to the database. Delay is 1 second by default.',
-      'full' => 'Return extended information about each message',
-      'full-filter' => 'Return extended information about messages containing filter',
-      'nested' => 'Display nested argument data using print_r()',
+      // Presentation
+      'full' => 'Full table information about each message.',
+      'detail' => 'Return extended information about each message.',
+      'detail-filter' => 'Return extended information about messages containing filter.',
+      'nested' => 'Display nested argument data using print_r().',
     ),
     'examples' => array(
-      'drush past-show' => 'Show a listing of most recent 10 messages.',
+      'drush past-show' => 'Show a tablelisting of most recent 10 messages.',
       'drush past-show 64' => 'Show in detail message with id 64.',
       'drush past-show "cron run succesful"' => 'Show a listing of most recent 10 messages containing the string "cron run succesful".',
       'drush past-show --count=46' => 'Show a listing of most recent 46 messages.',
       'drush past-show --severity=notice' => 'Show a listing of most recent 10 messages with a severity of notice.',
       'drush past-show --type=php' => 'Show a listing of most recent 10 messages of type php.',
-      'drush past-show --tail --full' => 'Show a listing of most recent 10 messages with extended information about each one and continue showing messages as they are registered in the past log.',
-      'drush past-show --tail --full-filter=debug' => 'Show a listing of most recent 10 messages with extended information about each containing "debug" items and continue showing messages as they are registered in the past log.',
+      'drush past-show --tail --full' => 'Show a table 5listing of most recent 10 messages with extended information about each one and continue showing messages as they are registered in the past log.',
+      'drush past-show --tail --detail' => 'Show most recent 10 messages with detail information about each one and continue showing messages as they are registered in the past log.',
+      'drush past-show --tail --detail-filter=debug' => 'Show a listing of most recent 10 messages with extended information about each containing "debug" items and continue showing messages as they are registered in the past log.',
       'drush past-show --tail --sleep-delay=2' => 'Do a tail of the past log with a delay of two seconds between each poll to the database.',
     ),
     'aliases' => array('ps'),
@@ -90,7 +94,7 @@ function past_db_drush_show_one($event_id) {
   foreach ($result as $key => $value) {
     $uc = ucfirst(str_replace('_', ' ', $key));
     if (is_array($value)) {
-      $value = implode("      \n", $value);
+      $value = implode("\n", $value);
     }
     $upper->$uc = $value;
   }
@@ -113,21 +117,30 @@ function past_db_drush_show_many($filter = NULL) {
   $severity = drush_get_option('severity');
   $tail = drush_get_option('tail', FALSE);
   $full = drush_get_option('full', FALSE);
-  $full_filter = drush_get_option('full-filter', NULL);
-
-  $none = TRUE;
-
-  // Prepare header.
-  $header = array(dt('Id'), dt('Date'), dt('Severity'), dt('Module'), dt('Machine name'), dt('Message'));
+  $detail = drush_get_option('detail', FALSE);
+  $display = $full?'full':'normal';
+  if ($detail) {
+    $display = 'detail';
+  }
+  $detail_filter = drush_get_option('detail-filter', NULL);
 
   // Prepare table data.
+  $none = TRUE;
   $table = array();
+  $tbl = new Console_Table(CONSOLE_TABLE_ALIGN_LEFT, '');
 
   drush_log(dt('Most recent !count past event messages:', array('!count' => $count)));
 
-  array_unshift($table, $header);
-  $tbl = new Console_Table(CONSOLE_TABLE_ALIGN_LEFT, '');
-  $tbl->setHeaders($header);
+  // Prepare header.
+  $header = NULL;
+  if ($display!='normal') {
+    $header = array(dt('Id'), dt('Date'), dt('Severity'), dt('Module'), dt('Machine name'), dt('Message'));
+    if ($display=='full') {
+      $header[] = dt('Arguments');
+    }
+    //array_unshift($table, $header);
+    $tbl->setHeaders($header);
+  }
 
   // We will reuse the table object to display each line generated while in tail mode.
   // To make it possible some hacking is done on the object: remove the header and reset the rows on each iteration.
@@ -145,6 +158,7 @@ function past_db_drush_show_many($filter = NULL) {
     $result = $query->execute();
     if ($result) {
       $none = FALSE;
+      // Initi this cycle.
       $table = array();
       // Reset table rows.
       $tbl->_data = array();
@@ -153,37 +167,55 @@ function past_db_drush_show_many($filter = NULL) {
       $events = array_reverse($events);
 
       foreach ($events as $event) {
-        $full_line = $full;
+        $detail_line = $display=='detail';
+        $full_line = $display=='full';
+        // Check arguments if this line is a special case.
         $arguments = $event->getArguments();
+        if ($detail_filter && ($arguments[$detail_filter])) {
+          $detail_line = TRUE;
+        }
+        // Consider full-filter
         if ($full_filter && ($arguments[$full_filter])) {
           $full_line = TRUE;
         }
-        $result = past_db_event_format_result($event, $full_line, $nested);
+        // Prepare result, with arguments if requested
+        $arguments_line = $full_line || $detail_line;
+        $result = past_db_event_format_result($event, $arguments_line, $nested);
     
-        $row = array(
-          $result->event_id, $result->date, $result->severity, $result->module, $result->machine_name, $result->message
-        );
-        if ($full || $full_line) {
-          if (count($table)) {
-            // preflush table
-            past_drush_table($tbl, $table, $header, $last_format);
-            $table = array();
-          }
+        if ($detail_line) {
+          // preflush table.
+          past_drush_table($tbl, $table, $header, $last_format);
+          // display single detail record.
           past_db_drush_show_one($event->event_id);
-          $last_format = 'full';
+          $last_format = 'detail';
         }
         else {
-          // enqueue
+          $row = array(
+            $result->event_id, $result->date, $result->severity, $result->module, $result->machine_name, $result->message
+          );
+          if ($full_line) {
+            $argstr = '';
+            foreach ($arguments as $key => $value) {
+              $data = $value->getData();
+              if (is_scalar($data)) {
+                $argstr .= ucfirst($key) . ': ' . $data . "\n";
+              }
+              else {
+                $argstr .= ucfirst($key) . ':' . "\n";
+                $argstr .= $result->{'argument_' . $key} . "\n";
+              }
+            }
+            $row[] = $argstr;
+          }
+          // enqueue.
           $table[] = $row;
         }
       }
-
-      // display table
+      // display table.
       past_drush_table($tbl, $table, $header, $last_format);
-      $table = array();
+      // terminate this loop.
       $last = array_pop($events);
       $last_event_id = $last->event_id;
-      $last_format = 'table';
     }
     if (!$tail) {
       print "\n";
@@ -198,15 +230,21 @@ function past_db_drush_show_many($filter = NULL) {
   }
 }
 
-function past_drush_table($tbl, $table, $header, $last_format) {
+function past_drush_table(&$tbl, &$table, $header, &$last_format) {
+  if (!count($table)) {
+    return;
+  }
   // @todo for some reason the first header output is misaligned. fix!
-  $tbl->setHeaders($header);
-  if ($last_format == 'table') {
-    // @todo this is not possible with setHeaders(); fix drush!
-    $tbl->_headers = NULL;
+  // @todo this is not possible with setHeaders(); fix drush!
+  $tbl->_headers = NULL;
+  if ($last_format == 'detail') {
+    $tbl->setHeaders($header);
   }
   $tbl->addData($table);
   print $tbl->getTable();
+
+  $last_format = 'table';
+  $table = array();
 }
 
 /**
@@ -214,7 +252,7 @@ function past_drush_table($tbl, $table, $header, $last_format) {
  *
  * @param PastEventInterface $event
  *   Past event entity.
- * @param $full
+ * @param $show_arguments
  *   Boolean. Return extended details.
  * @return
  *   Array. The result object with some attributes themed.
@@ -222,7 +260,7 @@ function past_drush_table($tbl, $table, $header, $last_format) {
  * @todo Unsetting $event variables is unclean. Build a new array.
  * @todo Return currently is object, NOT array.
  */
-function past_db_event_format_result($event, $full = FALSE, $nested = FALSE) {
+function past_db_event_format_result($event, $show_arguments = FALSE, $nested = FALSE) {
   $result = clone $event;
   // Severity.
   $severities = past_event_severities();
@@ -237,7 +275,7 @@ function past_db_event_format_result($event, $full = FALSE, $nested = FALSE) {
   // Message.
   $message_length = 188;
 
-  if ($full) {
+  if ($show_arguments) {
     // Print all the data available.
     foreach ($event->getArguments() as $key => $argument) {
       $result->{'argument_' . $key} = past_db_argument($argument, $nested);
