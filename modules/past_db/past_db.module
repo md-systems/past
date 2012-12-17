@@ -40,3 +40,22 @@ function past_db_entity_info() {
   );
   return $info;
 }
+
+/**
+ * Implements hook_cron().
+ */
+function past_db_cron() {
+  // Check if expiration is enabled.
+  if ($expire = variable_get('past_events_expire', 0)) {
+    // Fetch up to 100 past events to delete, delete oldest first.
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'past_event');
+    $query->propertyCondition('timestamp', REQUEST_TIME - $expire, '<');
+    $query->propertyOrderBy('timestamp');
+    $query->range(0, 100);
+    $result = $query->execute();
+    if ($result) {
+      entity_delete_multiple('past_event', array_keys($result['past_event']));
+    }
+  }
+}

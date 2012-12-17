@@ -38,6 +38,19 @@ class PastEventController extends EntityAPIController {
     }
   }
 
+  public function delete($ids, \DatabaseTransaction $transaction = NULL) {
+    // Delete the arguments first.
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'past_event_argument');
+    $query->propertyCondition('event_id', $ids);
+    $result = $query->execute();
+    if ($result) {
+      entity_delete_multiple('past_event_argument', array_keys($result['past_event_argument']));
+    }
+
+    parent::delete($ids, $transaction);
+  }
+
 }
 
 /**
@@ -66,6 +79,15 @@ class PastEventArgumentController extends EntityAPIController {
       $this->normalizeData($entity->argument_id, $data);
       $this->insert->execute();
     }
+  }
+
+  public function delete($ids, \DatabaseTransaction $transaction = NULL) {
+    // Delete the data first.
+    db_delete('past_event_data')
+      ->condition('argument_id', $ids)
+      ->execute();
+
+    parent::delete($ids, $transaction);
   }
 
   /**
