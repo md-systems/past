@@ -36,6 +36,16 @@ class PastEventController extends EntityAPIController {
       $argument->event_id = $entity->event_id;
       $argument->save();
     }
+
+    // Update child events to use the parent_event_id.
+    if ($child_events = $entity->getChildEvents()) {
+    db_update('past_event')
+      ->fields(array(
+        'parent_event_id' => $entity->event_id
+      ))
+      ->condition('event_id', $child_events)
+      ->execute();
+    }
   }
 
   public function delete($ids, \DatabaseTransaction $transaction = NULL) {

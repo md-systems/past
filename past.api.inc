@@ -184,6 +184,14 @@ interface PastEventInterface {
   public function getModule();
 
   /**
+   * Will flag the child event to use this as the parent once saved.
+   *
+   * @param int $event_id
+   *   The event id that should use this event as the parent.
+   */
+  public function addChildEvent($event_id);
+
+  /**
    * Saves the event.
    */
   public function save();

@@ -14,6 +14,7 @@ class PastEvent extends Entity implements PastEventInterface {
   public $parent_event_id;
 
   protected $arguments;
+  protected $child_events = array();
 
   public function addArgument($key, $data, array $options = array()) {
     if (!is_array($this->arguments)) {
@@ -118,6 +119,14 @@ class PastEvent extends Entity implements PastEventInterface {
 
   public function setModule($module) {
     $this->module = $module;
+  }
+
+  public function addChildEvent($event_id) {
+    $this->child_events[] = $event_id;
+  }
+
+  public function getChildEvents() {
+    return $this->child_events;
   }
 
 }
