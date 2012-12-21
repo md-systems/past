@@ -46,6 +46,23 @@ class PastEventController extends EntityAPIController {
       ->condition('event_id', $child_events)
       ->execute();
     }
+
+    // If running in a WebTestCase environment, propagate the log into simpletest log.
+  }
+
+  private function testLog() {
+    $class = '';
+    $caller = '';
+
+    // @todo this is very ugly! improve.
+    static $test_id;
+    if (!$test_id) {
+      $test_id = db_query('simpletest_test_id')
+        ->useDefaults(array('test_id'))
+        ->execute();
+    }
+
+    DrupalTestCase::insertAssert($test_id, $class, FALSE, t('Test'), 'Completion check', $caller);
   }
 
   public function delete($ids, \DatabaseTransaction $transaction = NULL) {
@@ -136,4 +153,74 @@ class PastEventArgumentController extends EntityAPIController {
     }
   }
 
+}
+
+
+/**
+ * Controller class for the Entity Metadata.
+ */
+class PastDBEventMetadataController extends EntityDefaultMetadataController {
+  protected static $modules = array();
+
+  /**
+   * Overrides EntityDefaultMetadataController::entityPropertyInfo().
+   *
+   * @see EntityDefaultMetadataController::entityPropertyInfo()
+   * @return array|void
+   */
+  public function entityPropertyInfo() {
+    // Loading property information and make em better usable in here.
+    $info = parent::entityPropertyInfo();
+    $prop = &$info[$this->type]['properties'];
+
+    // The timestamp should be rendered/shown as a date.
+    $prop['timestamp']['type'] = 'date';
+
+    // The severity should be a translated options list.
+    // We could also call the method 'past_event_severities' directly, but I prefer the OOP-Way for all and not a mix up.
+    $prop['severity']['options list'] = array(get_class($this), 'severityOptionsList');
+
+    // Show a list with all modules instead a text field.
+    $prop['module']['options list'] = array(get_class($this), 'moduleOptionsList');
+
+    return $info;
+  }
+
+  /**
+   * An OptionsList callback to return all Severity levels.
+   * @return array
+   */
+  public function severityOptionsList() {
+    return past_event_severities();
+  }
+
+  /**
+   * Return an associative array with all enabled modules.
+   * There might be applications where "module" is not cleanly used. You cannot search for those values.
+   *
+   * @return array
+   *   Associative array wit key as the module name and the Value the same with uppercase first char.
+   */
+  public function moduleOptionsList() {
+    if (empty(self::$modules)) {
+      self::$modules = array();
+      $result = db_query('SELECT name FROM {system} WHERE type=\'module\' AND status=1 ORDER BY name;');
+
+      foreach ($result as $res) {
+        self::$modules[$res->name] = ucfirst($res->name);
+      }
+    }
+    return self::$modules;
+  }
+
+}
+
+
+class PastDBEventViewsController extends EntityDefaultViewsController {
+
+  public function views_data() {
+    $data = parent::views_data();
+    $data['past_event']['event_id']['field']['handler'] = 'past_db_handler_field_event_id';
+    return $data;
+  }
 }
