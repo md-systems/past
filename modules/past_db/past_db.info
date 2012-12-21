@@ -2,7 +2,9 @@ name=Past Database Backend
 description=Provides a database implementation of the past event API.
 core=7.x
 
-dependencies[]=entity
+dependencies[] = entity
+dependencies[] = views
 
-files[]=past_db.entity.inc
-files[]=past_db.controller.inc
+files[] = past_db.entity.inc
+files[] = past_db.controller.inc
+files[] = handlers/past_db_handler_field_event_id.inc
