@@ -18,9 +18,13 @@ function past_db_entity_info() {
     'base table' => 'past_event',
     'uri callback' => 'entity_class_uri',
     'label callback' => 'entity_class_label',
-    'access callback' => 'past_db_event_access',
+    'access callback' => 'past_db_permission',
     'entity keys' => array(
       'id' => 'event_id',
+    ),
+    'admin ui' => array(
+      'controller class' => 'PastDBEventUIController',
+      'path' => 'admin/reports/past',
     ),
   );
 
@@ -29,12 +33,12 @@ function past_db_entity_info() {
     'module' => 'past_db',
     'controller class' => 'PastEventArgumentController',
     'metadata controller class' => 'PastDBEventMetadataController',
-    //'views controller class' => 'PastDBEventViewsController',
+    //'views controller class' => 'PastDBArgumentViewsController',
     'entity class' => 'PastEventArgument',
     'base table' => 'past_event_argument',
     'uri callback' => 'entity_class_uri',
     'label callback' => 'entity_class_label',
-    'access callback' => 'past_db_event_argument_access',
+    'access callback' => 'past_db_permission',
     'entity keys' => array(
       'id' => 'argument_id',
     ),
@@ -48,7 +52,7 @@ function past_db_entity_info() {
  */
 function past_db_permission() {
   return array(
-    'administer past db' => array(
+    'administer past_db' => array(
       'title' => t('Administer Past DB'),
     ),
   );
@@ -63,10 +67,9 @@ function past_db_menu() {
     'description' => 'Configure relevance settings for search and other indexing options.', // @todo fix
     'page callback' => 'drupal_get_form',
     'page arguments' => array('past_admin_settings'),
-    'access arguments' => array('administer past db'),
+    'access arguments' => array('administer past_db'),
     'file' => 'past_db.admin.inc',
   );
-
   return $items;
 }
 
@@ -87,5 +90,13 @@ function past_db_cron() {
       entity_delete_multiple('past_event', array_keys($result['past_event']));
     }
   }
+}
+
+/**
+ * Implements views arguments details.
+ * defined in PastDBArgumentUIController::hook_menu().
+ */
+function past_db_event_view($event) {
+  return entity_view($event->entityType(), array($event), 'full', NULL, TRUE);
 }
 
