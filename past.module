@@ -100,3 +100,30 @@ function past_event_severities() {
     PAST_SEVERITY_ERROR => t('Error'),
   );
 }
+
+
+/**
+ * Implements hook_menu().
+ */
+function past_menu() {
+  $items['admin/config/past/settings'] = array(
+    'title' => 'Past settings',
+    'description' => 'Configure relevance settings for past events.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('past_admin_settings'),
+    'access arguments' => array('administer past'),
+    'file' => 'past.admin.inc',
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function past_permission() {
+  return array(
+    'administer past' => array(
+      'title' => t('Administer Past'),
+    ),
+  );
+}

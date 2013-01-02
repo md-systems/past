@@ -5,4 +5,5 @@ core=7.x
 dependencies[]=past_db
 
 files[]=past.api.inc
+files[]=past.admin.inc
 files[]=past.test

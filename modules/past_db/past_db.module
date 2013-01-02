@@ -18,7 +18,7 @@ function past_db_entity_info() {
     'base table' => 'past_event',
     'uri callback' => 'entity_class_uri',
     'label callback' => 'entity_class_label',
-    'access callback' => 'past_db_permission',
+    'access callback' => 'past_permission',
     'entity keys' => array(
       'id' => 'event_id',
     ),
@@ -38,39 +38,13 @@ function past_db_entity_info() {
     'base table' => 'past_event_argument',
     'uri callback' => 'entity_class_uri',
     'label callback' => 'entity_class_label',
-    'access callback' => 'past_db_permission',
+    'access callback' => 'past_permission',
     'entity keys' => array(
       'id' => 'argument_id',
     ),
   );
 
   return $info;
-}
-
-/**
- * Implements hook_permission().
- */
-function past_db_permission() {
-  return array(
-    'administer past_db' => array(
-      'title' => t('Administer Past DB'),
-    ),
-  );
-}
-
-/**
- * Implements hook_menu().
- */
-function past_db_menu() {
-  $items['admin/config/past/settings'] = array(
-    'title' => 'Past settings',
-    'description' => 'Configure relevance settings for search and other indexing options.', // @todo fix
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('past_admin_settings'),
-    'access arguments' => array('administer past_db'),
-    'file' => 'past_db.admin.inc',
-  );
-  return $items;
 }
 
 /**
