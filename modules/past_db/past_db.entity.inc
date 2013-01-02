@@ -129,6 +129,118 @@ class PastEvent extends Entity implements PastEventInterface {
     return $this->child_events;
   }
 
+  /**
+   * Overrides Entity::defaultUri().
+   * @return string
+   */
+  public function defaultUri() {
+    return 'admin/reports/past/' . $this->event_id;
+  }
+
+  public function defaultLabel() {
+    return $this->getMessage();
+  }
+
+  /**
+   * Overrides Entity::buildContent().
+   * @param string $view_mode
+   * @param null $langcode
+   * @return mixed
+   */
+  public function buildContent($view_mode = 'full', $langcode = NULL) {
+    $content = array();
+
+    // global information about the event
+    $content['message'] = array(
+      '#type' => 'item',
+      '#title' => t('Message'),
+      '#markup' => $this->getMessage(),
+    );
+    $content['module'] = array(
+      '#type' => 'item',
+      '#title' => t('Module'),
+      '#markup' => $this->getModule(),
+    );
+    $content['machine_name'] = array(
+      '#type' => 'item',
+      '#title' => t('Machine name'),
+      '#markup' => $this->getMachineName(),
+    );
+    $content['timestamp'] = array(
+      '#type' => 'item',
+      '#title' => t('Date'),
+      '#markup' => format_date($this->getTimestamp(), 'long'),
+    );
+
+    // show all arguments in a vertical_tab
+    $content['arguments'] = array(
+      '#type' => 'vertical_tabs',
+      '#tree' => TRUE,
+      '#weight' => 99,
+    );
+
+    foreach ($this->getArguments() as $key => $argument) {
+      $content['arguments']['fieldset_' . $key] = array(
+        '#type' => 'fieldset',
+        '#title' => ucfirst($key),
+        '#collapsible' => TRUE,
+        '#collapsed' => FALSE,
+        '#group' => 'arguments',
+        '#attached' => array(
+          'js' => array(
+            'vertical-tabs' => drupal_get_path('module', 'vertical_tabs_example') . '/vertical_tabs_example.js',
+          ),
+        ),
+        '#tree' => TRUE,
+        '#weight' => -2,
+      );
+      $content['arguments']['fieldset_' . $key]['argument_' . $key] = array(
+        '#type' => 'item',
+        '#markup' => $this->formatArgument($key, $argument),
+      );
+    }
+
+    /*if (module_exists('views') && ($view = views_get_view('past_event_argument'))) {
+      $content['agruments'] = array(
+        '#type' => 'item',
+        '#title' => $view->get_title(),
+        '#markup' => $view->preview('past_event_argument_block', array($this->event_id)),
+      );
+    }*/
+    return entity_get_controller($this->entityType)->buildContent($this, $view_mode, $langcode, $content);
+  }
+
+  protected function formatArgument($name, $argument) {
+    $back = '';
+    $data = $argument->getData();
+    if (is_array($data) || is_object($data)) {
+      foreach ($data as $k => $v) {
+        $back .= '<div><em>' . $k . '</em>: ' . $this->parseObject($v) . '</div>';
+      }
+    }
+    else {
+      $back = $data;
+    }
+    $back = '<div><strong>' . $name . '</strong> (<em>' . gettype($data) . '</em>)<br/>' . $back . '</div>';
+    return $back;
+  }
+
+  protected function parseObject($obj, $recursive = 0) {
+    if ($recursive > 5) {
+      return t('<em>Too many nested objects (' . ($recursive + 1) . '</em>');
+    }
+    if (is_scalar($obj)) {
+      return $obj;
+    }
+
+    $back = '';
+    $css = 'style="padding-left:' . ($recursive + 10) . 'px;"';
+    foreach ($obj as $k => $v) {
+      $back .= '<div ' . $css . ' ><strong>' . $k . '</strong> (<em>' . gettype($v) . '</em>): ' . $this->parseObject($v, $recursive + 1) . '</div>';
+    }
+    return $back;
+  }
+
 }
 
 /**
@@ -195,5 +307,9 @@ class PastEventArgument extends Entity implements PastEventArgumentInterface {
         $this->type = gettype($this->original_data);
       }
     }
+  }
+
+  public function defaultLabel() {
+    return $this->getKey();
   }
 }
