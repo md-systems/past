@@ -50,7 +50,7 @@ class PastEventController extends EntityAPIController {
     // If running in a WebTestCase environment, propagate the log into simpletest log.
   }
 
-  private function testLog() {
+  /*private function testLog() {
     $class = '';
     $caller = '';
 
@@ -63,7 +63,7 @@ class PastEventController extends EntityAPIController {
     }
 
     DrupalTestCase::insertAssert($test_id, $class, FALSE, t('Test'), 'Completion check', $caller);
-  }
+  }*/
 
   public function delete($ids, \DatabaseTransaction $transaction = NULL) {
     // Delete the arguments first.
@@ -204,7 +204,7 @@ class PastDBEventMetadataController extends EntityDefaultMetadataController {
   public function moduleOptionsList() {
     if (empty(self::$modules)) {
       self::$modules = array();
-      $result = db_query('SELECT name FROM {system} WHERE type=\'module\' AND status=1 ORDER BY name;');
+      $result = db_query("SELECT name FROM {system} WHERE type='module' AND status=1 ORDER BY name;");
 
       foreach ($result as $res) {
         self::$modules[$res->name] = ucfirst($res->name);
@@ -222,5 +222,26 @@ class PastDBEventViewsController extends EntityDefaultViewsController {
     $data = parent::views_data();
     $data['past_event']['event_id']['field']['handler'] = 'past_db_handler_field_event_id';
     return $data;
+  }
+}
+
+class PastDBEventUIController extends EntityDefaultUIController {
+
+  public function hook_menu() {
+    $id_count = count(explode('/', $this->path));
+    $plural_label = isset($this->entityInfo['plural label']) ? $this->entityInfo['plural label'] : $this->entityInfo['label'] . 's';
+    $wildcard = isset($this->entityInfo['admin ui']['menu wildcard']) ? $this->entityInfo['admin ui']['menu wildcard'] : '%entity_object';
+    $items[$this->path . '/' . $wildcard] = array(
+      'title callback' => 'entity_label',
+      'title arguments' => array($this->entityType, $id_count),
+      'page callback' => 'past_db_event_view',
+      'page arguments' => array($id_count),
+      'load arguments' => array($this->entityType),
+      'access callback' => 'entity_access',
+      'access arguments' => array('view', $this->entityType, $id_count),
+      //'file' => $this->entityInfo['admin ui']['file'],
+      //'file path' => $this->entityInfo['admin ui']['file path'],
+    );
+    return $items;
   }
 }
