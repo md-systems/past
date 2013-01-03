@@ -2,6 +2,7 @@ name=Past Database Backend
 description=Provides a database implementation of the past event API.
 core=7.x
 
+dependencies[] = past
 dependencies[] = entity
 dependencies[] = views
 
