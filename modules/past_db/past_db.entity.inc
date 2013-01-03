@@ -15,6 +15,12 @@ class PastEvent extends Entity implements PastEventInterface {
 
   protected $arguments;
   protected $child_events = array();
+  protected $max_recuresion;
+
+  public function __construct(array $values = array(), $entityType = NULL) {
+    parent::__construct($values, $entityType);
+    $this->max_recursion = variable_get('past_max_recursion', 5);
+  }
 
   public function addArgument($key, $data, array $options = array()) {
     if (!is_array($this->arguments)) {
@@ -215,13 +221,13 @@ class PastEvent extends Entity implements PastEventInterface {
     $data = $argument->getData();
     if (is_array($data) || is_object($data)) {
       foreach ($data as $k => $v) {
-        $back .= '<div><em>' . $k . '</em>: ' . $this->parseObject($v) . '</div>';
+        $back .= '<div style="padding-left:10px;">[<strong>' . $k . '</strong>] (<em>' . gettype($v) . '</em>): ' . $this->parseObject($v) . '</div>';
       }
     }
     else {
       $back = $data;
     }
-    $back = '<div><strong>' . $name . '</strong> (<em>' . gettype($data) . '</em>)<br/>' . $back . '</div>';
+    $back = '<div><strong>' . $name . '</strong> (<em>' . gettype($data) . '</em>): ' . $back . '</div>';
     return $back;
   }
 
@@ -236,7 +242,7 @@ class PastEvent extends Entity implements PastEventInterface {
     $back = '';
     $css = 'style="padding-left:' . ($recursive + 10) . 'px;"';
     foreach ($obj as $k => $v) {
-      $back .= '<div ' . $css . ' ><strong>' . $k . '</strong> (<em>' . gettype($v) . '</em>): ' . $this->parseObject($v, $recursive + 1) . '</div>';
+      $back .= '<div ' . $css . ' >[<strong>' . $k . '</strong>] (<em>' . gettype($v) . '</em>): ' . $this->parseObject($v, $recursive + 1) . '</div>';
     }
     return $back;
   }
