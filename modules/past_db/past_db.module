@@ -74,3 +74,9 @@ function past_db_event_view($event) {
   return entity_view($event->entityType(), array($event), 'full', NULL, TRUE);
 }
 
+/**
+ * Implements hook_views_api().
+ */
+function hook_views_api() {
+  return array("version" => "3.0");
+}
