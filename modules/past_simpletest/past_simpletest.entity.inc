@@ -17,8 +17,11 @@ class PastEventSimpletest implements PastEventInterface {
 
   protected $arguments;
   protected $child_events = array();
+  protected $max_recursion;
 
   public function __construct(array $values = array()) {
+    $this->max_recursion = variable_get('past_max_recursion', 5);
+
     foreach ($values as $key => $value) {
       $this->$key = $value;
     }
@@ -30,8 +33,19 @@ class PastEventSimpletest implements PastEventInterface {
       $argument->ensureType();
     }
 
+    // Create a pretty debug string to show on the Simpletest view
+    $out  = 'Module: ' . $this->getModule() . chr(10);
+    $out .= 'Machine name: ' . $this->getMachineName() . chr(10);
+    $out .= 'Message: ' . $this->getMessage() . chr(10);
+
+    // Attach all Arguments
+    $out .= 'Arguments: ' . chr(10);
+    foreach ($this->getArguments() as $name => $argument) {
+      $out .= $this->formatArgument($name, $argument);
+    }
+
     // Debug outputs are shown on the Simpletest frontend.
-    debug($this);
+    debug($out);
   }
 
   public function addArgument($key, $data, array $options = array()) {
@@ -64,7 +78,7 @@ class PastEventSimpletest implements PastEventInterface {
       unset($options['exclude']);
     }
 
-    $this->arguments[$key] = entity_create('past_event_argument', array('name' => $key, 'original_data' => $data) + $options);
+    $this->arguments[$key] = new PastEventSimpletestArgument(array('name' => $key, 'original_data' => $data) + $options);
     return $this->arguments[$key];
   }
 
@@ -143,6 +157,37 @@ class PastEventSimpletest implements PastEventInterface {
   public function getChildEvents() {
     return $this->child_events;
   }
+
+  protected function formatArgument($name, $argument) {
+    $back = '';
+    $data = $argument->getData();
+    if (is_array($data) || is_object($data)) {
+      foreach ($data as $k => $v) {
+        $back .= '   [' . $k . '] => (' . gettype($v) . ') ' . $this->parseObject($v) . chr(10);
+      }
+      $back = chr(10) . $back;
+    }
+    else {
+      $back = $data . chr(10);
+    }
+    $back = ' ' . $name . ' (' . gettype($data) . '): ' . $back;
+    return $back;
+  }
+
+  protected function parseObject($obj, $recursive = 0) {
+    if ($recursive > $this->max_recursion) {
+      return t('_Too many nested objects (' . ($recursive + 1) . '_');
+    }
+    if (is_scalar($obj) || is_null($obj)) {
+      return $obj;
+    }
+
+    $back = '';
+    foreach ($obj as $k => $v) {
+      $back .= chr(10) . str_repeat(' ', $recursive * 2) . '     [' . $k . '] => (' . gettype($v) . ') ' . $this->parseObject($v, $recursive + 1);
+    }
+    return $back;
+  }
 }
 
 /**
@@ -164,8 +209,7 @@ class PastEventSimpletestArgument implements PastEventArgumentInterface {
   }
 
   public function getData() {
-    // The Event is not stored, so we cannot load any arguments.
-    return NULL;
+    return $this->original_data;
   }
 
   public function getKey() {
