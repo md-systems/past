@@ -5,4 +5,3 @@
  * Module file for the Past Simpletest Backend.
  */
 
-variable_set('past_backend', 'past_simpletest');
