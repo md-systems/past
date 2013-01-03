@@ -5,32 +5,4 @@
  * Module file for the Past Simpletest Backend.
  */
 
-/**
- * Implements hook_entity_info()
- */
-function past_db_entity_info() {
-  $info['past_event'] = array(
-    'label' => t('Past Event'),
-    'module' => 'past_simpletest',
-    'controller class' => 'PastEventController',
-    'entity class' => 'PastEvent',
-    'base table' => 'past_event_simpletest', // Not used to store something, but needed for the entity.
-    'entity keys' => array(
-      'id' => 'event_id',
-    ),
-  );
-
-  $info['past_event_argument'] = array(
-    'label' => t('Past Event Argument'),
-    'module' => 'past_simpletest',
-    'controller class' => 'PastEventArgumentController',
-    'entity class' => 'PastEventArgument',
-    'base table' => 'past_event_argument_simpletest', // Not used to store something, but needed for the entity.
-    'entity keys' => array(
-      'id' => 'argument_id',
-    ),
-  );
-
-  return $info;
-}
-
+variable_set('past_backend', 'past_simpletest');

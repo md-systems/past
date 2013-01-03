@@ -7,17 +7,32 @@
 /**
  * The main Event class for the Past Simpletest backend.
  */
-class PastEvent extends Entity implements PastEventInterface {
+class PastEventSimpletest implements PastEventInterface {
 
   public $module;
   public $machine_name;
   public $message;
   public $severity;
   public $timestamp;
-  public $parent_event_id;
 
   protected $arguments;
   protected $child_events = array();
+
+  public function __construct(array $values = array()) {
+    foreach ($values as $key => $value) {
+      $this->$key = $value;
+    }
+  }
+
+  public function save() {
+    // Prepare all arguments.
+    foreach ($this->getArguments() as $argument) {
+      $argument->ensureType();
+    }
+
+    // Debug outputs are shown on the Simpletest frontend.
+    debug($this);
+  }
 
   public function addArgument($key, $data, array $options = array()) {
     if (!is_array($this->arguments)) {
@@ -133,7 +148,7 @@ class PastEvent extends Entity implements PastEventInterface {
 /**
  * The Arguments Entity class for the Past Simpletest backend.
  */
-class PastEventArgument extends Entity implements PastEventArgumentInterface {
+class PastEventSimpletestArgument implements PastEventArgumentInterface {
 
   public $argument_id;
   public $event_id;
@@ -141,6 +156,12 @@ class PastEventArgument extends Entity implements PastEventArgumentInterface {
   public $name;
   public $type;
   public $raw;
+
+  public function __construct(array $values = array()) {
+    foreach ($values as $key => $value) {
+      $this->$key = $value;
+    }
+  }
 
   public function getData() {
     // The Event is not stored, so we cannot load any arguments.

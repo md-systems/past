@@ -2,7 +2,6 @@ name=Past Simpletest Backend
 description=Provides a simpletest implementation of the past event API to show debug messages while running simpletest.
 core=7.x
 
-dependencies[] = entity
+dependencies[] = past
 
 files[] = past_simpletest.entity.inc
-files[] = past_simpletest.controller.inc
