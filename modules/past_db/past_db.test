@@ -1,0 +1,74 @@
+<?php
+
+/**
+ * @file
+ * Contains tests for the past_db Admin UI.
+ */
+
+class PastDBUiTest extends DrupalWebTestCase {
+
+  static function getInfo() {
+    return array(
+      'name' => 'Past DB Admin-UI tests',
+      'description' => 'Generic tests for testing the administration reports view',
+      'group' => 'Past',
+    );
+  }
+
+  function setUp() {
+    parent::setUp(array('views', 'past', 'past_db'));
+
+    // Prepare some logs
+    $event = past_event_create('past_db', 'machine name', 'message 1');
+    $event->addArgument('arg1', 'First Argument');
+    $event->addArgument('arg2', new stdClass());
+    $event->addArgument('arg3', FALSE);
+    $event->setSeverity(PAST_SEVERITY_DEBUG);
+    $event->save();
+
+    $event = past_event_create('past_db', 'machine name', 'message 2');
+    $event->addArgument('arg1', 'First Argument');
+    $event->addArgument('arg2', new stdClass());
+    $event->addArgument('arg3', FALSE);
+    $event->setSeverity(PAST_SEVERITY_INFO);
+    $event->save();
+
+    $event = past_event_create('past_db', 'machine name', 'message 3');
+    $event->addArgument('arg1', 'First Argument');
+    $event->addArgument('arg2', new stdClass());
+    $event->addArgument('arg3', FALSE);
+    $event->setSeverity(PAST_SEVERITY_WARNING);
+    $event->save();
+  }
+
+  public function testAdminUI() {
+    $admin = $this->drupalCreateUser(array('administer past'));
+    $this->drupalLogin($admin);
+
+    $this->drupalGet('admin/reports/past');
+
+    // Check for all messages
+    $this->assertText('message 1');
+    $this->assertText('message 2');
+    $this->assertText('message 3');
+
+    // Check severities
+    $severities = past_event_severities();
+    $this->assertText($severities[PAST_SEVERITY_DEBUG]);
+    $this->assertText($severities[PAST_SEVERITY_INFO]);
+    $this->assertText($severities[PAST_SEVERITY_WARNING]);
+
+    // Go to the first detail page
+    $this->drupalGet('admin/reports/past/1');
+
+    $this->assertText('machine name');
+    $this->assertText('message 1');
+    $this->assertText('arg1');
+    $this->assertText('arg2');
+    $this->assertText('arg3');
+    $this->assertText('First Argument');
+
+    $this->drupalLogout();
+  }
+
+}
