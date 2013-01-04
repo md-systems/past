@@ -192,11 +192,6 @@ class PastEvent extends Entity implements PastEventInterface {
         '#collapsible' => TRUE,
         '#collapsed' => FALSE,
         '#group' => 'arguments',
-        '#attached' => array(
-          'js' => array(
-            'vertical-tabs' => drupal_get_path('module', 'vertical_tabs_example') . '/vertical_tabs_example.js',
-          ),
-        ),
         '#tree' => TRUE,
         '#weight' => -2,
       );
