@@ -148,7 +148,10 @@ class PastEvent extends Entity implements PastEventInterface {
    * @return string
    */
   public function defaultUri() {
-    return 'admin/reports/past/' . $this->event_id;
+    return array(
+      'uri' => 'admin/reports/past/' . $this->event_id,
+      'options' => array(),
+    );
   }
 
   public function defaultLabel() {
