@@ -18,7 +18,7 @@ function past_db_entity_info() {
     'base table' => 'past_event',
     'uri callback' => 'entity_class_uri',
     'label callback' => 'entity_class_label',
-    'access callback' => 'past_permission',
+    'access callback' => 'past_db_access',
     'entity keys' => array(
       'id' => 'event_id',
     ),
@@ -38,13 +38,17 @@ function past_db_entity_info() {
     'base table' => 'past_event_argument',
     'uri callback' => 'entity_class_uri',
     'label callback' => 'entity_class_label',
-    'access callback' => 'past_permission',
+    'access callback' => 'past_db_access',
     'entity keys' => array(
       'id' => 'argument_id',
     ),
   );
 
   return $info;
+}
+
+function past_db_access($op, $entity = NULL, $account = NULL) {
+  return user_access('administer past', $account);
 }
 
 /**
@@ -77,7 +81,7 @@ function past_db_event_view($event) {
 /**
  * Implements hook_views_api().
  */
-function hook_views_api() {
+function past_db_views_api() {
   return array(
     'api' => 3,
   );

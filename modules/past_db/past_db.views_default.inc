@@ -14,7 +14,8 @@ function past_db_views_default_views() {
   /* Display: Master */
   $handler = $view->new_display('default', 'Master', 'default');
   $handler->display->display_options['title'] = 'Past event log';
-  $handler->display->display_options['access']['type'] = 'none';
+  $handler->display->display_options['access']['type'] = 'perm';
+  $handler->display->display_options['access']['perm'] = 'administer past';
   $handler->display->display_options['cache']['type'] = 'none';
   $handler->display->display_options['query']['type'] = 'views_query';
   $handler->display->display_options['query']['options']['query_comment'] = FALSE;
@@ -181,9 +182,8 @@ function past_db_views_default_views() {
   $handler->display->display_options['filters']['module']['expose']['label'] = 'Module';
   $handler->display->display_options['filters']['module']['expose']['operator'] = 'module_op';
   $handler->display->display_options['filters']['module']['expose']['identifier'] = 'module';
-  $handler->display->display_options['filters']['module']['expose']['remember'] = 1;
-  $handler->display->display_options['filters']['module']['expose']['multiple'] = 1;
-  $handler->display->display_options['filters']['module']['expose']['reduce'] = 0;
+  $handler->display->display_options['filters']['module']['expose']['required'] = 0;
+  $handler->display->display_options['filters']['module']['expose']['multiple'] = FALSE;
   /* Filter criterion: Past Event: Severity */
   $handler->display->display_options['filters']['severity']['id'] = 'severity';
   $handler->display->display_options['filters']['severity']['table'] = 'past_event';

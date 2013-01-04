@@ -9,3 +9,4 @@ dependencies[] = views
 files[] = past_db.entity.inc
 files[] = past_db.controller.inc
 files[] = handlers/past_db_handler_field_event_id.inc
+files[] = past_db.test

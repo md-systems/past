@@ -201,13 +201,6 @@ class PastEvent extends Entity implements PastEventInterface {
       );
     }
 
-    /*if (module_exists('views') && ($view = views_get_view('past_event_argument'))) {
-      $content['agruments'] = array(
-        '#type' => 'item',
-        '#title' => $view->get_title(),
-        '#markup' => $view->preview('past_event_argument_block', array($this->event_id)),
-      );
-    }*/
     return entity_get_controller($this->entityType)->buildContent($this, $view_mode, $langcode, $content);
   }
 

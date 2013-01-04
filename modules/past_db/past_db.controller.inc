@@ -50,21 +50,6 @@ class PastEventController extends EntityAPIController {
     // If running in a WebTestCase environment, propagate the log into simpletest log.
   }
 
-  /*private function testLog() {
-    $class = '';
-    $caller = '';
-
-    // @todo this is very ugly! improve.
-    static $test_id;
-    if (!$test_id) {
-      $test_id = db_query('simpletest_test_id')
-        ->useDefaults(array('test_id'))
-        ->execute();
-    }
-
-    DrupalTestCase::insertAssert($test_id, $class, FALSE, t('Test'), 'Completion check', $caller);
-  }*/
-
   public function delete($ids, \DatabaseTransaction $transaction = NULL) {
     // Delete the arguments first.
     $query = new EntityFieldQuery();
@@ -181,7 +166,7 @@ class PastDBEventMetadataController extends EntityDefaultMetadataController {
     $prop['severity']['options list'] = array(get_class($this), 'severityOptionsList');
 
     // Show a list with all modules instead a text field.
-    $prop['module']['options list'] = array(get_class($this), 'moduleOptionsList');
+    //$prop['module']['options list'] = array(get_class($this), 'moduleOptionsList');
 
     return $info;
   }
