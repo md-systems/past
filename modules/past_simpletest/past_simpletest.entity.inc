@@ -176,28 +176,28 @@ class PastEventSimpletest implements PastEventInterface {
     $data = $argument->getData();
     if (is_array($data) || is_object($data)) {
       foreach ($data as $k => $v) {
-        $back .= '   [' . $k . '] => (' . gettype($v) . ') ' . $this->parseObject($v) . chr(10);
+        $back .= '   [' . strip_tags($k) . '] => (' . gettype($v) . ') ' . $this->parseObject($v) . chr(10);
       }
       $back = chr(10) . $back;
     }
     else {
-      $back = $data . chr(10);
+      $back = (is_string($data) ? strip_tags($data) : $data) . chr(10);
     }
-    $back = ' ' . $name . ' (' . gettype($data) . '): ' . $back;
+    $back = ' ' . strip_tags($name) . ' (' . gettype($data) . '): ' . $back;
     return $back;
   }
 
   protected function parseObject($obj, $recursive = 0) {
     if ($recursive > $this->max_recursion) {
-      return t('_Too many nested objects (' . ($recursive + 1) . '_');
+      return t('_Too many nested objects (@recursion)_', array('@recursion' => ($recursive + 1)));
     }
     if (is_scalar($obj) || is_null($obj)) {
-      return $obj;
+      return is_string($obj) ? trim(strip_tags($obj)) : $obj;
     }
 
     $back = '';
     foreach ($obj as $k => $v) {
-      $back .= chr(10) . str_repeat(' ', $recursive * 2) . '     [' . $k . '] => (' . gettype($v) . ') ' . $this->parseObject($v, $recursive + 1);
+      $back .= chr(10) . str_repeat(' ', $recursive * 2) . '     [' . strip_tags($k) . '] => (' . gettype($v) . ') ' . $this->parseObject($v, $recursive + 1);
     }
     return $back;
   }
