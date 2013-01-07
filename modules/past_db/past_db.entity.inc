@@ -137,10 +137,10 @@ class PastEvent extends Entity implements PastEventInterface {
 
   /**
    * Overrides Entity::defaultUri().
-   * @return string
+   * @return array
    */
   public function defaultUri() {
-    return 'admin/reports/past/' . $this->event_id;
+    return array('path' => 'admin/reports/past/' . $this->event_id);
   }
 
   public function defaultLabel() {
@@ -221,7 +221,7 @@ class PastEvent extends Entity implements PastEventInterface {
 
   protected function parseObject($obj, $recursive = 0) {
     if ($recursive > 5) {
-      return t('<em>Too many nested objects (' . ($recursive + 1) . '</em>');
+      return t('<em>Too many nested objects (@recursion)</em>', array('@recursion' => ($recursive + 1)));
     }
     if (is_scalar($obj)) {
       return $obj;
