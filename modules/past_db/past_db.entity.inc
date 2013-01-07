@@ -219,13 +219,13 @@ class PastEvent extends Entity implements PastEventInterface {
     $data = $argument->getData();
     if (is_array($data) || is_object($data)) {
       foreach ($data as $k => $v) {
-        $back .= '<div style="padding-left:10px;">[<strong>' . $k . '</strong>] (<em>' . gettype($v) . '</em>): ' . $this->parseObject($v) . '</div>';
+        $back .= '<div style="padding-left:10px;">[<strong>' . check_plain($k) . '</strong>] (<em>' . gettype($v) . '</em>): ' . $this->parseObject($v) . '</div>';
       }
     }
     else {
-      $back = $data;
+      $back = check_plain($data);
     }
-    $back = '<div><strong>' . $name . '</strong> (<em>' . gettype($data) . '</em>): ' . $back . '</div>';
+    $back = '<div><strong>' . check_plain($name) . '</strong> (<em>' . gettype($data) . '</em>): ' . $back . '</div>';
     return $back;
   }
 
@@ -234,13 +234,13 @@ class PastEvent extends Entity implements PastEventInterface {
       return t('<em>Too many nested objects (@recursion)</em>', array('@recursion' => ($recursive + 1)));
     }
     if (is_scalar($obj) || is_null($obj)) {
-      return $obj;
+      return is_string($obj) ? nl2br(trim(check_plain($obj))) : $obj;
     }
 
     $back = '';
     $css = 'style="padding-left:' . ($recursive + 10) . 'px;"';
     foreach ($obj as $k => $v) {
-      $back .= '<div ' . $css . ' >[<strong>' . $k . '</strong>] (<em>' . gettype($v) . '</em>): ' . $this->parseObject($v, $recursive + 1) . '</div>';
+      $back .= '<div ' . $css . ' >[<strong>' . check_plain($k) . '</strong>] (<em>' . gettype($v) . '</em>): ' . $this->parseObject($v, $recursive + 1) . '</div>';
     }
     return $back;
   }
