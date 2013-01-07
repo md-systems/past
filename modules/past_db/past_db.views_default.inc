@@ -175,11 +175,12 @@ function past_db_views_default_views() {
   $handler->display->display_options['fields']['message']['alter']['replace_spaces'] = 0;
   $handler->display->display_options['fields']['message']['alter']['trim_whitespace'] = 0;
   $handler->display->display_options['fields']['message']['alter']['nl2br'] = 0;
+  $handler->display->display_options['fields']['message']['alter']['max_length'] = '100';
   $handler->display->display_options['fields']['message']['alter']['word_boundary'] = 1;
   $handler->display->display_options['fields']['message']['alter']['ellipsis'] = 1;
   $handler->display->display_options['fields']['message']['alter']['more_link'] = 0;
-  $handler->display->display_options['fields']['message']['alter']['strip_tags'] = 0;
-  $handler->display->display_options['fields']['message']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['message']['alter']['strip_tags'] = 1;
+  $handler->display->display_options['fields']['message']['alter']['trim'] = 1;
   $handler->display->display_options['fields']['message']['alter']['html'] = 0;
   $handler->display->display_options['fields']['message']['element_label_colon'] = 1;
   $handler->display->display_options['fields']['message']['element_default_classes'] = 1;

@@ -5,8 +5,6 @@
  * Contains the entity classes for Past DB.
  */
 class PastEvent extends Entity implements PastEventInterface {
-  const MAS_MESSAGE_LENGTH = 100;
-
   public $module;
   public $machine_name;
   public $message;
@@ -121,7 +119,7 @@ class PastEvent extends Entity implements PastEventInterface {
   }
 
   public function setMessage($message) {
-    $this->message = substr($message, 0, self::MAS_MESSAGE_LENGTH);
+    $this->message = $message;
   }
 
   public function setTimestamp($timestamp) {
