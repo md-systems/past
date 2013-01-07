@@ -5,6 +5,7 @@
  * Contains the entity classes for Past DB.
  */
 class PastEvent extends Entity implements PastEventInterface {
+  const MAS_MESSAGE_LENGTH = 100;
 
   public $module;
   public $machine_name;
@@ -120,7 +121,7 @@ class PastEvent extends Entity implements PastEventInterface {
   }
 
   public function setMessage($message) {
-    $this->message = $message;
+    $this->message = substr($message, 0, self::MAS_MESSAGE_LENGTH);
   }
 
   public function setTimestamp($timestamp) {
@@ -234,7 +235,7 @@ class PastEvent extends Entity implements PastEventInterface {
     if ($recursive > 5) {
       return t('<em>Too many nested objects (@recursion)</em>', array('@recursion' => ($recursive + 1)));
     }
-    if (is_scalar($obj)) {
+    if (is_scalar($obj) || is_null($obj)) {
       return $obj;
     }
 
