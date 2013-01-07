@@ -47,6 +47,17 @@ function past_db_entity_info() {
   return $info;
 }
 
+/**
+ * Access callback implementation.
+ * @param $operation
+ *   The performed operation - view, delete, create, update, customs...
+ * @param $entity
+ *   (optional) The entity on which $operation should be performed.
+ * @param $account
+ *   (optional) The account to check if it has access.
+ * @return boolean
+ *    TRUE if $account can perform $operation on $entity
+ */
 function past_db_access($op, $entity = NULL, $account = NULL) {
   return user_access('administer past', $account);
 }
