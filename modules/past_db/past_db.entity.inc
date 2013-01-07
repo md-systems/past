@@ -56,6 +56,14 @@ class PastEvent extends Entity implements PastEventInterface {
     return $this->arguments[$key];
   }
 
+  public function addArgumentArray($key_prefix, array $data, array $options = array()) {
+    $arguments = array();
+    foreach ($data as $key => $value) {
+      $arguments[$key] = $this->addArgument($key_prefix . ':' . $key, $value, $options);
+    }
+    return $arguments;
+  }
+
   protected function loadArguments() {
     if (!is_array($this->arguments)) {
       $this->arguments = array();
@@ -140,7 +148,10 @@ class PastEvent extends Entity implements PastEventInterface {
    * @return array
    */
   public function defaultUri() {
-    return array('path' => 'admin/reports/past/' . $this->event_id);
+    return array(
+      'uri' => 'admin/reports/past/' . $this->event_id,
+      'options' => array(),
+    );
   }
 
   public function defaultLabel() {

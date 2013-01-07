@@ -9,6 +9,7 @@
  */
 class PastEventSimpletest implements PastEventInterface {
 
+  public $event_id;
   public $module;
   public $machine_name;
   public $message;
@@ -18,6 +19,8 @@ class PastEventSimpletest implements PastEventInterface {
   protected $arguments;
   protected $child_events = array();
   protected $max_recursion;
+
+  protected static $event_id_counter = 1;
 
   public function __construct(array $values = array()) {
     $this->max_recursion = variable_get('past_max_recursion', 5);
@@ -43,6 +46,9 @@ class PastEventSimpletest implements PastEventInterface {
     foreach ($this->getArguments() as $name => $argument) {
       $out .= $this->formatArgument($name, $argument);
     }
+
+    // Assign an event id.
+    $this->event_id = self::$event_id_counter++;
 
     // Debug outputs are shown on the Simpletest frontend.
     debug($out);
@@ -80,6 +86,14 @@ class PastEventSimpletest implements PastEventInterface {
 
     $this->arguments[$key] = new PastEventSimpletestArgument(array('name' => $key, 'original_data' => $data) + $options);
     return $this->arguments[$key];
+  }
+
+  public function addArgumentArray($key_prefix, array $data, array $options = array()) {
+    $arguments = array();
+    foreach ($data as $key => $value) {
+      $arguments[$key] = $this->addArgument($key_prefix . ':' . $key, $value, $options);
+    }
+    return $arguments;
   }
 
   protected function loadArguments() {

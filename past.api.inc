@@ -88,7 +88,7 @@ interface PastEventInterface {
    * normalized and persisted in a separate table so that it can be queried.
    *
    * @param string $key
-   *   The name of the argument, must be unique for the event. Otherwise.
+   *   The name of the argument, must be unique for the event.
    * @param mixed $data
    *   The data that belongs to the argument and should be logged. Supported are
    *   scalar values, arrays, and objects. Exceptions are automatically decoded
@@ -102,6 +102,27 @@ interface PastEventInterface {
    *   The created past event argument object.
    */
   public function addArgument($key, $data, array $options = array());
+
+  /**
+   * Add an array of arguments to the event.
+   *
+   * The key for each will consist of the $key_prefix_$array_key
+   *
+   * @param string $key_prefix
+   *   The name prefix of the arguments,
+   * @param array $data
+   *   Array of arguments.
+   * @param array $options
+   *   Options for the argument. Currently supported:
+   *     - exclude: Array of keys/properties that should be ignored on the data
+   *       structure and not logged.
+   *
+   * @return array
+   *   Array of the created past event argument objects.
+   *
+   * @see PastEventInterface::addArgument()
+   */
+  public function addArgumentArray($key_prefix, array $data, array $options = array());
 
   /**
    * Returns all arguments of this event.
@@ -135,7 +156,7 @@ interface PastEventInterface {
    * @return PastEventArgumentInterface
    *   The created past event argument object.
    */
-  public function addException(Exception $exception, array $options);
+  public function addException(Exception $exception, array $options = array());
 
   /**
    * Allows to reference this to a parent event.
