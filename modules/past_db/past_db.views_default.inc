@@ -94,6 +94,8 @@ function past_db_views_default_views() {
   $handler->display->display_options['fields']['event_id']['hide_empty'] = 0;
   $handler->display->display_options['fields']['event_id']['empty_zero'] = 0;
   $handler->display->display_options['fields']['event_id']['hide_alter_empty'] = 1;
+  $handler->display->display_options['fields']['event_id']['separator'] = '';
+  $handler->display->display_options['fields']['event_id']['format_plural'] = 0;
   /* Field: Past Event: Severity */
   $handler->display->display_options['fields']['severity']['id'] = 'severity';
   $handler->display->display_options['fields']['severity']['table'] = 'past_event';
