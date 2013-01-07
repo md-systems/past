@@ -3,7 +3,7 @@
  * @file
  *
  */
-class past_db_handler_field_event_id extends views_handler_field_entity {
+/*class past_db_handler_field_event_id extends views_handler_field_entity {
 
   public function render($values) {
     $item = $this->get_value($values);
@@ -16,4 +16,4 @@ class past_db_handler_field_event_id extends views_handler_field_entity {
     );
     return drupal_render($element);
   }
-}
+}*/
