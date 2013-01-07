@@ -18,7 +18,7 @@ class PastEvent extends Entity implements PastEventInterface {
 
   public function __construct(array $values = array(), $entityType = NULL) {
     parent::__construct($values, $entityType);
-    $this->max_recursion = variable_get('past_max_recursion', 5);
+    $this->max_recursion = variable_get('past_max_recursion', 10);
   }
 
   public function addArgument($key, $data, array $options = array()) {
@@ -230,8 +230,8 @@ class PastEvent extends Entity implements PastEventInterface {
   }
 
   protected function parseObject($obj, $recursive = 0) {
-    if ($recursive > 5) {
-      return t('<em>Too many nested objects (@recursion)</em>', array('@recursion' => ($recursive + 1)));
+    if ($recursive > $this->max_recursion) {
+      return t('<em>Too many nested objects ( @recursion )</em>', array('@recursion' => $this->max_recursion));
     }
     if (is_scalar($obj) || is_null($obj)) {
       return is_string($obj) ? nl2br(trim(check_plain($obj))) : $obj;

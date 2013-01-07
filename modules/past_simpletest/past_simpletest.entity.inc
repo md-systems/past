@@ -22,7 +22,7 @@ class PastEventSimpletest implements PastEventInterface {
   protected static $event_id_counter = 1;
 
   public function __construct(array $values = array()) {
-    $this->max_recursion = variable_get('past_max_recursion', 5);
+    $this->max_recursion = variable_get('past_max_recursion', 10);
 
     foreach ($values as $key => $value) {
       $this->$key = $value;
@@ -189,7 +189,7 @@ class PastEventSimpletest implements PastEventInterface {
 
   protected function parseObject($obj, $recursive = 0) {
     if ($recursive > $this->max_recursion) {
-      return t('_Too many nested objects (@recursion)_', array('@recursion' => ($recursive + 1)));
+      return t('_Too many nested objects ( @recursion )_', array('@recursion' => $this->max_recursion));
     }
     if (is_scalar($obj) || is_null($obj)) {
       return is_string($obj) ? trim(strip_tags($obj)) : $obj;
