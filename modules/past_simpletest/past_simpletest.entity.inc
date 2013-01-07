@@ -8,6 +8,7 @@
  * The main Event class for the Past Simpletest backend.
  */
 class PastEventSimpletest implements PastEventInterface {
+  const MAS_MESSAGE_LENGTH = 100;
 
   public $event_id;
   public $module;
@@ -149,7 +150,7 @@ class PastEventSimpletest implements PastEventInterface {
   }
 
   public function setMessage($message) {
-    $this->message = $message;
+    $this->message = substr($message, 0, self::MAS_MESSAGE_LENGTH);
   }
 
   public function setTimestamp($timestamp) {
