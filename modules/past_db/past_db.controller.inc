@@ -165,9 +165,6 @@ class PastDBEventMetadataController extends EntityDefaultMetadataController {
     // We could also call the method 'past_event_severities' directly, but I prefer the OOP-Way for all and not a mix up.
     $prop['severity']['options list'] = array(get_class($this), 'severityOptionsList');
 
-    // Show a list with all modules instead a text field.
-    //$prop['module']['options list'] = array(get_class($this), 'moduleOptionsList');
-
     return $info;
   }
 
@@ -179,39 +176,17 @@ class PastDBEventMetadataController extends EntityDefaultMetadataController {
     return past_event_severities();
   }
 
-  /**
-   * Return an associative array with all enabled modules.
-   * There might be applications where "module" is not cleanly used. You cannot search for those values.
-   *
-   * @return array
-   *   Associative array wit key as the module name and the Value the same with uppercase first char.
-   */
-  public function moduleOptionsList() {
-    if (empty(self::$modules)) {
-      self::$modules = array();
-      $result = db_query("SELECT name FROM {system} WHERE type='module' AND status=1 ORDER BY name;");
-
-      foreach ($result as $res) {
-        self::$modules[$res->name] = ucfirst($res->name);
-      }
-    }
-    return self::$modules;
-  }
-
 }
 
-
-class PastDBEventViewsController extends EntityDefaultViewsController {
-
-  public function views_data() {
-    $data = parent::views_data();
-    $data['past_event']['event_id']['field']['handler'] = 'past_db_handler_field_event_id';
-    return $data;
-  }
-}
-
+/**
+ * Implements the default UI Controller.
+ */
 class PastDBEventUIController extends EntityDefaultUIController {
 
+  /**
+   * Overrides EntityDefaultUIController::hook_menu().
+   * @return array
+   */
   public function hook_menu() {
     $id_count = count(explode('/', $this->path));
     $plural_label = isset($this->entityInfo['plural label']) ? $this->entityInfo['plural label'] : $this->entityInfo['label'] . 's';
@@ -224,8 +199,6 @@ class PastDBEventUIController extends EntityDefaultUIController {
       'load arguments' => array($this->entityType),
       'access callback' => 'entity_access',
       'access arguments' => array('view', $this->entityType, $id_count),
-      //'file' => $this->entityInfo['admin ui']['file'],
-      //'file path' => $this->entityInfo['admin ui']['file path'],
     );
     return $items;
   }
