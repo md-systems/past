@@ -89,7 +89,12 @@ class PastEventArgumentController extends EntityAPIController {
       $this->insert = db_insert('past_event_data')
         ->fields(array('argument_id', 'parent_data_id', 'type', 'name', 'value', 'serialized'));
       $this->normalizeData($entity->argument_id, $data);
-      $this->insert->execute();
+      try {
+        $this->insert->execute();
+      }
+      catch (Exception $e) {
+        watchdog_exception('past', $e); 
+      }
     }
   }
 
