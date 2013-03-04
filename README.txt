@@ -55,6 +55,43 @@ CONTENTS OF THIS FILE
  The default, views based log overview page is at Administration > Reports >
  Past.
 
+ OPTIONAL USAGE
+ --------------
+
+ To add optional integration with Past in a situation where you do not want
+ a hard dependency (e.g. a contrib project), you can add the following wrapper
+ function to your project/module.
+
+ The downside of this approach is that it is not possible to use the object
+ oriented interface which is more flexible and easier to use when logging
+ multiple arguments.
+
+/**
+ * Wrapper for past_event_save to avoid dependency to past.
+ */
+function YOURMODULE_event_save($module, $machine_name, $message, array $arguments = array(), array $options = array()) {
+  if (module_exists('past')) {
+    past_event_save($module, $machine_name, $message, $arguments, $options);
+  }
+  else {
+    $severity = isset($options['severity']) ? $options['severity'] : WATCHDOG_NOTICE;
+
+    // Decode exceptions, as trying to print_r() them results in recursions.
+    foreach ($arguments as &$argument) {
+      if ($argument instanceof Exception) {
+        $decoded = _drupal_decode_exception($argument);
+        $argument = $decoded;
+      }
+    }
+
+    watchdog((string) $module, '@name::@message <pre>@arguments</pre>', array(
+      '@name' => $machine_name,
+      '@message' => $message,
+      '@arguments' => print_r($arguments, TRUE),
+    ), $severity);
+  }
+}
+
 
  FOR MORE INFORMATION
  --------------------
