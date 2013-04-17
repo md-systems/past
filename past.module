@@ -5,10 +5,18 @@
  * Module file for the past project.
  */
 
-define('PAST_SEVERITY_ERROR', 1);
-define('PAST_SEVERITY_WARNING', 2);
-define('PAST_SEVERITY_INFO', 4);
-define('PAST_SEVERITY_DEBUG', 8);
+/**
+ * Severities correspond to Log message severity from WATCHDOG
+ * @see bootstrap.inc
+ */
+define('PAST_SEVERITY_EMERGENCY', 0);
+define('PAST_SEVERITY_ALERT', 1);
+define('PAST_SEVERITY_CRITICAL', 2);
+define('PAST_SEVERITY_ERROR', 3);
+define('PAST_SEVERITY_WARNING', 4);
+define('PAST_SEVERITY_NOTICE', 5);
+define('PAST_SEVERITY_INFO', 6);
+define('PAST_SEVERITY_DEBUG', 7);
 
 /**
  * Creates and saves a past event.
@@ -102,8 +110,12 @@ function past_event_severities() {
   return array(
     PAST_SEVERITY_DEBUG => t('Debug'),
     PAST_SEVERITY_INFO => t('Info'),
+    PAST_SEVERITY_NOTICE => t('Notice'),
     PAST_SEVERITY_WARNING => t('Warning'),
     PAST_SEVERITY_ERROR => t('Error'),
+    PAST_SEVERITY_EMERGENCY => t('Emergency'),
+    PAST_SEVERITY_ALERT => t('Alert'),
+    PAST_SEVERITY_CRITICAL => t('Critical'),
   );
 }
 

@@ -139,3 +139,32 @@ function past_db_schema() {
 
   return $schema;
 }
+
+/**
+ * Map PAST_SEVERITY_ values to use WATCHDOG's ones
+ */
+function past_update_7000() {
+  /* PAST_SEVERITY_ERROR */
+  db_update('past_event')
+    ->fields(array('severity' => 3))
+    ->condition('severity', 1)
+    ->execute();
+
+  /* PAST_SEVERITY_WARNING */
+  db_update('past_event')
+    ->fields(array('severity' => 4))
+    ->condition('severity', 2)
+    ->execute();
+
+  /* PAST_SEVERITY_INFO */
+  db_update('past_event')
+    ->fields(array('severity' => 6))
+    ->condition('severity', 4)
+    ->execute();
+
+  /* PAST_SEVERITY_DEBUG */
+  db_update('past_event')
+    ->fields(array('severity' => 7))
+    ->condition('severity', 8)
+    ->execute();
+}
