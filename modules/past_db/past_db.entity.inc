@@ -112,30 +112,37 @@ class PastEvent extends Entity implements PastEventInterface {
 
   public function setParentEventId($event_id) {
     $this->parent_event_id = $event_id;
+    return $this;
   }
 
   public function setSeverity($severity) {
     $this->severity = $severity;
+    return $this;
   }
 
   public function setMessage($message) {
     $this->message = $message;
+    return $this;
   }
 
   public function setTimestamp($timestamp) {
     $this->timestamp = $timestamp;
+    return $this;
   }
 
   public function setMachineName($machine_name) {
     $this->machine_name = $machine_name;
+    return $this;
   }
 
   public function setModule($module) {
     $this->module = $module;
+    return $this;
   }
 
   public function addChildEvent($event_id) {
     $this->child_events[] = $event_id;
+    return $this;
   }
 
   public function getChildEvents() {
