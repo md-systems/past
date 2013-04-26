@@ -161,7 +161,7 @@ class PastEvent extends Entity implements PastEventInterface {
   }
 
   public function defaultLabel() {
-    return $this->getMessage();
+    return strip_tags($this->getMessage());
   }
 
   /**
@@ -230,7 +230,7 @@ class PastEvent extends Entity implements PastEventInterface {
       }
     }
     else {
-      $back = check_plain($data);
+      $back = nl2br(check_plain($data));
     }
     $back = '<div><strong>' . check_plain($name) . '</strong> (<em>' . gettype($data) . '</em>): ' . $back . '</div>';
     return $back;

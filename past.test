@@ -101,6 +101,45 @@ class PastTest extends DrupalWebTestCase {
   }
 
   /**
+   * Tests if the watchdog replacement works as expected.
+   */
+  public function testWatchdogReplacement() {
+    // First enable watchdog logging.
+    variable_set('past_log_watchdog', 1);
+    $my_machine_name = 'test_watchdog';
+
+    $msg = 'something';
+    watchdog($my_machine_name, $msg, NULL, WATCHDOG_INFO, NULL);
+    $event = $this->getLastEventByMachinename($my_machine_name);
+    $this->assertEqual('watchdog', $event->getModule());
+    $this->assertEqual($msg, $event->getMessage());
+    $this->assertEqual(WATCHDOG_INFO, $event->getSeverity());
+    $this->assertEqual(1, count($event->getArguments()));
+    $this->assertNotNull($event->getArgument('watchdog_args'));
+
+    $msg = 'something new';
+    $nice_url = 'http://md-systems.ch';
+    watchdog($my_machine_name, $msg, NULL, WATCHDOG_NOTICE, $nice_url);
+    $event = $this->getLastEventByMachinename($my_machine_name);
+    $this->assertEqual('watchdog', $event->getModule());
+    $this->assertEqual($msg, $event->getMessage());
+    $this->assertEqual(WATCHDOG_NOTICE, $event->getSeverity());
+    // A notice generates a backtrace and there's an additional link
+    // argument, so there are three arguments.
+    $this->assertEqual(3, count($event->getArguments()));
+    $this->assertNotNull($event->getArgument('watchdog_args'));
+    $this->assertNotNull($event->getArgument('link'));
+    $this->assertEqual($nice_url, $event->getArgument('link')->getData());
+
+    // Now we disable watchdog logging.
+    variable_set('past_log_watchdog', 0);
+    watchdog($my_machine_name, 'something past won\'t see', NULL, WATCHDOG_INFO, NULL);
+    $event = $this->getLastEventByMachinename($my_machine_name);
+    // And still the last message should be found.
+    $this->assertEqual($msg, $event->getMessage());
+  }
+
+  /**
    * Returns the last event with a given machine name.
    *
    * @param string $machine_name
