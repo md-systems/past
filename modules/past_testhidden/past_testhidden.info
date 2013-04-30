@@ -1,0 +1,6 @@
+name=Past Hidden Test Module
+description=should not be visible
+core=7.x
+hidden=true
+
+dependencies[] = past

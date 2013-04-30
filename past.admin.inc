@@ -13,6 +13,12 @@ function past_admin_settings() {
     '#options' => drupal_map_assoc(array(86400, 604800, 604800 * 4), 'format_interval'),
     '#empty_option' => '- None -',
   );
+  $form['past_exception_handling'] = array(
+  '#type' => 'checkbox',
+  '#title' => t('Register PHP exception handler'),
+  '#default_value' => variable_get('past_exception_handling', 0),
+  '#description' => t('When enabled, Past will log every exception via it\'s PHP exception handler.'),
+  );
   $form['past_watchdog'] = array(
     '#type' => 'fieldset',
     '#title' => t('Watchdog logging'),

@@ -120,6 +120,14 @@ function past_event_severities() {
   );
 }
 
+ /**
+ * Implements hook_init().
+ */
+function past_init() {
+  if (variable_get('past_exception_handling', 0) == 1) {
+    set_exception_handler('_past_exception_handler');
+  }
+}
 
 /**
  * Implements hook_menu().
@@ -204,6 +212,34 @@ function past_form_system_logging_settings_alter(&$form, &$form_state) {
   $form['past_info']['#prefix'] = t('See also <a href="!settings_url">past settings</a>',
     array('!settings_url' => url('admin/config/development/past/settings')));
   return $form;
+}
+
+/**
+ * Custom exception handler.
+ */
+function _past_exception_handler($exception) {
+  require_once DRUPAL_ROOT . '/includes/errors.inc';
+
+  try {
+    $event = past_event_create('past', 'unhandled_exception', $exception->getMessage());
+    $event->addArgument('exception', $exception);
+    $event->setSeverity(PAST_SEVERITY_ERROR);
+    $event->save();
+
+    // Log the message to the watchdog and return an error page to the user.
+    $error_decoded = _drupal_decode_exception($exception);
+    $error_decoded['past_already_logged'] = TRUE;
+    _drupal_log_error($error_decoded, TRUE);
+  }
+  catch (Exception $exception2) {
+    // Another uncaught exception was thrown while handling the first one.
+    // If we are displaying errors, then do so with no possibility of a further uncaught exception being thrown.
+    if (error_displayable()) {
+      print '<h1>Additional uncaught exception thrown while handling exception.</h1>';
+      print '<h2>Original</h2><p>' . _drupal_render_exception_safe($exception) . '</p>';
+      print '<h2>Additional</h2><p>' . _drupal_render_exception_safe($exception2) . '</p><hr />';
+    }
+  }
 }
 
 /**

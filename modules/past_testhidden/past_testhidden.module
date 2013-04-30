@@ -1,0 +1,26 @@
+<?php
+
+/**
+ * @file
+ * Module file for Past Test hidden.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function past_testhidden_menu() {
+  $items['past_test/throw-exception'] = array(
+    'title' => 'Past test hidden',
+    'description' => 'should never be visible',
+    'page callback' => 'past_testhidden_throw_exception',
+    'access callback' => TRUE,
+  );
+  return $items;
+}
+
+/**
+ * Page callback that throws an exception.
+ */
+function past_testhidden_throw_exception() {
+  throw new Exception('This is an exception.');
+}

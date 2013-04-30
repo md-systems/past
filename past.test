@@ -18,7 +18,7 @@ class PastTest extends DrupalWebTestCase {
   }
 
   function setUp() {
-    parent::setUp(array('past', 'past_db'));
+    parent::setUp(array('past', 'past_db', 'past_testhidden'));
   }
 
   function testSave() {
@@ -137,6 +137,78 @@ class PastTest extends DrupalWebTestCase {
     $event = $this->getLastEventByMachinename($my_machine_name);
     // And still the last message should be found.
     $this->assertEqual($msg, $event->getMessage());
+  }
+
+  /*
+  * Tests the disabled exception handler.
+  */
+  public function testExceptionHandler() {
+    // Let's produce an exception, the exception handler is disabled by default.
+    $this->drupalGet('past_test/throw-exception');
+    $this->assertText(t('The website encountered an unexpected error. Please try again later.'));
+    $this->assertText('Exception: This is an exception. in past_testhidden_throw_exception()');
+
+    // No exception should have been logged.
+    $event = $this->getLastEventByMachinename('unhandled_exception');
+    $this->assertNull($event);
+
+    // Enable exception handling and re-throw the exception.
+    variable_set('past_exception_handling', 1);
+    $this->drupalGet('past_test/throw-exception');
+    $this->assertText(t('The website encountered an unexpected error. Please try again later.'));
+    $this->assertText('Exception: This is an exception. in past_testhidden_throw_exception()');
+
+    // Now we have an log event, assert it.
+    $event = $this->getLastEventByMachinename('unhandled_exception');
+    $this->assertEqual('past', $event->getModule());
+    $this->assertEqual('unhandled_exception', $event->getMachineName());
+    $this->assertEqual(PAST_SEVERITY_ERROR, $event->getSeverity());
+    $this->assertEqual(1, count($event->getArguments()));
+    $data = $event->getArgument('exception')->getData();
+    $this->assertTrue(array_key_exists('backtrace', $data));
+  }
+
+  /**
+   * Overrides DrupalWebTestCase::curlHeaderCallback().
+   *
+   * Does not report errors from the client site as exceptions as we are
+   * expecting them and they're required for our test.
+   *
+   * @param $curlHandler
+   *   The cURL handler.
+   * @param $header
+   *   An header.
+   */
+  protected function curlHeaderCallback($curlHandler, $header) {
+    // Header fields can be extended over multiple lines by preceding each
+    // extra line with at least one SP or HT. They should be joined on receive.
+    // Details are in RFC2616 section 4.
+    if ($header[0] == ' ' || $header[0] == "\t") {
+      // Normalize whitespace between chucks.
+      $this->headers[] = array_pop($this->headers) . ' ' . trim($header);
+    }
+    else {
+      $this->headers[] = $header;
+    }
+
+    // Save cookies.
+    if (preg_match('/^Set-Cookie: ([^=]+)=(.+)/', $header, $matches)) {
+      $name = $matches[1];
+      $parts = array_map('trim', explode(';', $matches[2]));
+      $value = array_shift($parts);
+      $this->cookies[$name] = array('value' => $value, 'secure' => in_array('secure', $parts));
+      if ($name == $this->session_name) {
+        if ($value != 'deleted') {
+          $this->session_id = $value;
+        }
+        else {
+          $this->session_id = NULL;
+        }
+      }
+    }
+
+    // This is required by cURL.
+    return strlen($header);
   }
 
   /**
