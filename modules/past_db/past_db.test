@@ -7,6 +7,10 @@
 
 class PastDBUiTest extends DrupalWebTestCase {
 
+  protected $event_desc;
+  protected $machine_name;
+  protected $severities;
+
   static function getInfo() {
     return array(
       'name' => 'Past DB Admin-UI tests',
@@ -18,57 +22,97 @@ class PastDBUiTest extends DrupalWebTestCase {
   function setUp() {
     parent::setUp(array('views', 'past', 'past_db'));
 
-    // Prepare some logs
-    $event = past_event_create('past_db', 'machine name', 'message 1');
-    $event->addArgument('arg1', 'First Argument');
-    $event->addArgument('arg2', new stdClass());
-    $event->addArgument('arg3', FALSE);
-    $event->setSeverity(PAST_SEVERITY_DEBUG);
-    $event->save();
+    // Set some for log creation.
+    $this->machine_name = 'machine name';
+    $this->severities = past_event_severities();
+    $this->event_desc = 'message #';
 
-    $event = past_event_create('past_db', 'machine name', 'message 2');
-    $event->addArgument('arg1', 'First Argument');
-    $event->addArgument('arg2', new stdClass());
-    $event->addArgument('arg3', FALSE);
-    $event->setSeverity(PAST_SEVERITY_INFO);
-    $event->save();
-
-    $event = past_event_create('past_db', 'machine name', 'message 3');
-    $event->addArgument('arg1', 'First Argument');
-    $event->addArgument('arg2', new stdClass());
-    $event->addArgument('arg3', FALSE);
-    $event->setSeverity(PAST_SEVERITY_WARNING);
-    $event->save();
+    // Prepare some logs.
+    for($i = 0; $i <= 99; $i++) {
+      $event = past_event_create('past_db', $this->machine_name, $this->event_desc . ($i + 1));
+      $event->addArgument('arg1', 'First Argument');
+      $event->addArgument('arg2', new stdClass());
+      $event->addArgument('arg3', FALSE);
+      $event->setSeverity($this->severities[$i%3]);
+      $event->save();
+    }
   }
 
+  /**
+   * Tests the pas event log UI.
+   */
   public function testAdminUI() {
     $admin = $this->drupalCreateUser(array('administer past'));
     $this->drupalLogin($admin);
 
+    // Open the event log.
     $this->drupalGet('admin/reports/past');
 
-    // Check for all messages
-    $this->assertText('message 1');
-    $this->assertText('message 2');
-    $this->assertText('message 3');
+    // Check for some messages.
+    $this->assertText('message #1');
+    $this->assertText('message #2');
+    $this->assertText('message #3');
 
-    // Check severities
-    $severities = past_event_severities();
-    $this->assertText($severities[PAST_SEVERITY_DEBUG]);
-    $this->assertText($severities[PAST_SEVERITY_INFO]);
-    $this->assertText($severities[PAST_SEVERITY_WARNING]);
+    // Check severities.
+    $this->assertText($this->severities[PAST_SEVERITY_DEBUG]);
+    $this->assertText($this->severities[PAST_SEVERITY_INFO]);
+    $this->assertText($this->severities[PAST_SEVERITY_WARNING]);
+
+    // Check machine name.
+    $this->assertText($this->machine_name);
+
+    // Check for the exposed filter fields.
+    $this->assertFieldByName('module', '');
+    $this->assertFieldByName('severity[]', '');
+    $this->assertFieldByName('message', '');
+
+    // Check paging (the sort order has to be ignored
+    // because all events get created in the same second).
+    $this->assertText($this->event_desc . 1);
+    $this->assertText($this->event_desc . 50);
+    $this->assertText('next ›');
+    $this->assertText('last »');
+
+    // Open the 2nd page.
+    $options = array(
+      'query' => array(
+        'module' => '',
+        'message' => '',
+        'page' => 1,
+        'order' => 'timestamp',
+        'sort' => 'desc',
+      ),
+    );
+    $this->drupalGet('admin/reports/past', $options);
+
+    // Check for some messages.
+    $this->assertText('message #98');
+    $this->assertText('message #99');
+    $this->assertText('message #100');
+
+    // Check paging.
+    $this->assertText($this->event_desc . 51);
+    $this->assertText($this->event_desc . 100);
+    $this->assertText('‹ previous');
+    $this->assertText('« first');
 
     // Go to the first detail page
     $this->drupalGet('admin/reports/past/1');
 
-    $this->assertText('machine name');
-    $this->assertText('message 1');
+    $this->assertText($this->machine_name);
+    $this->assertText($this->event_desc . 1);
     $this->assertText('arg1');
     $this->assertText('arg2');
     $this->assertText('arg3');
     $this->assertText('First Argument');
 
     $this->drupalLogout();
-  }
 
+    // Check permissions for detail page.
+    $this->drupalGet('admin/reports/past/1');
+    $this->assertText(t('You are not authorized to access this page'));
+    // Check permissions for event log.
+    $this->drupalGet('admin/reports/past');
+    $this->assertText(t('You are not authorized to access this page'));
+  }
 }
