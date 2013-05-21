@@ -154,7 +154,10 @@ function past_db_drush_show_many($filter = NULL) {
     if ($last_event_id) {
       $query->propertyCondition('event_id', $last_event_id, '>');
     }
-    $query->range(0, $count);
+    if (!$last_event_id) {
+      // For the first tail query, limit the result.
+      $query->range(0, $count);
+    }
     $result = $query->execute();
     if ($result) {
       $none = FALSE;
@@ -368,7 +371,7 @@ function drush_core_watchdog_delete($arg = NULL) {
  *   False or array with structure ('where' => string, 'args' => array())
  **/
 function past_db_drush_query_events($filter = NULL, $severity = NULL, $module = NULL, $machine_name = NULL) {
-    $query = new EntityFieldQuery();
+  $query = new EntityFieldQuery();
   $query->entityCondition('entity_type', 'past_event');
   if ($severity) {
     $query->propertyCondition('severity', $severity, '<=');
