@@ -92,6 +92,22 @@ function YOURMODULE_event_save($module, $machine_name, $message, array $argument
   }
 }
 
+ DB SYNCHRONIZATION
+ ------------------
+
+ If you are using past_db for the storage of your logged data, please note that
+ the size of your DB will increase and can become quite large after some time.
+ This can lead to very large file sizes of your SQL dumps and thus long waiting
+ time for DB synchronization using drush commands sql-sync and sql-dump.
+
+ In order to prevent this, you can exclude the past_db tables by doing this:
+
+ 1. Add a configuration line in your drushrc.php file:
+    $options['skip-tables']['common'] = array('past_event', 'past_event_argument', 'past_event_data');
+
+ 2. Use the --skip-tables-key=common arguments when executing
+    drush sql-sync/dump. For further information please check the documentation
+    of the commands: http://drush.ws/#sql-sync and http://drush.ws/#sql-dump
 
  FOR MORE INFORMATION
  --------------------
