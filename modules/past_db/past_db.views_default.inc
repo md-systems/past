@@ -212,11 +212,11 @@ function past_db_views_default_views() {
   $handler->display->display_options['fields']['timestamp']['empty_zero'] = 0;
   $handler->display->display_options['fields']['timestamp']['hide_alter_empty'] = 1;
   $handler->display->display_options['fields']['timestamp']['date_format'] = 'short';
-  /* Sort criterion: Past Event: Timestamp */
-  $handler->display->display_options['sorts']['timestamp']['id'] = 'timestamp';
-  $handler->display->display_options['sorts']['timestamp']['table'] = 'past_event';
-  $handler->display->display_options['sorts']['timestamp']['field'] = 'timestamp';
-  $handler->display->display_options['sorts']['timestamp']['order'] = 'DESC';
+  /* Sort criterion: Past Event: Past event ID */
+  $handler->display->display_options['sorts']['event_id']['id'] = 'event_id';
+  $handler->display->display_options['sorts']['event_id']['table'] = 'past_event';
+  $handler->display->display_options['sorts']['event_id']['field'] = 'event_id';
+  $handler->display->display_options['sorts']['event_id']['order'] = 'DESC';
   /* Contextual filter: Past Event: Past event ID */
   $handler->display->display_options['arguments']['event_id']['id'] = 'event_id';
   $handler->display->display_options['arguments']['event_id']['table'] = 'past_event';

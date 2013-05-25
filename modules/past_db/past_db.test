@@ -49,9 +49,10 @@ class PastDBUiTest extends DrupalWebTestCase {
     $this->drupalGet('admin/reports/past');
 
     // Check for some messages.
-    $this->assertText('message #1');
-    $this->assertText('message #2');
-    $this->assertText('message #3');
+    $this->assertText($this->event_desc . 100);
+    $this->assertText($this->event_desc . 99);
+    $this->assertText($this->event_desc . 98);
+    $this->assertText($this->event_desc . 51);
 
     // Check severities.
     $this->assertText($this->severities[PAST_SEVERITY_DEBUG]);
@@ -66,10 +67,7 @@ class PastDBUiTest extends DrupalWebTestCase {
     $this->assertFieldByName('severity[]', '');
     $this->assertFieldByName('message', '');
 
-    // Check paging (the sort order has to be ignored
-    // because all events get created in the same second).
-    $this->assertText($this->event_desc . 1);
-    $this->assertText($this->event_desc . 50);
+    // Check paging.
     $this->assertText('next ›');
     $this->assertText('last »');
 
@@ -79,20 +77,16 @@ class PastDBUiTest extends DrupalWebTestCase {
         'module' => '',
         'message' => '',
         'page' => 1,
-        'order' => 'timestamp',
-        'sort' => 'desc',
       ),
     );
     $this->drupalGet('admin/reports/past', $options);
 
     // Check for some messages.
-    $this->assertText('message #98');
-    $this->assertText('message #99');
-    $this->assertText('message #100');
+    $this->assertText($this->event_desc . 50);
+    $this->assertText($this->event_desc . 49);
+    $this->assertText($this->event_desc . 1);
 
     // Check paging.
-    $this->assertText($this->event_desc . 51);
-    $this->assertText($this->event_desc . 100);
     $this->assertText('‹ previous');
     $this->assertText('« first');
 
