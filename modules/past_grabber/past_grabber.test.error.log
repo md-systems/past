@@ -1,0 +1,9 @@
+[Tue May 21 03:02:05 2013] [error] [client 192.168.56.1] PHP Parse error:  syntax error, unexpected '}' in /var/www/funny_file.module on line 1, referer: http://funny.url
+[Tue May 21 03:02:05 2013] [error] [client 192.168.56.1] PHP Parse error:  syntax error, unexpected '}' in /var/www/funny_file.module on line 2
+[Sat May 04 03:10:13 2013] [error] [client 192.168.56.1] PHP Parse error:  syntax error, unexpected T_STRING in /var/www/funny_file.module on line 3
+[Fri May 03 02:20:45 2013] [error] [client 192.168.56.1] File does not exist: /var/www/tmgmt/app/favicon.ico
+[Fri May 03 02:26:57 2013] [error] [client 192.168.56.1] File does not exist: /var/www/tmgmt/app/favicon.ico
+[Fri May 03 09:03:48 2013] [error] [client 192.168.56.1] PHP Fatal error:  Call to undefined function dsm() in /var/www/another_file.inc on line 4, referer: http://another.url
+[Fri May 03 09:03:48 2013] [error] [client 192.168.56.1] File does not exist: /var/www/tmgmt/app/favicon.ico
+[Fri May 03 09:04:27 2013] [error] [client 192.168.56.1] PHP Fatal error:  Call to undefined function dpm() in /var/www/another_file.inc on line 5, referer: http://another.url
+[Fri May 03 09:17:02 2013] [error] [client 192.168.56.1] PHP Fatal error:  Nesting level too deep - recursive dependency? in /var/www/tmgmt/app/includes/common.inc on line 6, referer: http://nesting.problem.site

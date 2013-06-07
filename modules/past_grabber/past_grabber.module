@@ -1,0 +1,180 @@
+<?php
+
+/**
+ * @file
+ * Main bootstrap file for past_grabber.
+ */
+
+/**
+ * Implements hook_form_ID_alter().
+ *
+ * Alters past admin settings.
+ */
+function past_grabber_form_past_admin_settings_alter(&$form, &$form_state) {
+  $form['grabber'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Log Grabber'),
+    '#collapsible' => TRUE,
+    '#description' => t('On the cron run the Log Grabber will skim through the provided error log file for parse errors and create past events.')
+  );
+  $form['grabber']['past_grabber_file_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Error log file path'),
+    '#description' => t('Enter path to the web server error log file.'),
+    '#default_value' => variable_get('past_grabber_file_path', ini_get('error_log')),
+  );
+
+  if (variable_get('past_grabber_file_path') && $file_info = variable_get('past_grabber_log_file_info', FALSE)) {
+    $form['grabber']['pointer'] = array(
+      '#type' => 'item',
+      '#title' => t('Error log file pointer'),
+      '#markup' => variable_get('past_grabber_log_file_line', $file_info['position']),
+    );
+  }
+  $form['grabber']['reset_grabber'] = array(
+    '#type' => 'submit',
+    '#value' => t('Reset grabber'),
+    '#submit' => array('_past_grabber_reset_error_log_line_pointer'),
+  );
+  $form['#validate'][] = 'past_grabber_admin_settings_validate';
+}
+
+/**
+ * Submit callback to reset log file pointer.
+ */
+function _past_grabber_reset_error_log_line_pointer($form, &$form_state) {
+  variable_set('past_grabber_log_file_line', 0);
+}
+
+/**
+ * Validate callback for grabber settings.
+ */
+function past_grabber_admin_settings_validate(&$form, &$form_state) {
+  if (!empty($form_state['values']['past_grabber_file_path']) && !is_readable($form_state['values']['past_grabber_file_path'])) {
+    form_set_error('past_grabber_file_path', t('The provided path to the log file is invalid or php user has insufficient permissions to read it.'));
+  }
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Will run parsing of error log file and will grab out PHP Parse errors.
+ */
+function past_grabber_cron() {
+  $path = variable_get('past_grabber_file_path');
+  if (empty($path)) {
+    return;
+  }
+
+  if (!is_readable($path)) {
+    watchdog('past_grabber', 'Unable to open log file @path', array('@path' => $path));
+    return;
+  }
+
+  $stat = stat($path);
+  $file_info = variable_get('past_grabber_log_file_info', array(
+    'mtime' => 0,
+    'ctime' => 0,
+    'position' => 0,
+  ));
+
+  // The log file was not updated, do nothing.
+  if ($stat['mtime'] == $file_info['mtime']) {
+    return;
+  }
+
+  // If ctime of the log file is newer then the one recorded we have new a log.
+  if ($stat['ctime'] > $file_info['ctime']) {
+    $file_info['position'] = 0;
+  }
+
+  $position = past_grabber_parse_error_log($path, $file_info['position']);
+
+  variable_set('past_grabber_log_file_info', array(
+    'mtime' => $stat['mtime'],
+    'ctime' => $stat['ctime'],
+    'position' => $position,
+  ));
+}
+
+/**
+ * Parses provided error log and creates past events.
+ *
+ * @param string $path
+ *   Error log file path.
+ * @param $position
+ *   File pointer position
+ * @param string $error_type
+ *   Error type to be logged.
+ * @param int $limit
+ *   Limit for processed error log entries.
+ *
+ * @return int
+ *   New file pointer position.
+ */
+function past_grabber_parse_error_log($path, $position, $error_type = 'PHP Parse error', $limit = 100) {
+  $handle = fopen($path, 'r');
+  fseek($handle, $position);
+
+  $i = 0;
+  while ($i < $limit && ($line = fgets($handle))) {
+    $log = _past_grabber_parse_line($line, $error_type);
+    if (empty($log)) {
+      continue;
+    }
+
+    // Increment i only if we got a log entry to process.
+    $i++;
+
+    // Create the past event.
+    $severity = PAST_SEVERITY_CRITICAL;
+    $event = past_event_create('past_grabber', 'error', $log['message']);
+    $event->setSeverity($severity);
+    $event->setTimestamp(strtotime($log['time']));
+
+    $event->addArgument('php', array(
+      'type' => $log['type'],
+      'message' => $log['message'],
+      'file' => $log['file'],
+      'line' => $log['line'],
+    ));
+    $event->addArgument('client_data', array(
+      'referer' => $log['referer'],
+      'client' => $log['client'],
+    ));
+    $event->save();
+  }
+
+  $position = ftell($handle);
+  fclose($handle);
+
+  return $position;
+}
+
+/**
+ * Helper function to parse error log line.
+ *
+ * @param string $line
+ *   Log entry to parse.
+ * @param string $type
+ *   What error type to parse.
+ *
+ * @return array
+ *   Associative array with parsed data.
+ */
+function _past_grabber_parse_line($line, $type = 'PHP Parse error') {
+  preg_match('/\[(.*)\]\s\[error\]\s\[client\s(.*)\]\s(' . str_replace(' ', '\s', $type) . '):\s+(.*)\sin\s(.*) on\sline\s(\d*)(.*referer:\s(.*))?/', $line, $matches);
+
+  if (empty($matches)){
+    return array();
+  }
+  return array(
+    'time' => $matches[1],
+    'client' => $matches[2],
+    'type' => $matches[3],
+    'message' => $matches[4],
+    'file' => $matches[5],
+    'line' => $matches[6],
+    'referer' => isset($matches[8]) ? $matches[8] : NULL,
+  );
+}

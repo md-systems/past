@@ -1,0 +1,7 @@
+name=Past Log Grabber
+description=Searches for error log entries in the server logs and logs them as Past events.
+core=7.x
+
+dependencies[]=past
+
+files[]=past_grabber.test
