@@ -326,6 +326,27 @@ class PastEventArgument extends Entity implements PastEventArgumentInterface {
   }
 }
 
+/**
+ * Past event data entity.
+ */
+class PastEventData extends Entity implements PastEventDataInterface {
+  public $data_id;
+  public $argument_id;
+  public $name;
+  public $type;
+
+  public function id() {
+    return $this->data_id;
+  }
+
+  public function getKey() {
+    return $this->name;
+  }
+
+  public function getType() {
+    return $this->type;
+  }
+}
 
 /**
  * Use a separate class for past_event types so we can specify some defaults

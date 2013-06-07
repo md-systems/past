@@ -148,7 +148,6 @@ class PastEventArgumentController extends EntityAPIController {
 
 }
 
-
 /**
  * Controller class for the Entity Metadata.
  */
@@ -157,9 +156,6 @@ class PastDBEventMetadataController extends EntityDefaultMetadataController {
 
   /**
    * Overrides EntityDefaultMetadataController::entityPropertyInfo().
-   *
-   * @see EntityDefaultMetadataController::entityPropertyInfo()
-   * @return array|void
    */
   public function entityPropertyInfo() {
     // Loading property information and make em better usable in here.
@@ -181,7 +177,6 @@ class PastDBEventUIController extends EntityDefaultUIController {
 
   /**
    * Overrides EntityDefaultUIController::hook_menu().
-   * @return array
    */
   public function hook_menu() {
     $id_count = count(explode('/', $this->path));
@@ -212,5 +207,45 @@ class PastEventTypeUIController extends EntityDefaultUIController {
     $items = parent::hook_menu();
     $items[$this->path]['description'] = 'Manage past event, including fields.';
     return $items;
+  }
+}
+
+/**
+ * Controller class for the Past Argument Metadata.
+ */
+class PastDBEventArgumentMetadataController extends EntityDefaultMetadataController {
+
+  /**
+   * Overrides EntityDefaultMetadataController::entityPropertyInfo().
+   */
+  public function entityPropertyInfo() {
+    $info = parent::entityPropertyInfo();
+
+    $properties = &$info[$this->type]['properties'];
+    
+    // Link the event id property to the corresponding event entity.
+    $properties['event_id']['type'] = 'past_event';
+    
+    return $info;
+  }
+}
+
+/**
+ * Controller class for the Past Data Metadata.
+ */
+class PastDBEventDataMetadataController extends EntityDefaultMetadataController {
+
+  /**
+   * Overrides EntityDefaultMetadataController::entityPropertyInfo().
+   */
+  public function entityPropertyInfo() {
+    $info = parent::entityPropertyInfo();
+
+    $properties = &$info[$this->type]['properties'];
+    
+    // Link the argument id property to the corresponding argument entity.
+    $properties['argument_id']['type'] = 'past_event_argument';
+
+    return $info;
   }
 }

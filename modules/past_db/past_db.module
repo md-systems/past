@@ -57,8 +57,7 @@ function past_db_entity_info() {
     'label' => t('Past Event Argument'),
     'module' => 'past_db',
     'controller class' => 'PastEventArgumentController',
-    //'metadata controller class' => 'PastDBEventMetadataController',
-    //'views controller class' => 'PastDBArgumentViewsController',
+    'metadata controller class' => 'PastDBEventArgumentMetadataController',
     'entity class' => 'PastEventArgument',
     'base table' => 'past_event_argument',
     'uri callback' => 'entity_class_uri',
@@ -68,6 +67,21 @@ function past_db_entity_info() {
       'id' => 'argument_id',
     ),
   );
+
+   $info['past_event_data'] = array(
+     'label' => t('Past Event Data'),
+     'module' => 'past_db',
+     'controller class' => 'EntityAPIController',
+     'metadata controller class' => 'PastDBEventDataMetadataController',
+     'entity class' => 'PastEventData',
+     'base table' => 'past_event_data',
+     'uri callback' => 'entity_class_uri',
+     'label callback' => 'entity_class_label',
+     'access callback' => 'past_db_access',
+     'entity keys' => array(
+       'id' => 'data_id',
+     ),
+   );
 
   $info['past_event_type'] = array(
     'label' => t('Past Event type'),
