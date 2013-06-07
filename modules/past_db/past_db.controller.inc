@@ -19,6 +19,9 @@ class PastEventController extends EntityAPIController {
   public function create(array $values = array()) {
     $entity = parent::create($values);
 
+    if (empty($entity->type)) {
+      $entity->type = 'past_event';
+    }
     if (empty($entity->timestamp)) {
       $entity->timestamp = REQUEST_TIME;
     }
@@ -93,7 +96,7 @@ class PastEventArgumentController extends EntityAPIController {
         $this->insert->execute();
       }
       catch (Exception $e) {
-        watchdog_exception('past', $e); 
+        watchdog_exception('past', $e);
       }
     }
   }
@@ -165,22 +168,10 @@ class PastDBEventMetadataController extends EntityDefaultMetadataController {
 
     // The timestamp should be rendered/shown as a date.
     $prop['timestamp']['type'] = 'date';
-
-    // The severity should be a translated options list.
-    // We could also call the method 'past_event_severities' directly, but I prefer the OOP-Way for all and not a mix up.
-    $prop['severity']['options list'] = array(get_class($this), 'severityOptionsList');
+    $prop['severity']['options list'] = 'past_event_severities';
 
     return $info;
   }
-
-  /**
-   * An OptionsList callback to return all Severity levels.
-   * @return array
-   */
-  public function severityOptionsList() {
-    return past_event_severities();
-  }
-
 }
 
 /**
@@ -205,6 +196,21 @@ class PastDBEventUIController extends EntityDefaultUIController {
       'access callback' => 'entity_access',
       'access arguments' => array('view', $this->entityType, $id_count),
     );
+    return $items;
+  }
+}
+
+/**
+ * UI controller.
+ */
+class PastEventTypeUIController extends EntityDefaultUIController {
+
+  /**
+   * Overrides hook_menu() defaults.
+   */
+  public function hook_menu() {
+    $items = parent::hook_menu();
+    $items[$this->path]['description'] = 'Manage past event, including fields.';
     return $items;
   }
 }

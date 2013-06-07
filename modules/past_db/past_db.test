@@ -5,46 +5,85 @@
  * Contains tests for the past_db Admin UI.
  */
 
-class PastDBUiTest extends DrupalWebTestCase {
+class PastDBBaseTestCase extends DrupalWebTestCase {
 
   protected $event_desc;
   protected $machine_name;
   protected $severities;
 
+  protected function createEvents($count = 99) {
+    // Set some for log creation.
+    $this->machine_name = 'machine name';
+    $this->severities = past_event_severities();
+    $severities_codes = array_keys($this->severities);
+    $this->event_desc = 'message #';
+
+    // Prepare some logs.
+    for($i = 0; $i <= $count; $i++) {
+      $severity_index = $severities_codes[rand(0, 7)];
+      $event = past_event_create('past_db', $this->machine_name, $this->event_desc . ($i + 1));
+      $event->addArgument('arg1', 'First Argument');
+      $event->addArgument('arg2', new stdClass());
+      $event->addArgument('arg3', FALSE);
+      $event->setSeverity($severity_index);
+      $event->save();
+    }
+  }
+
+  /**
+   * @return PastEvent[]
+   */
+  protected function loadEvents() {
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', 'past_event');
+    $result = $query->execute();
+    return entity_load('past_event', array_keys($result['past_event']));
+  }
+}
+
+class PastDBTest extends PastDBBaseTestCase {
+
   static function getInfo() {
     return array(
-      'name' => 'Past DB Admin-UI tests',
-      'description' => 'Generic tests for testing the administration reports view',
+      'name' => 'Past DB tests',
+      'description' => 'Tests for DB backend of the Past module.',
       'group' => 'Past',
     );
   }
 
   function setUp() {
     parent::setUp(array('views', 'past', 'past_db'));
+    $admin = $this->drupalCreateUser(array('administer past'));
+    $this->drupalLogin($admin);
+    $this->createEvents();
+  }
 
-    // Set some for log creation.
-    $this->machine_name = 'machine name';
-    $this->severities = past_event_severities();
-    $this->event_desc = 'message #';
+  /**
+   * Tests event bundles.
+   */
+  function testEventBundles() {
+    $event_type = past_event_type_create('test_event', 'Test event');
+    $event_type->save();
 
-    // Prepare some logs.
-    for($i = 0; $i <= 99; $i++) {
-      $event = past_event_create('past_db', $this->machine_name, $this->event_desc . ($i + 1));
-      $event->addArgument('arg1', 'First Argument');
-      $event->addArgument('arg2', new stdClass());
-      $event->addArgument('arg3', FALSE);
-      $event->setSeverity($this->severities[$i%3]);
-      $event->save();
-    }
+    $event_type = past_event_get_types('test_event');
+    $this->assertEqual($event_type->label, 'Test event');
+    $this->assertEqual($event_type->type, 'test_event');
+
+    $event = past_event_create('past', 'test_event', 'test message');
+    $event->type = 'test_event';
+    $event->save();
+
+    $events = $this->loadEvents();
+    $event = array_pop($events);
+
+    $wrapper = entity_metadata_wrapper('past_event', $event);
+    $this->assertEqual($wrapper->getBundle(), 'test_event');
   }
 
   /**
    * Tests the pas event log UI.
    */
   public function testAdminUI() {
-    $admin = $this->drupalCreateUser(array('administer past'));
-    $this->drupalLogin($admin);
-
     // Open the event log.
     $this->drupalGet('admin/reports/past');
 
