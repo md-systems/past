@@ -9,18 +9,46 @@
  * Implements hook_menu().
  */
 function past_testhidden_menu() {
-  $items['past_test/throw-exception'] = array(
+  $items['past_trigger_error'] = array(
+    'title' => 'Past test errors',
+    'description' => 'should never be visible',
+    'page callback' => 'past_testhidden_errors',
+    'access callback' => TRUE,
+  );
+  $items['past_trigger_error/%'] = array(
     'title' => 'Past test hidden',
     'description' => 'should never be visible',
-    'page callback' => 'past_testhidden_throw_exception',
+    'page callback' => 'past_testhidden_trigger_error',
+    'page arguments' => array(1),
     'access callback' => TRUE,
   );
   return $items;
 }
 
+function past_testhidden_errors() {
+  return array(
+    '#theme' => 'links',
+    '#links' => array(
+      array('href' => 'past_trigger_error/E_ERROR', 'title' => 'E_ERROR'),
+      array('href' => 'past_trigger_error/E_WARNING', 'title' => 'E_WARNING'),
+      array('href' => 'past_trigger_error/E_COMPILE_ERROR', 'title' => 'E_COMPILE_ERROR'),
+      array('href' => 'past_trigger_error/E_COMPILE_WARNING', 'title' => 'E_COMPILE_WARNING'),
+      array('href' => 'past_trigger_error/E_DEPRECATED', 'title' => 'E_DEPRECATED'),
+      array('href' => 'past_trigger_error/E_NOTICE', 'title' => 'E_NOTICE'),
+      array('href' => 'past_trigger_error/E_PARSE', 'title' => 'E_PARSE'),
+      array('href' => 'past_trigger_error/E_RECOVERABLE_ERROR', 'title' => 'E_RECOVERABLE_ERROR'),
+      array('href' => 'past_trigger_error/E_STRICT', 'title' => 'E_STRICT'),
+      array('href' => 'past_trigger_error/Exception', 'title' => 'Exception'),
+    ),
+  );
+}
+
 /**
- * Page callback that throws an exception.
+ * Page callback that will trigger an error of given type.
+ *
+ * @param string $type
+ *   Error type.
  */
-function past_testhidden_throw_exception() {
-  throw new Exception('This is an exception.');
+function past_testhidden_trigger_error($type) {
+  require_once drupal_get_path('module', 'past_testhidden') . '/errors/past.' . $type . '.inc';
 }

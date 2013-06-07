@@ -144,9 +144,9 @@ class PastTest extends DrupalWebTestCase {
   */
   public function testExceptionHandler() {
     // Let's produce an exception, the exception handler is disabled by default.
-    $this->drupalGet('past_test/throw-exception');
+    $this->drupalGet('past_trigger_error/Exception');
     $this->assertText(t('The website encountered an unexpected error. Please try again later.'));
-    $this->assertText('Exception: This is an exception. in past_testhidden_throw_exception()');
+    $this->assertText('Exception: This is an exception.');
 
     // No exception should have been logged.
     $event = $this->getLastEventByMachinename('unhandled_exception');
@@ -154,9 +154,9 @@ class PastTest extends DrupalWebTestCase {
 
     // Enable exception handling and re-throw the exception.
     variable_set('past_exception_handling', 1);
-    $this->drupalGet('past_test/throw-exception');
+    $this->drupalGet('past_trigger_error/Exception');
     $this->assertText(t('The website encountered an unexpected error. Please try again later.'));
-    $this->assertText('Exception: This is an exception. in past_testhidden_throw_exception()');
+    $this->assertText('Exception: This is an exception.');
 
     // Now we have an log event, assert it.
     $event = $this->getLastEventByMachinename('unhandled_exception');
@@ -166,6 +166,25 @@ class PastTest extends DrupalWebTestCase {
     $this->assertEqual(1, count($event->getArguments()));
     $data = $event->getArgument('exception')->getData();
     $this->assertTrue(array_key_exists('backtrace', $data));
+  }
+
+  /*
+  * Tests the shutdown function.
+  */
+  public function testShutdownFunction() {
+    // Let's produce an exception, the exception handler is disabled by default.
+    $this->drupalGet('past_trigger_error/E_ERROR');
+
+    // Now we have an log event, assert it.
+    $event = $this->getLastEventByMachinename('fatal_error');
+
+    $this->assertEqual('past', $event->getModule());
+    $this->assertEqual('fatal_error', $event->getMachineName());
+    $this->assertEqual(PAST_SEVERITY_CRITICAL, $event->getSeverity());
+    $this->assertEqual(2, count($event->getArguments()));
+    $this->assertEqual('Cannot use object of type stdClass as array', $event->getMessage());
+    $data = $event->getArgument('error')->getData();
+    $this->assertEqual($data['type'], E_ERROR);
   }
 
   /**

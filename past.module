@@ -120,13 +120,15 @@ function past_event_severities() {
   );
 }
 
- /**
+/**
  * Implements hook_init().
  */
 function past_init() {
   if (variable_get('past_exception_handling', 0) == 1) {
     set_exception_handler('_past_exception_handler');
   }
+
+  drupal_register_shutdown_function('_past_shutdown_function');
 }
 
 /**
@@ -303,4 +305,56 @@ function _past_error_array_to_event($error) {
   $context['severity_level'] = $error['severity_level'];
 
   return $context;
+}
+
+/**
+ * Past custom shutdown function.
+ *
+ * Attempts to deal with error types which error handler is not able to capture.
+ */
+function _past_shutdown_function() {
+
+  $error_types = array(
+    E_ERROR,
+    E_WARNING,
+    E_CORE_ERROR,
+    E_CORE_WARNING,
+    E_COMPILE_ERROR,
+    E_COMPILE_WARNING,
+  );
+
+  if (!($error = error_get_last()) || !in_array($error['type'], $error_types)) {
+    return;
+  }
+
+  $severity = PAST_SEVERITY_CRITICAL;
+
+  $event = past_event_create('past', 'fatal_error', $error['message']);
+  $event->setSeverity($severity);
+  $event->setTimestamp(REQUEST_TIME);
+
+  $event->addArgument('error', $error);
+
+  $user_args = array();
+  $user_args['location'] = _past_current_url();
+
+  if (!empty($GLOBALS['user'])) {
+    $user_args['uid'] = $GLOBALS['user']->uid;
+  }
+  if (!empty($_SERVER['referer'])) {
+    $user_args['referer'] = $_SERVER['referer'];
+  }
+  $user_args['hostname'] = substr($_SERVER['REMOTE_ADDR'], 0, 128);
+  $event->addArgument('user_args', $user_args);
+  $event->save();
+}
+
+/**
+ * Builds current url.
+ *
+ * @return string
+ *   The url.
+ */
+function _past_current_url() {
+  return $GLOBALS['base_url'] . $_SERVER['REQUEST_URI'];
 }
