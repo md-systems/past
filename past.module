@@ -323,18 +323,22 @@ function _past_shutdown_function() {
     E_COMPILE_WARNING,
   );
 
+  // Check if an error was thrown and it's one that can only be captured by a
+  // shutdown function.
   if (!($error = error_get_last()) || !in_array($error['type'], $error_types)) {
     return;
   }
 
   $severity = PAST_SEVERITY_CRITICAL;
 
+  // Create a event, add the error information.
   $event = past_event_create('past', 'fatal_error', $error['message']);
   $event->setSeverity($severity);
   $event->setTimestamp(REQUEST_TIME);
 
   $event->addArgument('error', $error);
 
+  // Add metadata arguments like the path and user to the past event.
   $user_args = array();
   $user_args['location'] = _past_current_url();
 
