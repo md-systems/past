@@ -1,0 +1,11 @@
+name = Past Bughunt UI
+description = Provides a UI to track down and manage bugs found by the Past module.
+core=7.x
+
+dependencies[] = past_db
+dependencies[] = views_bulk_operations
+dependencies[] = flag
+dependencies[] = rules
+dependencies[] = entityreference
+
+files[] = past_bughunt.test

@@ -26,6 +26,8 @@ CONTENTS OF THIS FILE
  FEATURES
  --------
 
+ THE CORE
+
  * Procedural and object oriented interface for logging events
  * Attach any number of arguments to a single event
  * Pluggable backends. The current default backend is a database/entity based
@@ -34,6 +36,29 @@ CONTENTS OF THIS FILE
  * Each element in an array or object is stored separately to be search and filterable
  * Views and drush integration for the database backend
  * Expiration of old entries
+
+ ERROR CAPTURE
+
+ * Watchdog implementation - can be used to replace dblog
+ * PHP Exception handler
+ * Implements PHP shutdown function to capture also PHP fatal errors
+ * Provides server error log grabber that can extract PHP syntax errors so that
+   all error events are gathered in the Past log
+
+ EXTENDABILITY
+
+ Past DB module provides Past Event Types as bundles for events. This feature
+ can be utilised to use Past for different purpose logging. So it can server as
+ error logging utility as well as messaging backend for capturing events from
+ i.e. ecommerce transactions.
+
+ EVENTS MANAGEMENT
+
+ Past Bughunt is a module that provides a simple workflow to manage individual
+ events. It has following features:
+
+ * Provides an UI to set events as TODO and Done.
+ * Inserts a list of suggested similar events into the event detail page.
 
  REQUIREMENTS
  ------------
@@ -46,6 +71,14 @@ CONTENTS OF THIS FILE
  Enable the "Past" and "Past Database Backend" modules, unless you want to use
  a different backend.
 
+ If you wish to use bughunt or grabber features, enable appropriate modules.
+
+ For configuration options visit the admin/config/development/past/settings
+ page. Note that logging and watchdog features needs to be enabled in the
+ settings first.
+
+ To configure event types visit the admin/config/development/past-types page.
+
  USAGE
  -----
 
@@ -54,6 +87,19 @@ CONTENTS OF THIS FILE
 
  The default, views based log overview page is at Administration > Reports >
  Past.
+
+ All events are in default created with past_event bundle. In case you defined
+ a custom event type you can wrote your own wrapper as follows:
+
+/**
+ * Wrapper to create an event of a specific type/bundle.
+ */
+function YOURMODULE_event_save($machine_name, $message = NULL) {
+  $event = past_event_create('YOURMODULE', $machine_name, $message);
+  $event->type = 'my_event_type';
+  $event->save();
+  return $event;
+}
 
  OPTIONAL USAGE
  --------------
