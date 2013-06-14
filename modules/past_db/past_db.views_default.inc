@@ -70,6 +70,10 @@ function past_db_views_default_views() {
       'empty_column' => 0,
     ),
   );
+  /* Relationship: Past Event: User */
+  $handler->display->display_options['relationships']['uid']['id'] = 'uid';
+  $handler->display->display_options['relationships']['uid']['table'] = 'past_event';
+  $handler->display->display_options['relationships']['uid']['field'] = 'uid';
   /* Field: Past Event: Past event ID */
   $handler->display->display_options['fields']['event_id']['id'] = 'event_id';
   $handler->display->display_options['fields']['event_id']['table'] = 'past_event';
@@ -104,6 +108,12 @@ function past_db_views_default_views() {
   $handler->display->display_options['fields']['timestamp']['table'] = 'past_event';
   $handler->display->display_options['fields']['timestamp']['field'] = 'timestamp';
   $handler->display->display_options['fields']['timestamp']['date_format'] = 'short';
+  /* Field: User: Name */
+  $handler->display->display_options['fields']['name']['id'] = 'name';
+  $handler->display->display_options['fields']['name']['table'] = 'users';
+  $handler->display->display_options['fields']['name']['field'] = 'name';
+  $handler->display->display_options['fields']['name']['relationship'] = 'uid';
+  $handler->display->display_options['fields']['name']['label'] = 'User';
   /* Sort criterion: Past Event: Past event ID */
   $handler->display->display_options['sorts']['event_id']['id'] = 'event_id';
   $handler->display->display_options['sorts']['event_id']['table'] = 'past_event';
@@ -178,6 +188,7 @@ function past_db_views_default_views() {
     t('‹ previous'),
     t('next ›'),
     t('last »'),
+    t('User'),
     t('ID'),
     t('.'),
     t('Severity'),
@@ -273,6 +284,10 @@ function past_db_views_default_views() {
   $handler->display->display_options['relationships']['past_event_data']['table'] = 'past_event_argument';
   $handler->display->display_options['relationships']['past_event_data']['field'] = 'past_event_data';
   $handler->display->display_options['relationships']['past_event_data']['relationship'] = 'past_event_argument';
+  /* Relationship: Past Event: User */
+  $handler->display->display_options['relationships']['uid']['id'] = 'uid';
+  $handler->display->display_options['relationships']['uid']['table'] = 'past_event';
+  $handler->display->display_options['relationships']['uid']['field'] = 'uid';
   /* Field: Past Event: Past event ID */
   $handler->display->display_options['fields']['event_id']['id'] = 'event_id';
   $handler->display->display_options['fields']['event_id']['table'] = 'past_event';
@@ -307,6 +322,12 @@ function past_db_views_default_views() {
   $handler->display->display_options['fields']['timestamp']['table'] = 'past_event';
   $handler->display->display_options['fields']['timestamp']['field'] = 'timestamp';
   $handler->display->display_options['fields']['timestamp']['date_format'] = 'short';
+  /* Field: User: Name */
+  $handler->display->display_options['fields']['name']['id'] = 'name';
+  $handler->display->display_options['fields']['name']['table'] = 'users';
+  $handler->display->display_options['fields']['name']['field'] = 'name';
+  $handler->display->display_options['fields']['name']['relationship'] = 'uid';
+  $handler->display->display_options['fields']['name']['label'] = 'User';
   /* Sort criterion: Past Event: Timestamp */
   $handler->display->display_options['sorts']['timestamp']['id'] = 'timestamp';
   $handler->display->display_options['sorts']['timestamp']['table'] = 'past_event';
@@ -431,6 +452,7 @@ function past_db_views_default_views() {
     t('last »'),
     t('Past Event Argument'),
     t('Past Event Data'),
+    t('User'),
     t('ID'),
     t('.'),
     t('Severity'),
@@ -445,6 +467,7 @@ function past_db_views_default_views() {
     t('Data value'),
     t('Page'),
   );
+
 
   $views[$view->name] = $view;
 

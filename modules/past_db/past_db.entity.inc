@@ -12,6 +12,7 @@ class PastEvent extends Entity implements PastEventInterface {
   public $severity;
   public $timestamp;
   public $parent_event_id;
+  public $uid;
 
   protected $arguments;
   protected $child_events = array();
@@ -107,6 +108,10 @@ class PastEvent extends Entity implements PastEventInterface {
     return $this->timestamp;
   }
 
+  public function getUid() {
+    return $this->uid;
+  }
+
   public function id() {
     return $this->event_id;
   }
@@ -138,6 +143,11 @@ class PastEvent extends Entity implements PastEventInterface {
 
   public function setModule($module) {
     $this->module = $module;
+    return $this;
+  }
+
+  public function setUid($uid) {
+    $this->uid = $uid;
     return $this;
   }
 

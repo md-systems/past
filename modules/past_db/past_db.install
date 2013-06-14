@@ -55,6 +55,12 @@ function past_db_schema() {
         'type' => 'int',
         'not null' => TRUE,
       ),
+      'uid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The {users}.uid of the user who triggered the event.',
+      ),
     ),
     'primary key' => array('event_id'),
     'indexes' => array(
@@ -67,6 +73,10 @@ function past_db_schema() {
       'type' => array(
         'table' => 'past_event_type',
         'columns' => array('type' => 'type'),
+      ),
+      'uid' => array(
+        'table' => 'users',
+        'columns' => array('uid' => 'uid'),
       ),
     ),
   );
@@ -337,4 +347,18 @@ function past_db_update_7001() {
   db_insert('past_event_type')
       ->fields(array('type' => 'past_event', 'label' => t('Default')))
       ->execute();
+}
+
+/**
+ * Adds uid field to {past_event}.
+ */
+function past_db_update_7002() {
+  if (!db_field_exists('past_event', 'uid')) {
+    db_add_field('past_event', 'uid', array(
+      'type' => 'int',
+      'not null' => TRUE,
+      'default' => 0,
+      'description' => 'The {users}.uid of the user who triggered the event.',
+    ));
+  }
 }

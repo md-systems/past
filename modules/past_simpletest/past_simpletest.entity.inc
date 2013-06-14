@@ -14,6 +14,7 @@ class PastEventSimpletest implements PastEventInterface {
   public $message;
   public $severity;
   public $timestamp;
+  public $uid;
 
   protected $arguments;
   protected $child_events = array();
@@ -153,6 +154,15 @@ class PastEventSimpletest implements PastEventInterface {
 
   public function setTimestamp($timestamp) {
     $this->timestamp = $timestamp;
+  }
+
+  public function setUid($uid) {
+    $this->uid = $uid;
+    return $this;
+  }
+
+  public function getUid() {
+    return $this->uid;
   }
 
   public function setMachineName($machine_name) {

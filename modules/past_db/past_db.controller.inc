@@ -28,6 +28,9 @@ class PastEventController extends EntityAPIController {
     if (empty($entity->severity)) {
       $entity->severity = PAST_SEVERITY_INFO;
     }
+    if (empty($entity->uid) && !empty($GLOBALS['user'])) {
+      $entity->uid = $GLOBALS['user']->uid;
+    }
     return $entity;
   }
 
@@ -165,6 +168,13 @@ class PastDBEventMetadataController extends EntityDefaultMetadataController {
     // The timestamp should be rendered/shown as a date.
     $prop['timestamp']['type'] = 'date';
     $prop['severity']['options list'] = 'past_event_severities';
+    $prop['uid'] = array(
+      'label' => t('User'),
+      'type' => 'user',
+      'description' => t('The user who triggered the event.'),
+      'setter callback' => 'entity_property_verbatim_set',
+      'schema field' => 'uid',
+    );
 
     return $info;
   }
@@ -222,10 +232,10 @@ class PastDBEventArgumentMetadataController extends EntityDefaultMetadataControl
     $info = parent::entityPropertyInfo();
 
     $properties = &$info[$this->type]['properties'];
-    
+
     // Link the event id property to the corresponding event entity.
     $properties['event_id']['type'] = 'past_event';
-    
+
     return $info;
   }
 }
@@ -242,7 +252,7 @@ class PastDBEventDataMetadataController extends EntityDefaultMetadataController 
     $info = parent::entityPropertyInfo();
 
     $properties = &$info[$this->type]['properties'];
-    
+
     // Link the argument id property to the corresponding argument entity.
     $properties['argument_id']['type'] = 'past_event_argument';
 

@@ -104,6 +104,8 @@ class PastTest extends DrupalWebTestCase {
    * Tests if the watchdog replacement works as expected.
    */
   public function testWatchdogReplacement() {
+    global $user;
+
     // First enable watchdog logging.
     variable_set('past_log_watchdog', 1);
     $my_machine_name = 'test_watchdog';
@@ -116,6 +118,10 @@ class PastTest extends DrupalWebTestCase {
     $this->assertEqual(WATCHDOG_INFO, $event->getSeverity());
     $this->assertEqual(1, count($event->getArguments()));
     $this->assertNotNull($event->getArgument('watchdog_args'));
+
+    // Note that here we do not create a test user but use the user that has
+    // triggered the test as this is the user captured in the watchdog().
+    $this->assertEqual($user->uid, $event->getUid());
 
     $msg = 'something new';
     $nice_url = 'http://md-systems.ch';
@@ -143,6 +149,10 @@ class PastTest extends DrupalWebTestCase {
   * Tests the disabled exception handler.
   */
   public function testExceptionHandler() {
+    // Create user to test logged uid.
+    $account = $this->drupalCreateUser();
+    $this->drupalLogin($account);
+
     // Let's produce an exception, the exception handler is disabled by default.
     $this->drupalGet('past_trigger_error/Exception');
     $this->assertText(t('The website encountered an unexpected error. Please try again later.'));
@@ -166,12 +176,17 @@ class PastTest extends DrupalWebTestCase {
     $this->assertEqual(1, count($event->getArguments()));
     $data = $event->getArgument('exception')->getData();
     $this->assertTrue(array_key_exists('backtrace', $data));
+    $this->assertEqual($account->uid, $event->getUid());
   }
 
   /*
   * Tests the shutdown function.
   */
   public function testShutdownFunction() {
+    // Create user to test logged uid.
+    $account = $this->drupalCreateUser();
+    $this->drupalLogin($account);
+
     // Let's produce an exception, the exception handler is disabled by default.
     $this->drupalGet('past_trigger_error/E_ERROR');
 
@@ -185,6 +200,7 @@ class PastTest extends DrupalWebTestCase {
     $this->assertEqual('Cannot use object of type stdClass as array', $event->getMessage());
     $data = $event->getArgument('error')->getData();
     $this->assertEqual($data['type'], E_ERROR);
+    $this->assertEqual($account->uid, $event->getUid());
   }
 
   /**

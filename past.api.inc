@@ -181,6 +181,25 @@ interface PastEventInterface {
   public function setTimestamp($timestamp);
 
   /**
+   * Sets Drupal user id.
+   *
+   * @param int $uid
+   *   Drupal user id.
+   *
+   * @return PastEventInterface
+   *   The current object.
+   */
+  public function setUid($uid);
+
+  /**
+   * Gets Drupal user id.
+   *
+   * @return int
+   *   Drupal user id.
+   */
+  public function getUid();
+
+  /**
    * Returns the timestamp when the event happened.
    *
    * @return integer
