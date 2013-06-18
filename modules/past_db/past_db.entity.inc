@@ -109,7 +109,7 @@ class PastEvent extends Entity implements PastEventInterface {
   }
 
   public function getUid() {
-    return $this->uid;
+    return (int)$this->uid;
   }
 
   public function id() {
@@ -204,6 +204,13 @@ class PastEvent extends Entity implements PastEventInterface {
       '#type' => 'item',
       '#title' => t('Date'),
       '#markup' => format_date($this->getTimestamp(), 'long'),
+    );
+
+    $account = user_load($this->getUid());
+    $content['user'] = array(
+      '#type' => 'item',
+      '#title' => t('User'),
+      '#markup' => theme('username', array('account' => $account)),
     );
 
     // show all arguments in a vertical_tab

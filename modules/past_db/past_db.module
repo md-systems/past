@@ -246,3 +246,44 @@ function past_db_entity_past_event_type_delete($entity) {
   field_attach_delete_bundle('past_event', $entity->type);
 }
 
+/**
+ * Implements hook_field_extra_fields().
+ */
+function past_db_field_extra_fields() {
+  $extra['past_event']['past_event'] = array(
+    'display' => array(
+      'message' => array(
+        'label' => t('Message'),
+        'description' => t('The event log message'),
+        'weight' => 0,
+      ),
+      'module' => array(
+        'label' => t('Module'),
+        'description' => t('Module which triggered the event.'),
+        'weight' => 1,
+      ),
+      'machine_name' => array(
+        'label' => t('Machine name'),
+        'description' => t('The event machine name.'),
+        'weight' => 2,
+      ),
+      'timestamp' => array(
+        'label' => t('Event time'),
+        'description' => t('The time when the event occurred.'),
+        'weight' => 3,
+      ),
+      'user' => array(
+        'label' => t('User'),
+        'description' => t('The user that triggered the event.'),
+        'weight' => 4,
+      ),
+      'arguments' => array(
+        'label' => t('Arguments'),
+        'description' => t('The event arguments.'),
+        'weight' => 5,
+      ),
+    ),
+  );
+
+  return $extra;
+}
