@@ -254,7 +254,7 @@ function past_db_field_extra_fields() {
     'display' => array(
       'message' => array(
         'label' => t('Message'),
-        'description' => t('The event log message'),
+        'description' => t('The event log message.'),
         'weight' => 0,
       ),
       'module' => array(
