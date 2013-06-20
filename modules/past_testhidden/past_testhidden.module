@@ -48,7 +48,11 @@ function past_testhidden_errors() {
  *
  * @param string $type
  *   Error type.
+ *
+ * @return string
+ *   Returns string to get visual.
  */
 function past_testhidden_trigger_error($type) {
   require_once drupal_get_path('module', 'past_testhidden') . '/errors/past.' . $type . '.inc';
+  return 'hello';
 }

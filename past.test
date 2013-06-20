@@ -203,6 +203,39 @@ class PastTest extends DrupalWebTestCase {
     $this->assertEqual($account->uid, $event->getUid());
   }
 
+  public function testErrors() {
+    variable_set('past_log_watchdog', 1);
+
+    $this->drupalGet('past_trigger_error/E_COMPILE_ERROR');
+    $event = $this->getLastEventByMachinename('php');
+    $this->assertTrue(strpos($event->getMessage(), 'Warning: require_once') !== FALSE);
+
+    $this->drupalGet('past_trigger_error/E_COMPILE_WARNING');
+    $event = $this->getLastEventByMachinename('php');
+    $this->assertTrue(strpos($event->getMessage(), 'Warning: include_once') !== FALSE);
+
+    $this->drupalGet('past_trigger_error/E_DEPRECATED');
+    $event = $this->getLastEventByMachinename('php');
+    $this->assertTrue(strpos($event->getMessage(), 'Deprecated function: Function call_user_method() is deprecated') !== FALSE);
+
+    $this->drupalGet('past_trigger_error/E_NOTICE');
+    $event = $this->getLastEventByMachinename('php');
+    $this->assertTrue(strpos($event->getMessage(), 'Notice: Undefined variable') !== FALSE);
+
+    $this->drupalGet('past_trigger_error/E_RECOVERABLE_ERROR');
+    $event = $this->getLastEventByMachinename('php');
+    $this->assertTrue(strpos($event->getMessage(), 'Recoverable fatal error') !== FALSE);
+
+    // @todo - enable when #2021877 will be fixed.
+    // $this->drupalGet('past_trigger_error/E_STRICT');
+    // $event = $this->getLastEventByMachinename('php');
+    // $this->assertTrue(strpos($event->getMessage(), 'Strict warning: Declaration of') !== FALSE);
+
+    $this->drupalGet('past_trigger_error/E_WARNING');
+    $event = $this->getLastEventByMachinename('php');
+    $this->assertTrue(strpos($event->getMessage(), 'Warning: fopen') !== FALSE);
+  }
+
   /**
    * Overrides DrupalWebTestCase::curlHeaderCallback().
    *

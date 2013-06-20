@@ -174,7 +174,6 @@ function past_watchdog(array $log_entry) {
       // Format watchdog message with array variables as placeholders.
       $message = format_string($log_entry['message'], $log_entry['variables']);
     }
-
     // The past message is expected to be in plain text, remove HTML tags and
     // decode entities.
     $event = past_event_create('watchdog', $log_entry['type'], html_entity_decode(strip_tags($message), ENT_QUOTES));

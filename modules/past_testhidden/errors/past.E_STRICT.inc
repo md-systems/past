@@ -2,7 +2,7 @@
 // Define a class with method that accepts
 // one argument.
 class ParentClass {
-  function myMethod($args = array()) {
+  function myMethod($args) {
 
   }
 }
