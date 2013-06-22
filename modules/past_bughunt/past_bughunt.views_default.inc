@@ -119,14 +119,14 @@ function past_bughunt_views_default_views() {
     'rules_component::rules_mass_flag_as_done' => array(
       'selected' => 1,
       'postpone_processing' => 0,
-      'skip_confirmation' => 0,
+      'skip_confirmation' => 1,
       'override_label' => 0,
       'label' => '',
     ),
     'rules_component::rules_mark_as_todo' => array(
       'selected' => 0,
       'postpone_processing' => 0,
-      'skip_confirmation' => 0,
+      'skip_confirmation' => 1,
       'override_label' => 0,
       'label' => '',
     ),
@@ -388,14 +388,14 @@ function past_bughunt_views_default_views() {
     'rules_component::rules_mass_flag_as_done' => array(
       'selected' => 0,
       'postpone_processing' => 0,
-      'skip_confirmation' => 0,
+      'skip_confirmation' => 1,
       'override_label' => 0,
       'label' => '',
     ),
     'rules_component::rules_mark_as_todo' => array(
       'selected' => 1,
       'postpone_processing' => 0,
-      'skip_confirmation' => 0,
+      'skip_confirmation' => 1,
       'override_label' => 0,
       'label' => '',
     ),
