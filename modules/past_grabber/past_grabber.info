@@ -1,5 +1,6 @@
 name=Past Log Grabber
 description=Searches for error log entries in the server logs and logs them as Past events.
+package = Logging
 core=7.x
 
 dependencies[]=past

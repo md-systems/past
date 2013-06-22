@@ -1,5 +1,6 @@
 name=Past Database Backend
 description=Provides a database implementation of the past event API.
+package = Logging
 core=7.x
 
 dependencies[] = past
