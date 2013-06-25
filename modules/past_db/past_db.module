@@ -252,7 +252,8 @@ function past_db_entity_past_event_type_delete($entity) {
 function past_db_field_extra_fields() {
   $extra = array();
 
-  foreach(entity_get_info('past_event') as $key => $bundle) {
+  $info = entity_get_info('past_event');
+  foreach($info['bundles'] as $key => $bundle) {
     $extra['past_event'][$key] = array(
       'display' => array(
         'message' => array(
