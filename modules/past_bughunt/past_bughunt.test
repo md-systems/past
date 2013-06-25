@@ -55,9 +55,9 @@ class PastDBBugHuntTest extends PastDBBaseTestCase {
     $this->assertFieldById('edit-rules-componentrules-mark-as-todo', t('Mark as TODO'));
 
     $this->drupalGet('admin/reports/past/todo');
-    $this->clickLink(t('Mark as Done'), 0);
-    $this->clickLink(t('Mark as Done'), 1);
-    $this->clickLink(t('Mark as Done'), 2);
+    $this->clickLink(t('Mark as done'), 0);
+    $this->clickLink(t('Mark as done'), 1);
+    $this->clickLink(t('Mark as done'), 2);
 
     $this->drupalGet('admin/reports/past/done');
     $rows = $this->xpath('//div[@class="view-content"]/div/form/div/table/tbody/tr');
