@@ -5,6 +5,7 @@
  * Contains the entity classes for Past DB.
  */
 class PastEvent extends Entity implements PastEventInterface {
+  public $event_id;
   public $module;
   public $machine_name;
   public $type;
@@ -171,8 +172,21 @@ class PastEvent extends Entity implements PastEventInterface {
     );
   }
 
+  /**
+   * Overrides Entity::defaultLabel().
+   */
   public function defaultLabel() {
-    return strip_tags($this->getMessage());
+    if (!empty($this->defaultLabel)) {
+      return $this->defaultLabel;
+    }
+
+    $this->defaultLabel = strip_tags($this->getMessage());
+
+    if (empty($this->defaultLabel)) {
+      $this->defaultLabel = t('Event #@id', array('@id' => $this->event_id));
+    }
+
+    return $this->defaultLabel;
   }
 
   /**
