@@ -81,6 +81,55 @@ class PastDBTest extends PastDBBaseTestCase {
   }
 
   /**
+   * Tests event extra fields display.
+   */
+  function testEventExtraFields() {
+    // Check for default bundle.
+    $this->drupalGet('admin/config/development/past-types');
+    $this->assertText('Machine name: past_event', 'Default bundle was found.');
+
+    // Check for extra fields display on default bundle.
+    $this->drupalGet('admin/config/development/past-types/manage/past_event/display');
+    $this->assertText(t('Message'));
+    $this->assertText(t('Module'));
+    $this->assertText(t('Machine name'));
+    $this->assertText(t('Event time'));
+    $this->assertText(t('User'));
+    $this->assertText(t('Arguments'));
+
+    // Add new bundle.
+    $edit = array(
+      'label' => 'Test bundle',
+      'type' => 'test_bundle'
+    );
+    $this->drupalPost('admin/config/development/past-types/add', $edit, t('Save past event type'));
+    $this->assertText('Machine name: ' . $edit['type'], 'Create bundle was found.');
+
+    // Check for extra fields display on default bundle.
+    $this->drupalGet('admin/config/development/past-types/manage/' . $edit['type'] . '/display');
+    $this->assertText(t('Message'));
+    $this->assertText(t('Module'));
+    $this->assertText(t('Machine name'));
+    $this->assertText(t('Event time'));
+    $this->assertText(t('User'));
+    $this->assertText(t('Arguments'));
+
+    // Create event of newly created type.
+    $values = array(
+      'bundle' => $edit['type'],
+      'message' => 'testmessage',
+      'module' => 'testmodule',
+      'machine_name' => 'testmachinename',
+    );
+    $event = entity_create('past_event', $values);
+    $event->save();
+    $this->drupalGet('admin/reports/past/' . $event->event_id);
+    $this->assertText($values['message']);
+    $this->assertText($values['module']);
+    $this->assertText($values['machine_name']);
+  }
+
+  /**
    * Tests the pas event log UI.
    */
   public function testAdminUI() {
