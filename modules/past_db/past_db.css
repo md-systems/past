@@ -1,0 +1,23 @@
+.odd.past-critical .views-field-severity,
+.odd.past-alert .views-field-severity,
+.odd.past-emergency .views-field-severity,
+.odd.past-error .views-field-severity {
+  background: #eeb9b9;
+}
+
+.even.past-critical .views-field-severity,
+.even.past-alert .views-field-severity,
+.even.past-emergency .views-field-severity,
+.even.past-error .views-field-severity {
+  background: #ee8f92;
+}
+
+.odd.past-warning .views-field-severity,
+.odd.past-notice .views-field-severity {
+  background: #eeea98;
+}
+
+.even.past-warning .views-field-severity,
+.even.past-notice .views-field-severity {
+  background: #eee560;
+}

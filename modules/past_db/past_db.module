@@ -220,6 +220,55 @@ function past_db_form_views_exposed_form_alter(&$form, $form_state, $form_id) {
 function past_db_views_api() {
   return array(
     'api' => 3,
+    'template path' => drupal_get_path('module', 'past_db') . '/themes',
+  );
+}
+
+/**
+ * Display a view as a table style.
+ */
+function past_db_preprocess_views_view_table(&$vars) {
+  // Do this only for the Past views.
+  if (strpos($vars['view']->name, 'past_event_log') === FALSE) {
+    return;
+  }
+  past_db_add_row_colors($vars);
+}
+
+/**
+ * Adds severity classes to rows.
+ *
+ * @param $vars
+ *   The variables array as passed into the theme function.
+ */
+function past_db_add_row_colors(&$vars) {
+  // Add the corresponding class to the row.
+  $class_names = past_db_severity_css_classes_map();
+  foreach ($vars['rows'] as $num => $row) {
+    if (!empty($class_names[$vars['result'][$num]->past_event_severity])) {
+      $vars['row_classes'][$num][] = $class_names[$vars['result'][$num]->past_event_severity];
+    }
+  }
+  // Add the CSS.
+  drupal_add_css(drupal_get_path('module', 'past_db') . '/past_db.css');
+}
+
+/**
+ * Getter for the severity css classes.
+ *
+ * @return array
+ *   The map of severities to css classes.
+ */
+function past_db_severity_css_classes_map() {
+  return array(
+    PAST_SEVERITY_DEBUG => 'past-debug',
+    PAST_SEVERITY_INFO => 'past-info',
+    PAST_SEVERITY_NOTICE => 'past-notice',
+    PAST_SEVERITY_WARNING => 'past-warning',
+    PAST_SEVERITY_ERROR => 'past-error',
+    PAST_SEVERITY_EMERGENCY => 'past-emergency',
+    PAST_SEVERITY_ALERT => 'past-alert',
+    PAST_SEVERITY_CRITICAL => 'past-critical',
   );
 }
 

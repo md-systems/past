@@ -116,3 +116,14 @@ function past_bughunt_entity_view($entity, $type, $view_mode, $langcode) {
     '#weight' => 100,
   );
 }
+
+/**
+ * Add special classes to the rows.
+ */
+function past_bughunt_preprocess_views_view_table(&$vars) {
+  // Do this only for the Past views.
+  if (!in_array($vars['view']->name, array('past_event_todo', 'past_event_done'))) {
+    return;
+  }
+  past_db_add_row_colors($vars);
+}

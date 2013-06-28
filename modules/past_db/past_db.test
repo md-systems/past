@@ -10,6 +10,7 @@ class PastDBBaseTestCase extends DrupalWebTestCase {
   protected $event_desc;
   protected $machine_name;
   protected $severities;
+  protected $events = array();
 
   protected function createEvents($count = 99) {
     // Set some for log creation.
@@ -27,6 +28,7 @@ class PastDBBaseTestCase extends DrupalWebTestCase {
       $event->addArgument('arg3', FALSE);
       $event->setSeverity($severity_index);
       $event->save();
+      $this->events[$event->event_id] = $event;
     }
   }
 
@@ -146,6 +148,23 @@ class PastDBTest extends PastDBBaseTestCase {
     $this->assertText($this->severities[PAST_SEVERITY_DEBUG]);
     $this->assertText($this->severities[PAST_SEVERITY_INFO]);
     $this->assertText($this->severities[PAST_SEVERITY_WARNING]);
+
+    // Test if we have correct classes for severities.
+    $class_names = past_db_severity_css_classes_map();
+    $i = 0;
+    /** @var SimpleXMLElement $row */
+    foreach ($this->xpath('//table[contains(@class, @views-table)]/tbody/tr') as $row) {
+      // Testing first 10 should be enough.
+      if ($i > 9) {
+        break;
+      }
+      $event_id = trim($row->td);
+      $event = $this->events[$event_id];
+      $class_name = $class_names[$event->severity];
+      $attributes = $row->attributes();
+      $this->assertTrue(strpos($attributes['class'], $class_name) !== FALSE);
+      $i++;
+    }
 
     // Check machine name.
     $this->assertText($this->machine_name);
