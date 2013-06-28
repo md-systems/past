@@ -27,7 +27,8 @@ class PastDBBugHuntTest extends PastDBBaseTestCase {
 
     $this->createEvents();
 
-    $admin = $this->drupalCreateUser(array('administer past', 'use Rules component rules_mass_flag_as_done', 'use Rules component rules_mark_as_todo'));
+    $admin = $this->drupalCreateUser(array('administer past', 'use Rules component rules_mass_flag_as_done', 'use Rules component rules_mark_as_todo',
+      'flag event_done', 'flag event_todo', 'unflag event_done', 'unflag event_todo'));
     $this->drupalLogin($admin);
 
     $this->drupalGet('admin/reports/past', array('query' => array('severity' => array(PAST_SEVERITY_DEBUG, PAST_SEVERITY_INFO))));

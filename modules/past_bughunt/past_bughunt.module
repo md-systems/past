@@ -22,14 +22,14 @@ function past_bughunt_views_api() {
 function past_bughunt_flag_default_flags() {
   $flags = array();
   // Exported flag: "Event done".
-  $flags['event_done'] = array (
-    'content_type' => 'past_event',
+  $flags['event_done'] = array(
+    'entity_type' => 'past_event',
     'title' => 'Event done',
     'global' => '1',
-    'types' =>
-    array (
+    'types' => array(
       0 => 'past_event',
     ),
+    'errors' => array(),
     'flag_short' => 'Mark as done',
     'flag_long' => 'Mark this event as done',
     'flag_message' => 'The event is now flagged as done',
@@ -38,32 +38,24 @@ function past_bughunt_flag_default_flags() {
     'unflag_message' => 'The done state was removed from the event',
     'unflag_denied_text' => '',
     'link_type' => 'toggle',
-    'roles' =>
-    array (
-      'flag' =>
-      array (
-        0 => '2',
-      ),
-      'unflag' =>
-      array (
-        0 => '2',
-      ),
-    ),
     'weight' => 0,
-    'show_on_entity' => 1,
+    'show_in_links' => array(),
+    'show_as_field' => FALSE,
     'show_on_form' => 0,
     'access_author' => '',
-    'api_version' => 2,
+    'show_contextual_link' => FALSE,
+    'api_version' => 3,
   );
+
   // Exported flag: "Event TODO".
-  $flags['event_todo'] = array (
-    'content_type' => 'past_event',
+  $flags['event_todo'] = array(
+    'entity_type' => 'past_event',
     'title' => 'Event TODO',
     'global' => '1',
-    'types' =>
-    array (
+    'types' => array(
       0 => 'past_event',
     ),
+    'errors' => array(),
     'flag_short' => 'Mark as TODO',
     'flag_long' => 'Mark this event as TODO',
     'flag_message' => 'The event is now flagged as TODO',
@@ -72,24 +64,15 @@ function past_bughunt_flag_default_flags() {
     'unflag_message' => 'The TODO flag was removed from the event',
     'unflag_denied_text' => '',
     'link_type' => 'toggle',
-    'roles' =>
-    array (
-      'flag' =>
-      array (
-        0 => '2',
-      ),
-      'unflag' =>
-      array (
-        0 => '2',
-      ),
-    ),
     'weight' => -10,
-    'show_on_entity' => 1,
+    'show_in_links' => array(),
+    'show_as_field' => FALSE,
     'show_on_form' => 0,
     'access_author' => '',
-    'module' => 'past_bughunt',
-    'api_version' => 2,
+    'show_contextual_link' => FALSE,
+    'api_version' => 3,
   );
+
   return $flags;
 }
 

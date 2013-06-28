@@ -5,7 +5,7 @@ core=7.x
 
 dependencies[] = past_db
 dependencies[] = views_bulk_operations
-dependencies[] = flag
+dependencies[] = flag (3.x)
 dependencies[] = rules
 dependencies[] = entityreference
 
