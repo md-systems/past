@@ -64,8 +64,7 @@ interface PastEventInterface {
    * Returns the severity of this event.
    *
    * @return integer
-   *   One of PAST_SEVERITY_DEBUG, PAST_SEVERITY_INFO, PAST_SEVERITY_WARNING and
-   *   PAST_SEVERITY_ERROR.
+   *   One of severities listed in past_event_severities().
    */
   public function getSeverity();
 
@@ -73,8 +72,7 @@ interface PastEventInterface {
    * Sets the severity of this event.
    *
    * @param integer $severity
-   *   One of PAST_SEVERITY_DEBUG, PAST_SEVERITY_INFO, PAST_SEVERITY_WARNING and
-   *   PAST_SEVERITY_ERROR.
+   *   One of severities listed in past_event_severities().
    *
    * @return PastEventInterface
    *   The current object.
