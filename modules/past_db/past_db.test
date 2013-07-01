@@ -54,7 +54,7 @@ class PastDBTest extends PastDBBaseTestCase {
   }
 
   function setUp() {
-    parent::setUp(array('views', 'past', 'past_db'));
+    parent::setUp(array('views', 'past', 'past_db', 'entityreference'));
     $admin = $this->drupalCreateUser(array('administer past'));
     $this->drupalLogin($admin);
     $this->createEvents();
@@ -129,6 +129,52 @@ class PastDBTest extends PastDBBaseTestCase {
     $this->assertText($values['message']);
     $this->assertText($values['module']);
     $this->assertText($values['machine_name']);
+  }
+
+  function testFieldability() {
+    // Add new bundle.
+    $bundle = 'test_bundle';
+    $edit = array(
+      'label' => 'Test bundle',
+      'type' => $bundle,
+    );
+    $this->drupalPost('admin/config/development/past-types/add', $edit, t('Save past event type'));
+
+    // Create an entity reference field on the bundle.
+    $field_instance = $this->addField($bundle);
+    // Check if the field shows up in field config of the bundle.
+    $this->drupalGet('admin/config/development/past-types/manage/' . $bundle . '/fields');
+    $this->assertText($field_instance['label']);
+    $this->assertText($field_instance['field_name']);
+    $this->assertText(t('Entity Reference'));
+
+    // Create an event that we can reference to.
+    $referenced_event_message = 'Referenced Event Test message';
+    $referenced_event = past_event_create('past_db', 'test_referenced_event', $referenced_event_message);
+    $referenced_event->save();
+
+    // Create an event of the bundle.
+    $values = array(
+      //'bundle' => $bundle,
+      'message' => 'testmessage',
+      'module' => 'testmodule',
+      'machine_name' => 'testmachinename',
+    );
+    $event = entity_create('past_event', $values);
+    $event->{$field_instance['field_name']}[LANGUAGE_NONE][0]['target_id'] = $referenced_event->event_id;
+    $event->type = $bundle;
+    $event->save();
+
+    // Check whether the bundle was saved correct.
+    $event = entity_load_single('past_event', $event->event_id);
+    $this->assertEqual($event->type, $bundle);
+
+    // Check if the created fields shows up on the event display.
+    $this->drupalGet('admin/reports/past/' . $event->event_id);
+    // Check field label display.
+    $this->assertText($field_instance['label']);
+    // Check field value display.
+    $this->assertText($referenced_event_message);
   }
 
   /**
@@ -215,5 +261,40 @@ class PastDBTest extends PastDBBaseTestCase {
     // Check permissions for event log.
     $this->drupalGet('admin/reports/past');
     $this->assertText(t('You are not authorized to access this page'));
+  }
+
+  protected function addField($bundle) {
+    $field_info = array(
+      'entity_types' => array('past_event'),
+      'settings' => array(
+        'target_type' => 'past_event',
+      ),
+      'field_name' => 'field_fieldtest',
+      'type' => 'entityreference',
+      'module' => 'entityreference',
+      'bundles' => array(
+        'past_event' => array(
+          0 => $bundle,
+        ),
+      ),
+    );
+    field_create_field($field_info);
+    $instance_info = array(
+      'label' => 'test entity reference',
+      'display' => array(
+        'default' => array(
+          'label' => 'above',
+          'type' => 'entityreference_label',
+          'settings' => array(
+            'link' => FALSE,
+          ),
+        ),
+      ),
+      'field_name' => 'field_fieldtest',
+      'entity_type' => 'past_event',
+      'bundle' => $bundle,
+    );
+    field_create_instance($instance_info);
+    return $instance_info;
   }
 }
