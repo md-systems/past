@@ -183,6 +183,10 @@ class PastTest extends DrupalWebTestCase {
   * Tests the shutdown function.
   */
   public function testShutdownFunction() {
+    // The shutdown error handler is on by default.
+    // Enable shutdown error capture.
+    //variable_set('past_shutdown_handling', 1);
+
     // Create user to test logged uid.
     $account = $this->drupalCreateUser();
     $this->drupalLogin($account);

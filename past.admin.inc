@@ -13,6 +13,12 @@ function past_admin_settings() {
     '#options' => drupal_map_assoc(array(86400, 604800, 604800 * 4), 'format_interval'),
     '#empty_option' => '- None -',
   );
+  $form['past_shutdown_handling'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Register PHP shutdown error handler'),
+    '#default_value' => variable_get('past_shutdown_handling', 1),
+    '#description' => t('When enabled, Past will register a shutdown handler that logs previously uncaught PHP errors.'),
+  );
   $form['past_exception_handling'] = array(
   '#type' => 'checkbox',
   '#title' => t('Register PHP exception handler'),

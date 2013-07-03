@@ -134,7 +134,9 @@ function past_init() {
     set_exception_handler('_past_exception_handler');
   }
 
-  drupal_register_shutdown_function('_past_shutdown_function');
+  if (variable_get('past_shutdown_handling', 1) == 1) {
+    drupal_register_shutdown_function('_past_shutdown_function');
+  }
 }
 
 /**
