@@ -20,10 +20,10 @@ function past_admin_settings() {
     '#description' => t('When enabled, Past will register a shutdown handler that logs previously uncaught PHP errors.'),
   );
   $form['past_exception_handling'] = array(
-  '#type' => 'checkbox',
-  '#title' => t('Register PHP exception handler'),
-  '#default_value' => variable_get('past_exception_handling', 0),
-  '#description' => t('When enabled, Past will log every exception via it\'s PHP exception handler.'),
+    '#type' => 'checkbox',
+    '#title' => t('Register PHP exception handler'),
+    '#default_value' => variable_get('past_exception_handling', 0),
+    '#description' => t('When enabled, Past will log every exception via it\'s PHP exception handler.'),
   );
   $form['past_watchdog'] = array(
     '#type' => 'fieldset',
