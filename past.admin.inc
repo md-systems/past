@@ -43,12 +43,12 @@ function past_admin_settings() {
     $severities['WATCHDOG_SEVERITY_' . $key] = $value;
   }
 
-  $form['past_watchdog']['past_backtrace_exclude'] = array(
+  $form['past_watchdog']['past_backtrace_include'] = array(
     '#type' => 'checkboxes',
-    '#default_value' => variable_get('past_backtrace_exclude', drupal_map_assoc(array('WATCHDOG_SEVERITY_' . WATCHDOG_DEBUG, 'WATCHDOG_SEVERITY_' . WATCHDOG_INFO))),
+    '#default_value' => variable_get('past_backtrace_include', _past_watchdog_severity_defaults()),
     '#options' => $severities,
-    '#title' => t('Exclude watchdog severity levels from writing backtraces'),
-    '#description' => t('A backtrace is logged for all severities that are not checked.'),
+    '#title' => t('Watchdog severity levels from writing backtraces'),
+    '#description' => t('A backtrace is logged for all severities that are checked.'),
     '#states' => array('visible' => array('input[name="past_log_watchdog"]' => array('checked' => TRUE))),
   );
 

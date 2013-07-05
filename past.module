@@ -252,12 +252,25 @@ function _past_exception_handler($exception) {
 }
 
 /**
+ * Provides the default enabled watchdog severities to include in backtrace.
+ */
+function _past_watchdog_severity_defaults() {
+  return drupal_map_assoc(array(
+    'WATCHDOG_SEVERITY_' . WATCHDOG_EMERGENCY,
+    'WATCHDOG_SEVERITY_' . WATCHDOG_ALERT,
+    'WATCHDOG_SEVERITY_' . WATCHDOG_CRITICAL,
+    'WATCHDOG_SEVERITY_' . WATCHDOG_ERROR,
+    'WATCHDOG_SEVERITY_' . WATCHDOG_NOTICE,
+  ));
+}
+
+/**
  * Ported format_backtrace from D8 and customized.
  */
 function _past_get_formatted_backtrace($severity_level, $slice = 5) {
-  $log_backtrace = variable_get('past_backtrace_exclude', drupal_map_assoc(array('WATCHDOG_SEVERITY_' . WATCHDOG_DEBUG, 'WATCHDOG_SEVERITY_' . WATCHDOG_INFO)));
+  $log_backtrace = variable_get('past_backtrace_include', _past_watchdog_severity_defaults());
   $severity_keyvalue = 'WATCHDOG_SEVERITY_' . $severity_level;
-  if (!empty($log_backtrace[$severity_keyvalue])) {
+  if (empty($log_backtrace[$severity_keyvalue])) {
     return;
   }
 

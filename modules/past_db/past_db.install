@@ -233,25 +233,25 @@ function past_db_enable() {
 }
 
 /**
- * Map PAST_SEVERITY_ values to use WATCHDOG's ones
+ * Map PAST_SEVERITY_ values to use WATCHDOG's ones.
  */
-function past_update_7000() {
+function past_db_update_7000() {
   /* PAST_SEVERITY_ERROR */
   db_update('past_event')
     ->fields(array('severity' => 3))
     ->condition('severity', 1)
     ->execute();
 
-  /* PAST_SEVERITY_WARNING */
-  db_update('past_event')
-    ->fields(array('severity' => 4))
-    ->condition('severity', 2)
-    ->execute();
-
   /* PAST_SEVERITY_INFO */
   db_update('past_event')
     ->fields(array('severity' => 6))
     ->condition('severity', 4)
+    ->execute();
+
+  /* PAST_SEVERITY_WARNING */
+  db_update('past_event')
+    ->fields(array('severity' => 4))
+    ->condition('severity', 2)
     ->execute();
 
   /* PAST_SEVERITY_DEBUG */
@@ -263,6 +263,7 @@ function past_update_7000() {
 
 /**
  * Creates past_event_type table.
+ *
  * Adds type field into past_event table.
  * Creates default past_event_type.
  */

@@ -17,3 +17,10 @@ function past_install() {
     ->fields(array('weight' => -1000))
     ->execute();
 }
+
+/**
+ * past_watchdog_exclude was inversed and renamed to past_watchdog_include.
+ */
+function past_update_7000() {
+  variable_del('past_watchdog_exclude');
+}
