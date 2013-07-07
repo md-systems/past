@@ -60,6 +60,16 @@ CONTENTS OF THIS FILE
  * Provides an UI to set events as TODO and Done.
  * Inserts a list of suggested similar events into the event detail page.
 
+ DRUSH GRABBER EXTENSION
+
+ Past Grabber is shipped with past-grab command that can parse server error log
+ files for specified error type entries and create past events for them.
+
+ drush past-grab /var/log/apache2/error.log "PHP Fatal error" --count=100
+
+ The above command will scan the file on provided path, parse out PHP Fatal
+ error entries and process them into past events.
+
  REQUIREMENTS
  ------------
 
