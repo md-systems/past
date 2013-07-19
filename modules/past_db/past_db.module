@@ -238,6 +238,8 @@ function past_db_preprocess_views_view_table(&$vars) {
 /**
  * Adds severity classes to rows.
  *
+ * This works only if the field past_event_severity is added to the view.
+ *
  * @param $vars
  *   The variables array as passed into the theme function.
  */
@@ -245,7 +247,7 @@ function past_db_add_row_colors(&$vars) {
   // Add the corresponding class to the row.
   $class_names = past_db_severity_css_classes_map();
   foreach ($vars['rows'] as $num => $row) {
-    if (!empty($class_names[$vars['result'][$num]->past_event_severity])) {
+    if (!empty($vars['result'][$num]->past_event_severity) && !empty($class_names[$vars['result'][$num]->past_event_severity])) {
       $vars['row_classes'][$num][] = $class_names[$vars['result'][$num]->past_event_severity];
     }
   }
