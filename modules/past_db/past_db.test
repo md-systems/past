@@ -50,6 +50,9 @@ class PastDBTest extends PastDBBaseTestCase {
       'name' => 'Past DB tests',
       'description' => 'Tests for DB backend of the Past module.',
       'group' => 'Past',
+      'dependencies' => array(
+        'entityreference',
+      ),
     );
   }
 
