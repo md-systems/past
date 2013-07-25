@@ -5,6 +5,9 @@
  * Main bootstrap file for past_grabber.
  */
 
+/**
+ * The grabber will look for these errors only by default.
+ */
 define('PAST_GRABBER_DEFAULT_TYPE', 'PHP Parse error');
 
 /**

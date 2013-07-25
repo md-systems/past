@@ -258,24 +258,33 @@ class PastGrabberTest extends DrupalWebTestCase {
 }
 
 /**
- * Fake drush function drush_get_option().
+ * Fake required drush environment if origin of test run is not drush.
  *
  * Drush is no module. We can't load it.
- * Just return default option value.
  */
-function drush_get_option($option, $default = NULL, $context = NULL) {
-  return $default;
-}
+if (!function_exists('drush_get_option')) {
+  /**
+   * Fake drush function drush_get_option().
+   *
+   * @return string
+   *   Default option value.
+   */
+  function drush_get_option($option, $default = NULL, $context = NULL) {
+    return $default;
+  }
 
-/**
- * Fake drush function drush_print().
- */
-function drush_print($message = '', $indent = 0) {
-}
+  /**
+   * Fake drush function drush_print().
+   */
+  function drush_print($message = '', $indent = 0) {
+  }
 
-/**
- * Fake drush function dt().
- */
-function dt($string, $args = array()) {
-  return t($string, $args);
+  /**
+   * Fake drush function dt().
+   *
+   * Pass call to t().
+   */
+  function dt($string, $args = array()) {
+    return t($string, $args);
+  }
 }

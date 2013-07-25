@@ -37,10 +37,10 @@ function past_grabber_drush_command() {
  * Will run grabber for provided error log file.
  */
 function past_grabber_drush_grab($path = NULL, $type = NULL) {
-  if ($path===NULL) {
+  if ($path === NULL) {
     $path = variable_get('past_grabber_file_path');
   }
-  if ($type===NULL) {
+  if ($type === NULL) {
     $type = PAST_GRABBER_DEFAULT_TYPE;
   }
 
