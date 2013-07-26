@@ -152,6 +152,7 @@ function past_db_schema() {
       'value' => array(
         'description' => 'The value of this data item',
         'type' => 'text',
+        'size' => 'medium',
       ),
     ),
     'primary key' => array('data_id'),
@@ -362,4 +363,15 @@ function past_db_update_7002() {
       'description' => 'The {users}.uid of the user who triggered the event.',
     ));
   }
+}
+
+/**
+ * Increase size of the data value column.
+ */
+function past_db_update_7003() {
+  db_change_field('past_event', 'value', 'value', array(
+    'description' => 'The value of this data item',
+    'type' => 'text',
+    'size' => 'medium',
+  ));
 }
