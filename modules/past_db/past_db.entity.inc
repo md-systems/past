@@ -224,7 +224,7 @@ class PastEvent extends Entity implements PastEventInterface {
     $content['user'] = array(
       '#type' => 'item',
       '#title' => t('User'),
-      '#markup' => check_plain(theme('username', array('account' => $account))),
+      '#markup' => theme('username', array('account' => $account)),
     );
 
     // show all arguments in a vertical_tab
