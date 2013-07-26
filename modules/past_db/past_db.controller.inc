@@ -259,3 +259,25 @@ class PastDBEventDataMetadataController extends EntityDefaultMetadataController 
     return $info;
   }
 }
+
+/**
+ * Controller for past_event views data.
+ */
+class PastDBEventViewsController extends EntityDefaultViewsController {
+
+  public function views_data() {
+    $data = parent::views_data();
+    $data['past_event']['argument_data'] = array(
+      'title' => t('Argument data'),
+      'help' => t('Display or filter by a specific argument data'),
+      'real field' => 'value',
+      'field' => array(
+        'handler' => 'past_db_handler_field_event_argument_data',
+      ),
+      'filter' => array(
+        'handler' => 'past_db_handler_filter_event_argument_value',
+      ),
+    );
+    return $data;
+  }
+}

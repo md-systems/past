@@ -14,7 +14,7 @@ function past_db_entity_info() {
     'fieldable' => TRUE,
     'controller class' => 'PastEventController',
     'metadata controller class' => 'PastDBEventMetadataController',
-    //'views controller class' => 'PastDBEventViewsController',
+    'views controller class' => 'PastDBEventViewsController',
     'entity class' => 'PastEvent',
     'base table' => 'past_event',
     'uri callback' => 'entity_class_uri',
