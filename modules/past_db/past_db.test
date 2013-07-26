@@ -256,6 +256,12 @@ class PastDBTest extends PastDBBaseTestCase {
     $this->assertText('arg3');
     $this->assertText('First Argument');
 
+    // Check events with a float argument.
+    $event = past_event_save('past_db', 'float_test', 'Float test', array('float' => 3.14));
+    $this->drupalGet('admin/reports/past/' . $event->id());
+    $this->assertText('Float test');
+    $this->assertText('3.14');
+
     $this->drupalLogout();
 
     // Check permissions for detail page.

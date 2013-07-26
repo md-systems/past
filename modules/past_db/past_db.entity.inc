@@ -307,7 +307,7 @@ class PastEventArgument extends Entity implements PastEventArgumentInterface {
         $return[$row->name] = $row->serialized ? unserialize($row->value) : $row->value;
       }
     }
-    elseif (!in_array($this->type, array('integer', 'string', 'float', 'boolean'))) {
+    elseif (!in_array($this->type, array('integer', 'string', 'double', 'boolean'))) {
       $return = new stdClass();
       foreach ($result as $row) {
         $return->{$row->name} = $row->serialized ? unserialize($row->value) : $row->value;
