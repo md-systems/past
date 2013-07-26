@@ -202,17 +202,17 @@ class PastEvent extends Entity implements PastEventInterface {
     $content['message'] = array(
       '#type' => 'item',
       '#title' => t('Message'),
-      '#markup' => $this->getMessage(),
+      '#markup' => check_plain($this->getMessage()),
     );
     $content['module'] = array(
       '#type' => 'item',
       '#title' => t('Module'),
-      '#markup' => $this->getModule(),
+      '#markup' => check_plain($this->getModule()),
     );
     $content['machine_name'] = array(
       '#type' => 'item',
       '#title' => t('Machine name'),
-      '#markup' => $this->getMachineName(),
+      '#markup' => check_plain($this->getMachineName()),
     );
     $content['timestamp'] = array(
       '#type' => 'item',
@@ -224,7 +224,7 @@ class PastEvent extends Entity implements PastEventInterface {
     $content['user'] = array(
       '#type' => 'item',
       '#title' => t('User'),
-      '#markup' => theme('username', array('account' => $account)),
+      '#markup' => check_plain(theme('username', array('account' => $account))),
     );
 
     // show all arguments in a vertical_tab
