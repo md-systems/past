@@ -35,6 +35,10 @@ class PastEventController extends EntityAPIController {
   }
 
   public function save($entity, DatabaseTransaction $transaction = NULL) {
+    // Limit length of message.
+    if (strlen($entity->message) > 255) {
+      $entity->message = substr($entity->message, 0, 250) . '...';
+    }
     parent::save($entity, $transaction);
 
     // Save the arguments.
