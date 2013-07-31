@@ -230,10 +230,11 @@ function past_db_views_api() {
  * Display a view as a table style.
  */
 function past_db_preprocess_views_view_table(&$vars) {
-  // Do this only for the Past views.
-  if (strpos($vars['view']->name, 'past_event_log') === FALSE) {
+  // Do this only for the Past views that have a severity field.
+  if (empty($vars['view']->field['severity'])) {
     return;
   }
+  $vars['classes_array'][] = 'past-severity-colors';
   past_db_add_row_colors($vars);
 }
 
