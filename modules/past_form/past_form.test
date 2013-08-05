@@ -605,6 +605,17 @@ class PastFormTest extends DrupalWebTestCase {
     $event = $this->getLastEventByMachinename('submit');
     $event_to_be = $this->getEventToBe('submit', $form_id, $register_button_value);
     $this->assertSameEvent($event, $event_to_be, $form_id, $register_button_value, $register_edit);
+
+    // Test that additional spaces and special characters don't confuse the form
+    // ID check.
+    $form_id = 'past_testhidden_form_empty_submit_array';
+    variable_set('past_form_log_form_ids', ' ' . $form_id . " \r\n other_form");
+    $this->drupalGet($form_id);
+    $this->drupalPost(NULL, $edit, $button_value);
+
+    $event = $this->getLastEventByMachinename('submit');
+    $event_to_be = $this->getEventToBe('submit', $form_id, $button_value);
+    $this->assertSameEvent($event, $event_to_be, $form_id, $button_value);
   }
 
   /**
