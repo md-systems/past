@@ -12,7 +12,7 @@ class PastDBBugHuntTest extends PastDBBaseTestCase {
       'name' => 'Past Bughunt tests',
       'description' => 'Past Bughunt tests',
       'group' => 'Past',
-      'dependencies' => array('past_db', 'views_bulk_operations', 'flag', 'rules', 'entityreference')
+      'dependencies' => array('past_db', 'views_bulk_operations', 'flagisbroken', 'rules', 'entityreference')
     );
   }
 
