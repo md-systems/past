@@ -47,7 +47,7 @@ class PastFormTest extends DrupalWebTestCase {
    */
   function testViewsExposedForm() {
     // Check that views_exposed_filter is not recorded.
-    $admin = $this->drupalCreateUser(array('administer past'));
+    $admin = $this->drupalCreateUser(array('view past reports'));
     $this->drupalLogin($admin);
 
     // The login event is logged.

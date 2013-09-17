@@ -58,7 +58,7 @@ class PastDBTest extends PastDBBaseTestCase {
 
   function setUp() {
     parent::setUp(array('views', 'past', 'past_db', 'entityreference'));
-    $admin = $this->drupalCreateUser(array('administer past'));
+    $admin = $this->drupalCreateUser(array('administer past', 'view past reports'));
     $this->drupalLogin($admin);
     $this->createEvents();
   }

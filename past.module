@@ -162,6 +162,9 @@ function past_permission() {
     'administer past' => array(
       'title' => t('Administer Past'),
     ),
+    'view past reports' => array(
+      'title' => t('View past reports'),
+    ),
   );
 }
 
