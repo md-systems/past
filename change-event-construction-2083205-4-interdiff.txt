@@ -1,0 +1,32 @@
+diff --git a/README.txt b/README.txt
+index b4a3198..042a847 100644
+--- a/README.txt
++++ b/README.txt
+@@ -61,7 +61,7 @@ CONTENTS OF THIS FILE
+  settings.php. The value of the variable is the wrapper function in your .module
+  file, for example:
+ 
+- $conf['past_backend_event_getter'] = 'past_event_example_backend_create_event';
++ $conf['past_backend'] = 'past_event_example_backend_create_event';
+ 
+  EVENTS MANAGEMENT
+ 
+diff --git a/past.module b/past.module
+index b1dede7..9cd7bb1 100644
+--- a/past.module
++++ b/past.module
+@@ -75,11 +75,11 @@ function past_event_save($module, $machine_name, $message, array $arguments = ar
+  * @see past_event_save()
+  */
+ function past_event_create($module, $machine_name, $message = NULL, array $options = array()) {
+-  $past_backend_event_getter = variable_get('past_backend_event_getter', 'past_db_create_event');
+-  if (!function_exists($past_backend_event_getter)) {
++  $past_backend_factory = variable_get('past_backend', 'past_db_create_event');
++  if (!function_exists($past_backend_factory)) {
+     return NULL;
+   }
+-  $event = $past_backend_event_getter();
++  $event = $past_backend_factory();
+ 
+   /* @var $event PastEventInterface */
+   $event->setModule($module);

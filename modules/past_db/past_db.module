@@ -346,3 +346,13 @@ function past_db_field_extra_fields() {
 
   return $extra;
 }
+
+/**
+ * Returns an event object.
+ *
+ * @return PastEventInterface
+ *   A new Past event instance.
+ */
+function past_db_create_event() {
+  return entity_create('past_event', array());
+}

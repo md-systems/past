@@ -52,6 +52,17 @@ CONTENTS OF THIS FILE
  error logging utility as well as messaging backend for capturing events from
  i.e. ecommerce transactions.
 
+ Past backends are pluggable, if you want to write your own you will have to add
+ a new module that contains two classes that implement PastEventInterface and
+ PastEventArgumentInterface. In your module file add a wrapper function that
+ returns an event instance of your class.
+
+ Further you will have to switch to the backend by setting a variable in your
+ settings.php. The value of the variable is the wrapper function in your .module
+ file, for example:
+
+ $conf['past_backend'] = 'past_event_example_backend_create_event';
+
  EVENTS MANAGEMENT
 
  Past Bughunt is a module that provides a simple workflow to manage individual
