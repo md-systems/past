@@ -241,6 +241,14 @@ class PastTest extends DrupalWebTestCase {
   }
 
   /**
+   * Test that watchdog logs of type 'php' don't produce notices.
+   */
+  public function testErrorArray() {
+    variable_set('past_log_watchdog', TRUE);
+    watchdog('php', 'This is some test watchdog log of type php', array());
+  }
+
+  /**
    * Overrides DrupalWebTestCase::curlHeaderCallback().
    *
    * Does not report errors from the client site as exceptions as we are

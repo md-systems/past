@@ -183,7 +183,10 @@ function past_watchdog(array $log_entry) {
 
     if ($log_entry['type'] == 'php') {
       // We handle an error report.
-      $event->addArgument('php', _past_error_array_to_event($log_entry['variables']));
+      $context = _past_error_array_to_event($log_entry['variables']);
+      if (!empty($context)) {
+        $event->addArgument('php', $context);
+      }
     }
 
     if ($backtrace = _past_get_formatted_backtrace($log_entry['severity'])) {
@@ -317,13 +320,17 @@ function _past_get_formatted_backtrace($severity_level, $slice = 5) {
  */
 function _past_error_array_to_event($error) {
   // Make the output of the exception nicer (remove special chars).
-  $context = array();
-  $context['type'] = $error['%type'];
-  $context['function'] = $error['%function'];
-  $context['file_line'] = $error['%file'] . ':' . $error['%line'];
-  $context['severity_level'] = $error['severity_level'];
-
-  return $context;
+  if (isset($error['%type']) && isset($error['%function']) && isset($error['%file']) && isset($error['%line']) && isset($error['severity_level'])) {
+    $context = array();
+    $context['type'] = $error['%type'];
+    $context['function'] = $error['%function'];
+    $context['file_line'] = $error['%file'] . ':' . $error['%line'];
+    $context['severity_level'] = $error['severity_level'];
+    return $context;
+  }
+  else {
+    return NULL;
+  }
 }
 
 /**
