@@ -373,7 +373,13 @@ function _past_shutdown_function() {
   }
   $user_args['hostname'] = substr($_SERVER['REMOTE_ADDR'], 0, 128);
   $event->addArgument('user_args', $user_args);
-  $event->save();
+  try {
+    $event->save();
+  }
+  catch (Exception $exception) {
+    // If for some reason the saving fails here, log to the apache error log.
+    error_log('Failed to save past event with message ' . $error['message'] . ' in past shutdown handler.');
+  }
 }
 
 /**
