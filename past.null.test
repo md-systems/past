@@ -1,0 +1,50 @@
+<?php
+
+/*
+ * @file
+ * Contains PastTestNullImplementation
+ */
+
+/**
+ * Tests the Past null implementation.
+ */
+class PastNullTestTestNull extends DrupalWebTestCase {
+
+  protected $profile = 'testing';
+
+  static function getInfo() {
+    return array(
+      'name' => 'Past Null Event implementation tests',
+      'description' => 'Tests the behavior of past when no valid backend is configured.',
+      'group' => 'Past',
+    );
+  }
+
+  function setUp() {
+    parent::setUp(array('past'));
+  }
+
+  /**
+   * Tests that past_event_create() returns PastEventUll when misconfigured.
+   */
+  function testMissingBackend() {
+    $event = past_event_create('past', 'test', 'A test log entry');
+    $this->assertTrue($event instanceof PastEventNull);
+
+    // Make sure that fluent calls are supported.
+    $event->setParentEventId('')
+    ->setSeverity(-1)
+    ->setSessionId('')
+    ->setMessage('')
+    ->setTimestamp(-1)
+    ->setMachineName('')
+    ->setUid(-1);
+
+    $array_argument = array('data' => array('sub' => 'value'), 'something' => 'else');
+    $event->addArgument('first', $array_argument);
+    $event->addArgument('second', 'simple');
+
+    $event->addArgument('third', 'chaining')
+    ->getKey();
+  }
+}
