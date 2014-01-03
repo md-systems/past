@@ -14,3 +14,5 @@ files[] = past_db.test
 ; Views integration and handlers
 files[] = views/handlers/past_db_handler_field_event_argument_data.inc
 files[] = views/handlers/past_db_handler_filter_event_argument_value.inc
+files[] = views/handlers/past_db_handler_field_trace_user.inc
+

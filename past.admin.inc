@@ -23,7 +23,13 @@ function past_admin_settings() {
     '#type' => 'checkbox',
     '#title' => t('Register PHP exception handler'),
     '#default_value' => variable_get('past_exception_handling', 0),
-    '#description' => t('When enabled, Past will log every exception via it\'s PHP exception handler.'),
+    '#description' => t('When enabled, Past will log every exception via its PHP exception handler.'),
+  );
+  $form['past_log_session_id'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Log the session id'),
+    '#default_value' => variable_get('past_log_session_id', 1),
+    '#description' => t("When enabled, Past will log the user's session id and entries can be traced by session id."),
   );
   $form['past_watchdog'] = array(
     '#type' => 'fieldset',

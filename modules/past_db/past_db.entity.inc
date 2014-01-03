@@ -11,6 +11,7 @@ class PastEvent extends Entity implements PastEventInterface {
   public $type;
   public $message;
   public $severity;
+  public $session_id;
   public $timestamp;
   public $parent_event_id;
   public $uid;
@@ -101,6 +102,10 @@ class PastEvent extends Entity implements PastEventInterface {
     return $this->severity;
   }
 
+  public function getSessionId() {
+    return $this->session_id;
+  }
+
   public function getMessage() {
     return $this->message;
   }
@@ -124,6 +129,11 @@ class PastEvent extends Entity implements PastEventInterface {
 
   public function setSeverity($severity) {
     $this->severity = $severity;
+    return $this;
+  }
+
+  public function setSessionId($session_id) {
+    $this->session_id = $session_id;
     return $this;
   }
 
@@ -219,12 +229,10 @@ class PastEvent extends Entity implements PastEventInterface {
       '#title' => t('Date'),
       '#markup' => format_date($this->getTimestamp(), 'long'),
     );
-
-    $account = user_load($this->getUid());
-    $content['user'] = array(
+    $content['actor'] = array(
       '#type' => 'item',
-      '#title' => t('User'),
-      '#markup' => theme('username', array('account' => $account)),
+      '#title' => t('Actor'),
+      '#markup' => $this->getActorDropbutton(FALSE),
     );
 
     // show all arguments in a vertical_tab
@@ -252,6 +260,59 @@ class PastEvent extends Entity implements PastEventInterface {
 
     return entity_get_controller($this->entityType)->buildContent($this, $view_mode, $langcode, $content);
   }
+
+  /**
+   * Returns the actor links as a ctools dropbutton.
+   *
+   * @param int $truncate
+   *   (optional) Truncate the session ID in case no user exists to the given
+   *   length. FALSE to disable, defaults to 20·
+   * @param string $uri
+   *   (optional) The uri to be used for the trace links, defaults to the
+   *   extended view.
+   *
+   * @return sting
+   *   The rendered links.
+   */
+  public function getActorDropbutton($truncate = 20, $uri = 'admin/reports/past/extended') {
+    $links = array();
+    $account = user_load((int) $this->getUid());
+    $sid = $this->getSessionId();
+    // If we have a user, display a dropbutton with link to the user profile and
+    // a trace link and optionally a trace by session link.
+    if ($account && $account->uid > 0) {
+      $links[] = array(
+        'title' => format_username($account),
+        'href' => drupal_get_path_alias('user/' . $account->uid),
+        'attributes' => array('title' => t('View profile')),
+      );
+      $links[] = array(
+        'title' => t('Trace: !user', array('!user' => format_username($account))),
+        'href' => $uri,
+        'query' => array('uid' => $account->name),
+      );
+      if (!empty($sid)) {
+        $links[] = array(
+          'title' => t('Trace session: @session', array('@session' => truncate_utf8($sid, 10, FALSE, TRUE))),
+          'href' => $uri,
+          'query' => array('session_id' => $sid),
+          'attributes' => array('title' => check_plain($sid)),
+        );
+      }
+      module_load_include('inc', 'views', 'includes/admin');
+      views_ui_add_admin_css();
+      return theme('links__ctools_dropbutton', array('links' => $links));
+    }
+
+    // If we only have a session ID, display that.
+    if ($sid) {
+      $title = t('Session: @session', array('@session' => $truncate ? truncate_utf8($sid, $truncate, FALSE, TRUE) : $sid));
+      return l($title, $uri, array('query' => array('session_id' => $sid)));
+    }
+
+    return t('Unknown');
+  }
+
 
   protected function formatArgument($name, $argument) {
     $back = '';

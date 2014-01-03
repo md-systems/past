@@ -103,17 +103,30 @@ function past_db_views_default_views() {
   $handler->display->display_options['fields']['message']['alter']['max_length'] = '100';
   $handler->display->display_options['fields']['message']['alter']['strip_tags'] = TRUE;
   $handler->display->display_options['fields']['message']['alter']['trim'] = TRUE;
-  /* Field: Past Event: Timestamp */
-  $handler->display->display_options['fields']['timestamp']['id'] = 'timestamp';
-  $handler->display->display_options['fields']['timestamp']['table'] = 'past_event';
-  $handler->display->display_options['fields']['timestamp']['field'] = 'timestamp';
-  $handler->display->display_options['fields']['timestamp']['date_format'] = 'short';
   /* Field: User: Name */
   $handler->display->display_options['fields']['name']['id'] = 'name';
   $handler->display->display_options['fields']['name']['table'] = 'users';
   $handler->display->display_options['fields']['name']['field'] = 'name';
   $handler->display->display_options['fields']['name']['relationship'] = 'uid';
   $handler->display->display_options['fields']['name']['label'] = 'User';
+  $handler->display->display_options['fields']['name']['exclude'] = TRUE;
+  /* Field: Past Event: Session_id */
+  $handler->display->display_options['fields']['session_id']['id'] = 'session_id';
+  $handler->display->display_options['fields']['session_id']['table'] = 'past_event';
+  $handler->display->display_options['fields']['session_id']['field'] = 'session_id';
+  $handler->display->display_options['fields']['session_id']['label'] = '';
+  $handler->display->display_options['fields']['session_id']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['session_id']['element_label_colon'] = FALSE;
+  /* Field: Past Event: Trace user */
+  $handler->display->display_options['fields']['trace_user']['id'] = 'trace_user';
+  $handler->display->display_options['fields']['trace_user']['table'] = 'past_event';
+  $handler->display->display_options['fields']['trace_user']['field'] = 'trace_user';
+  $handler->display->display_options['fields']['trace_user']['label'] = 'Actor';
+  /* Field: Past Event: Timestamp */
+  $handler->display->display_options['fields']['timestamp']['id'] = 'timestamp';
+  $handler->display->display_options['fields']['timestamp']['table'] = 'past_event';
+  $handler->display->display_options['fields']['timestamp']['field'] = 'timestamp';
+  $handler->display->display_options['fields']['timestamp']['date_format'] = 'short';
   /* Sort criterion: Past Event: Past event ID */
   $handler->display->display_options['sorts']['event_id']['id'] = 'event_id';
   $handler->display->display_options['sorts']['event_id']['table'] = 'past_event';
@@ -175,6 +188,21 @@ function past_db_views_default_views() {
     1 => 0,
     3 => 0,
   );
+  /* Filter criterion: Past Event: Session_id */
+  $handler->display->display_options['filters']['session_id']['id'] = 'session_id';
+  $handler->display->display_options['filters']['session_id']['table'] = 'past_event';
+  $handler->display->display_options['filters']['session_id']['field'] = 'session_id';
+  $handler->display->display_options['filters']['session_id']['operator'] = 'contains';
+  $handler->display->display_options['filters']['session_id']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['session_id']['expose']['operator_id'] = 'session_id_op';
+  $handler->display->display_options['filters']['session_id']['expose']['label'] = 'Session ID';
+  $handler->display->display_options['filters']['session_id']['expose']['operator'] = 'session_id_op';
+  $handler->display->display_options['filters']['session_id']['expose']['identifier'] = 'session_id';
+  $handler->display->display_options['filters']['session_id']['expose']['remember_roles'] = array(
+    2 => '2',
+    1 => 0,
+  );
+
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page_1');
@@ -212,6 +240,8 @@ function past_db_views_default_views() {
     t('Module'),
     t('Machine name'),
     t('Message'),
+    t('Actor'),
+    t('Session ID'),
     t('Timestamp'),
     t('All'),
     t('Page'),
@@ -333,17 +363,30 @@ function past_db_views_default_views() {
   $handler->display->display_options['fields']['message']['alter']['max_length'] = '100';
   $handler->display->display_options['fields']['message']['alter']['strip_tags'] = TRUE;
   $handler->display->display_options['fields']['message']['alter']['trim'] = TRUE;
-  /* Field: Past Event: Timestamp */
-  $handler->display->display_options['fields']['timestamp']['id'] = 'timestamp';
-  $handler->display->display_options['fields']['timestamp']['table'] = 'past_event';
-  $handler->display->display_options['fields']['timestamp']['field'] = 'timestamp';
-  $handler->display->display_options['fields']['timestamp']['date_format'] = 'short';
   /* Field: User: Name */
   $handler->display->display_options['fields']['name']['id'] = 'name';
   $handler->display->display_options['fields']['name']['table'] = 'users';
   $handler->display->display_options['fields']['name']['field'] = 'name';
   $handler->display->display_options['fields']['name']['relationship'] = 'uid';
   $handler->display->display_options['fields']['name']['label'] = 'User';
+  $handler->display->display_options['fields']['name']['exclude'] = TRUE;
+  /* Field: Past Event: Session_id */
+  $handler->display->display_options['fields']['session_id']['id'] = 'session_id';
+  $handler->display->display_options['fields']['session_id']['table'] = 'past_event';
+  $handler->display->display_options['fields']['session_id']['field'] = 'session_id';
+  $handler->display->display_options['fields']['session_id']['label'] = '';
+  $handler->display->display_options['fields']['session_id']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['session_id']['element_label_colon'] = FALSE;
+  /* Field: Past Event: Trace user */
+  $handler->display->display_options['fields']['trace_user']['id'] = 'trace_user';
+  $handler->display->display_options['fields']['trace_user']['table'] = 'past_event';
+  $handler->display->display_options['fields']['trace_user']['field'] = 'trace_user';
+  $handler->display->display_options['fields']['trace_user']['label'] = 'Actor';
+  /* Field: Past Event: Timestamp */
+  $handler->display->display_options['fields']['timestamp']['id'] = 'timestamp';
+  $handler->display->display_options['fields']['timestamp']['table'] = 'past_event';
+  $handler->display->display_options['fields']['timestamp']['field'] = 'timestamp';
+  $handler->display->display_options['fields']['timestamp']['date_format'] = 'short';
   /* Sort criterion: Past Event: Timestamp */
   $handler->display->display_options['sorts']['timestamp']['id'] = 'timestamp';
   $handler->display->display_options['sorts']['timestamp']['table'] = 'past_event';
@@ -456,6 +499,20 @@ function past_db_views_default_views() {
     1 => 0,
     3 => 0,
   );
+  /* Filter criterion: Past Event: Session_id */
+  $handler->display->display_options['filters']['session_id']['id'] = 'session_id';
+  $handler->display->display_options['filters']['session_id']['table'] = 'past_event';
+  $handler->display->display_options['filters']['session_id']['field'] = 'session_id';
+  $handler->display->display_options['filters']['session_id']['operator'] = 'contains';
+  $handler->display->display_options['filters']['session_id']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['session_id']['expose']['operator_id'] = 'session_id_op';
+  $handler->display->display_options['filters']['session_id']['expose']['label'] = 'Session ID';
+  $handler->display->display_options['filters']['session_id']['expose']['operator'] = 'session_id_op';
+  $handler->display->display_options['filters']['session_id']['expose']['identifier'] = 'session_id';
+  $handler->display->display_options['filters']['session_id']['expose']['remember_roles'] = array(
+    2 => '2',
+    1 => 0,
+  );
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page_1');
@@ -497,6 +554,8 @@ function past_db_views_default_views() {
     t('Argument name'),
     t('Data key'),
     t('Data value'),
+    t('Session ID'),
+    t('Actor'),
     t('Page'),
   );
 

@@ -80,6 +80,25 @@ interface PastEventInterface {
   public function setSeverity($severity);
 
   /**
+   * Returns the session id of this event.
+   *
+   * @return string
+   *   The session id.
+   */
+  public function getSessionId();
+
+  /**
+   * Sets the session id of this event.
+   *
+   * @param string $session_id
+   *   The session id.
+   *
+   * @return PastEventInterface
+   *   The current object.
+   */
+  public function setSessionId($session_id);
+
+  /**
    * Add an argument to the event.
    *
    * Each argument is identified by a key and has arbitrary data. The data is

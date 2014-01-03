@@ -27,6 +27,7 @@ class PastTest extends DrupalWebTestCase {
     $this->assertEqual('past', $event->getModule());
     $this->assertEqual('test', $event->getMachineName());
     $this->assertEqual('A test log entry', $event->getMessage());
+    $this->assertEqual(session_id(), $event->getSessionId());
     $this->assertEqual(REQUEST_TIME, $event->getTimestamp());
     $this->assertEqual(PAST_SEVERITY_INFO, $event->getSeverity());
     $this->assertEqual(array(), $event->getArguments());
@@ -143,6 +144,50 @@ class PastTest extends DrupalWebTestCase {
     $event = $this->getLastEventByMachinename($my_machine_name);
     // And still the last message should be found.
     $this->assertEqual($msg, $event->getMessage());
+  }
+
+  /*
+  * Tests the session id behavior.
+  */
+  function testSessionIdBehavior() {
+    global $user;
+
+    // Test a global user object without a session ID.
+    $user->sid = NULL;
+    past_event_save('past', 'test', 'A test log entry');
+    $event = $this->getLastEventByMachinename('test');
+    $this->assertEqual(session_id(), $event->getSessionId());
+
+    // Set a session ID on the user object.
+    $user->sid = 'session id';
+    past_event_save('past', 'test_sid', 'A test log entry');
+    $event = $this->getLastEventByMachinename('test_sid');
+    $this->assertEqual($user->sid, $event->getSessionId());
+
+    // Set a secure session ID on the user object, this should be used if
+    // present.
+    $user->ssid = 'securesession id';
+    past_event_save('past', 'test_ssid', 'A test log entry');
+    $event = $this->getLastEventByMachinename('test_ssid');
+    $this->assertEqual($user->ssid, $event->getSessionId());
+
+    variable_set('past_log_session_id', 0);
+    past_event_save('past', 'test1', 'Another test log entry');
+    $event = $this->getLastEventByMachinename('test1');
+    $this->assertEqual('', $event->getSessionId());
+
+    $event = past_event_create('past', 'test2', 'And Another test log entry');
+    $event->setSessionId('trace me');
+    $event->save();
+    $event = $this->getLastEventByMachinename('test2');
+    $this->assertEqual('trace me', $event->getSessionId());
+
+    variable_set('past_log_session_id', 1);
+    $event = past_event_create('past', 'test3', 'And Yet Another test log entry');
+    $event->setSessionId('trace me too');
+    $event->save();
+    $event = $this->getLastEventByMachinename('test3');
+    $this->assertEqual('trace me too', $event->getSessionId());
   }
 
   /*

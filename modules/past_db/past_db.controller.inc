@@ -282,6 +282,14 @@ class PastDBEventViewsController extends EntityDefaultViewsController {
         'handler' => 'past_db_handler_filter_event_argument_value',
       ),
     );
+    $data['past_event']['trace_user'] = array(
+      'title' => t('Trace user'),
+      'help' => t('Add links to sort the view by user / session id.'),
+      'real field' => 'uid',
+      'field' => array(
+        'handler' => 'past_db_handler_field_trace_user',
+      ),
+    );
     return $data;
   }
 }

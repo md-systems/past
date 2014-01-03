@@ -96,6 +96,23 @@ function past_event_create($module, $machine_name, $message = NULL, array $optio
     $event->setMessage($message);
   }
 
+  if (variable_get('past_log_session_id', 1) &&
+    !array_key_exists('session_id', $options)) {
+    // @todo move to PastEventController->create() or move other defaults here ?
+    // Add session id if not in options.
+    global $user;
+    if (!empty($user->ssid)) {
+      // HTTPS Session.
+      $event->setSessionId($user->ssid);
+    }
+    else if (!empty($user->sid)) {
+      $event->setSessionId($user->sid);
+    }
+    else {
+      $event->setSessionId(session_id());
+    }
+  }
+
   foreach ($options as $key => $value) {
     switch ($key) {
       case 'timestamp':
@@ -108,6 +125,10 @@ function past_event_create($module, $machine_name, $message = NULL, array $optio
 
       case 'uid':
         $event->setUid($value);
+        break;
+
+      case 'session_id':
+        $event->setSessionId($value);
         break;
     }
   }

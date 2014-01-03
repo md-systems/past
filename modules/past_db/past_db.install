@@ -42,6 +42,12 @@ function past_db_schema() {
         'size' => 'small',
         'not null' => TRUE,
       ),
+      'session_id' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'default' => '',
+        'description' => 'The session id of the user who triggered the event.',
+      ),
       'message' => array(
         'description' => 'The event message',
         'type' => 'text',
@@ -67,6 +73,7 @@ function past_db_schema() {
       'severity' => array('severity'),
       'module' => array('module'),
       'machine_name' => array('machine_name'),
+      'session_id' => array('session_id'),
       'type' => array('type'),
     ),
     'foreign keys' => array(
@@ -374,4 +381,18 @@ function past_db_update_7003() {
     'type' => 'text',
     'size' => 'medium',
   ));
+}
+
+/**
+ * Adds {past_event}.session_id.
+ */
+function past_db_update_7004() {
+  if (!db_field_exists('past_event', 'session_id')) {
+    db_add_field('past_event', 'session_id', array(
+      'type' => 'varchar',
+      'length' => '255',
+      'default' => '',
+      'description' => 'The session id of the user who triggered the event.',
+    ));
+  }
 }
