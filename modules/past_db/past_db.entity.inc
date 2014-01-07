@@ -39,7 +39,7 @@ class PastEvent extends Entity implements PastEventInterface {
     // Special support for exceptions, convert them to something that can be
     // stored.
     if (isset($data) && $data instanceof Exception) {
-      $data = _drupal_decode_exception($data) + array('backtrace' => $data->getTraceAsString());
+      $data = $this->decodeException($data);
     }
 
     // Remove values which were explicitly added to the exclude filter.
@@ -343,6 +343,32 @@ class PastEvent extends Entity implements PastEventInterface {
       $back .= '<div ' . $css . ' >[<strong>' . check_plain($k) . '</strong>] (<em>' . gettype($v) . '</em>): ' . $this->parseObject($v, $recursive + 1) . '</div>';
     }
     return $back;
+  }
+
+  /**
+   * Converts an exception into an array that can be easily stored.
+   *
+   * Previous/Originating exceptions are supported and put in the previous key,
+   * recursively with up to 3 previous exceptions.
+   *
+   * @param Exception $exception
+   *   The exception to decode.
+   * @param int $level
+   *   (optional) The nesting level, only used internally.
+   * @return array
+   *   An array containing the decoded exception including the backtrace.
+   */
+  protected function decodeException(Exception $exception, $level = 0) {
+    $data = _drupal_decode_exception($exception);
+    $data['backtrace'] = $exception->getTraceAsString();
+
+    // If we're not deeper than 3 levels in this method, the exception has a
+    // getPrevious() method (only exists on PHP >= 5.3) and there is a previous
+    // exception, add it to the decoded data.
+    if ($level < 3 && method_exists($exception, 'getPrevious') && $exception->getPrevious()) {
+      $data['previous'] = $this->decodeException($exception->getPrevious(), ++$level);
+    }
+    return $data;
   }
 
 }
