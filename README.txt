@@ -63,6 +63,11 @@ CONTENTS OF THIS FILE
 
  $conf['past_backend'] = 'past_event_example_backend_create_event';
 
+ Note: Sometimes an event is logged in situations where the autoloader does not
+       work. To support that, either only return an instance if the autoloader
+       works or ensure that all necessary files are loaded manually in that
+       case. See past_db_create_event().
+
  EVENTS MANAGEMENT
 
  Past Bughunt is a module that provides a simple workflow to manage individual
@@ -175,6 +180,17 @@ function YOURMODULE_event_save($module, $machine_name, $message, array $argument
  2. Use the --skip-tables-key=common arguments when executing
     drush sql-sync/dump. For further information please check the documentation
     of the commands: http://drush.ws/#sql-sync and http://drush.ws/#sql-dump
+
+ LIMITATIONS
+ -----------
+
+ Past registers handlers during hook_init(). Errors during hook_boot() and
+ similar are thus not covered by Past. Registering earlier contains risk the
+ environment is not ready yet.
+
+ We silently drop events during hook_watchdog if the class autoloader is
+ unable to load PastEvent / EntityAPIController. This will happen for instance
+ if an E_STRICT is triggered during parsing and is a PHP limitation.
 
  FOR MORE INFORMATION
  --------------------

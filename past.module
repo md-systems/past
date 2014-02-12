@@ -82,10 +82,22 @@ function past_event_create($module, $machine_name, $message = NULL, array $optio
   // in the parent site.enabled.
   if (!function_exists($past_backend_factory) ||
     (!module_exists('past_db') && $past_backend_factory == 'past_db_create_event')) {
+    // In certain conditions, for example an E_STRICT error during class auto
+    // loading, we can not autoload classes, so do it manually.
+    if (!class_exists('PastEventNull')) {
+      require_once drupal_get_path('module', 'past') . '/past.api.inc';
+      require_once drupal_get_path('module', 'past') . '/past.null.inc';
+      require_once drupal_get_path('module', 'past') . '/past.null_argument.inc';
+    }
     return new PastEventNull();
   }
   $event = $past_backend_factory();
   if (!$event) {
+    if (!class_exists('PastEventNull')) {
+      require_once drupal_get_path('module', 'past') . '/past.api.inc';
+      require_once drupal_get_path('module', 'past') . '/past.null.inc';
+      require_once drupal_get_path('module', 'past') . '/past.null_argument.inc';
+    }
     return new PastEventNull();
   }
 

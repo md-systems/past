@@ -21,6 +21,9 @@ class PastTest extends DrupalWebTestCase {
     parent::setUp(array('past', 'past_db', 'past_testhidden'));
   }
 
+  /**
+   * Tests the functional Past interface.
+   */
   function testSave() {
     past_event_save('past', 'test', 'A test log entry');
     $event = $this->getLastEventByMachinename('test');
@@ -94,6 +97,9 @@ class PastTest extends DrupalWebTestCase {
     $this->assertEqual(REQUEST_TIME - 1, $event->getTimestamp());
   }
 
+  /**
+   * Tests the Past OO interface.
+   */
   public function testObjectOrientedInterface() {
     $event = past_event_create('past', 'test_raw', 'Message with arguments');
     $array_argument = array('data' => array('sub' => 'value'), 'something' => 'else');
@@ -126,11 +132,11 @@ class PastTest extends DrupalWebTestCase {
 
     // First enable watchdog logging.
     variable_set('past_log_watchdog', 1);
-    $my_machine_name = 'test_watchdog';
+    $machine_name = 'test_watchdog';
 
     $msg = 'something';
-    watchdog($my_machine_name, $msg, NULL, WATCHDOG_INFO, NULL);
-    $event = $this->getLastEventByMachinename($my_machine_name);
+    watchdog($machine_name, $msg, NULL, WATCHDOG_INFO, NULL);
+    $event = $this->getLastEventByMachinename($machine_name);
     $this->assertEqual('watchdog', $event->getModule());
     $this->assertEqual($msg, $event->getMessage());
     $this->assertEqual(WATCHDOG_INFO, $event->getSeverity());
@@ -142,9 +148,9 @@ class PastTest extends DrupalWebTestCase {
     $this->assertEqual($user->uid, $event->getUid());
 
     $msg = 'something new';
-    $nice_url = 'http://md-systems.ch';
-    watchdog($my_machine_name, $msg, NULL, WATCHDOG_NOTICE, $nice_url);
-    $event = $this->getLastEventByMachinename($my_machine_name);
+    $nice_url = 'http://www.md-systems.ch';
+    watchdog($machine_name, $msg, NULL, WATCHDOG_NOTICE, $nice_url);
+    $event = $this->getLastEventByMachinename($machine_name);
     $this->assertEqual('watchdog', $event->getModule());
     $this->assertEqual($msg, $event->getMessage());
     $this->assertEqual(WATCHDOG_NOTICE, $event->getSeverity());
@@ -157,9 +163,9 @@ class PastTest extends DrupalWebTestCase {
 
     // Now we disable watchdog logging.
     variable_set('past_log_watchdog', 0);
-    watchdog($my_machine_name, 'something past won\'t see', NULL, WATCHDOG_INFO, NULL);
-    $event = $this->getLastEventByMachinename($my_machine_name);
-    // And still the last message should be found.
+    watchdog($machine_name, 'something Past will not see', NULL, WATCHDOG_INFO, NULL);
+    $event = $this->getLastEventByMachinename($machine_name);
+    // And still the previous message should be found.
     $this->assertEqual($msg, $event->getMessage());
   }
 
@@ -241,9 +247,9 @@ class PastTest extends DrupalWebTestCase {
     $this->assertEqual($account->uid, $event->getUid());
   }
 
-  /*
-  * Tests the shutdown function.
-  */
+  /**
+   * Tests the shutdown function.
+   */
   public function testShutdownFunction() {
     // The shutdown error handler is on by default.
     // Enable shutdown error capture.
@@ -253,10 +259,10 @@ class PastTest extends DrupalWebTestCase {
     $account = $this->drupalCreateUser();
     $this->drupalLogin($account);
 
-    // Let's produce an exception, the exception handler is disabled by default.
+    // Let's trigger an error, the error handler is disabled by default.
     $this->drupalGet('past_trigger_error/E_ERROR');
 
-    // Now we have an log event, assert it.
+    // Now we have a log event, assert it.
     $event = $this->getLastEventByMachinename('fatal_error');
 
     $this->assertEqual('past', $event->getModule());
@@ -269,37 +275,75 @@ class PastTest extends DrupalWebTestCase {
     $this->assertEqual($account->uid, $event->getUid());
   }
 
+  /**
+   * Tests triggering PHP errors.
+   *
+   * @todo We leave out E_PARSE as we can't handle it and it would make our code unclean.
+   * We do not test E_USER_* cases. They are not PHP errors.
+   */
   public function testErrors() {
+    // Enable hook_watchdog capture.
     variable_set('past_log_watchdog', 1);
 
     $this->drupalGet('past_trigger_error/E_COMPILE_ERROR');
     $event = $this->getLastEventByMachinename('php');
-    $this->assertTrue(strpos($event->getMessage(), 'Warning: require_once') !== FALSE);
+    $this->assertTextContains($event->getMessage(), 'Warning: require_once');
 
     $this->drupalGet('past_trigger_error/E_COMPILE_WARNING');
     $event = $this->getLastEventByMachinename('php');
-    $this->assertTrue(strpos($event->getMessage(), 'Warning: include_once') !== FALSE);
+    $this->assertTextContains($event->getMessage(), 'Warning: include_once');
 
     $this->drupalGet('past_trigger_error/E_DEPRECATED');
     $event = $this->getLastEventByMachinename('php');
-    $this->assertTrue(strpos($event->getMessage(), 'Deprecated function: Function call_user_method() is deprecated') !== FALSE);
+    $this->assertTextContains($event->getMessage(), 'Deprecated function: Function call_user_method() is deprecated');
 
     $this->drupalGet('past_trigger_error/E_NOTICE');
     $event = $this->getLastEventByMachinename('php');
-    $this->assertTrue(strpos($event->getMessage(), 'Notice: Undefined variable') !== FALSE);
+    $this->assertTextContains($event->getMessage(), 'Notice: Undefined variable');
 
     $this->drupalGet('past_trigger_error/E_RECOVERABLE_ERROR');
     $event = $this->getLastEventByMachinename('php');
-    $this->assertTrue(strpos($event->getMessage(), 'Recoverable fatal error') !== FALSE);
-
-    // @todo - enable when #2021877 will be fixed.
-    // $this->drupalGet('past_trigger_error/E_STRICT');
-    // $event = $this->getLastEventByMachinename('php');
-    // $this->assertTrue(strpos($event->getMessage(), 'Strict warning: Declaration of') !== FALSE);
+    $this->assertTextContains($event->getMessage(), 'Recoverable fatal error');
 
     $this->drupalGet('past_trigger_error/E_WARNING');
     $event = $this->getLastEventByMachinename('php');
-    $this->assertTrue(strpos($event->getMessage(), 'Warning: fopen') !== FALSE);
+    $this->assertTextContains($event->getMessage(), 'Warning: fopen');
+
+    $this->drupalGet('past_trigger_error/E_STRICT');
+    $event = $this->getLastEventByMachinename('php');
+    $this->assertTextContains($event->getMessage(), 'Strict warning: Non-static method Strict::test() should not be called statically');
+    // Make sure that the page is rendered correctly.
+    $this->assertText('hello, world');
+
+    // Test E_STRICT errors that are thrown during parsing of a file.
+    $this->drupalGet('past_trigger_error/E_STRICT_parse');
+    // This scenario can not be logged, so we just make sure that the page is
+    // rendered correctly.
+    $this->assertText('hello, world');
+    $this->assertText('Strict warning: Declaration of');
+    $event_2 = $this->getLastEventByMachinename('php');
+    $this->assertEqual($event->id(), $event_2->id(), 'No new event was logged');
+  }
+
+  /**
+   * Asserts if $text contains $chunk.
+   */
+  function assertTextContains($text, $chunk) {
+    $this->assert(strpos($text, $chunk) !== FALSE,
+      t('@text contains @chunk.', array(
+        '@text' => $text,
+        '@chunk' => $chunk,
+    )));
+  }
+  /**
+   * Asserts if $text starts with $chunk.
+   */
+  function assertTextStartsWith($text, $chunk) {
+    $this->assert(strpos($text, $chunk) === 0,
+      t('@text starts with @chunk.', array(
+        '@text' => $text,
+        '@chunk' => $chunk
+    )));
   }
 
   /**

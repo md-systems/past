@@ -6,6 +6,15 @@
  */
 
 /**
+ * Implements hook_init().
+ */
+function past_testhidden_init() {
+  // E_STRICT is not part of E_ALL on PHP 5.3 and earlier, make sure
+  // that they are logged and reported.
+  error_reporting(E_ALL | E_STRICT);
+}
+
+/**
  * Implements hook_menu().
  */
 function past_testhidden_menu() {
@@ -123,6 +132,9 @@ function past_testhidden_menu() {
   return $items;
 }
 
+/**
+ * List existing error cases.
+ */
 function past_testhidden_errors() {
   return array(
     '#theme' => 'links',
@@ -136,23 +148,26 @@ function past_testhidden_errors() {
       array('href' => 'past_trigger_error/E_PARSE', 'title' => 'E_PARSE'),
       array('href' => 'past_trigger_error/E_RECOVERABLE_ERROR', 'title' => 'E_RECOVERABLE_ERROR'),
       array('href' => 'past_trigger_error/E_STRICT', 'title' => 'E_STRICT'),
+      array('href' => 'past_trigger_error/E_STRICT_parse', 'title' => 'E_STRICT during file parsing'),
       array('href' => 'past_trigger_error/Exception', 'title' => 'Exception'),
     ),
   );
 }
 
 /**
- * Page callback that will trigger an error of given type.
+ * Page callback that will trigger an error case of given type.
+ *
+ * Error cases trigger different errors or exceptions.
  *
  * @param string $type
- *   Error type.
+ *   Error case type.
  *
  * @return string
  *   Returns string to get visual.
  */
 function past_testhidden_trigger_error($type) {
   module_load_include('inc', 'past_testhidden', '/errors/past.' . $type);
-  return 'hello';
+  return 'hello, world';
 }
 
 /**

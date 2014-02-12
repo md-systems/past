@@ -354,5 +354,8 @@ function past_db_field_extra_fields() {
  *   A new Past event instance.
  */
 function past_db_create_event() {
-  return entity_create('past_event', array());
+  // Only create the entity if the autoloader works.
+  if (class_exists('PastEvent')) {
+    return entity_create('past_event', array());
+  }
 }

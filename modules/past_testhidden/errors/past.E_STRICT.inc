@@ -1,17 +1,18 @@
 <?php
-// Define a class with method that accepts
-// one argument.
-class ParentClass {
-  function myMethod($args) {
 
+/**
+ * Example class to trigger an E_STRICT error.
+ */
+class Strict {
+
+  /**
+   * Method that is not defined as static.
+   */
+  public function test() {
+    return 'Test';
   }
+
 }
 
-// Extend the parent class and override
-// myMethod() in a way that changes the
-// method signature.
-class ChildClass extends ParentClass {
-  function myMethod() {
-
-  }
-}
+// This will trigger a "no-strict method should not be called statically" error.
+Strict::test();
