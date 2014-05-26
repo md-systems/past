@@ -177,6 +177,39 @@ function past_init() {
 }
 
 /**
+ * Implements hook_requirements().
+ */
+function past_requirements($phase) {
+  $requirements = array();
+  if ($phase == 'runtime') {
+    $past_backend_factory = variable_get('past_backend', 'past_db_create_event');
+    // If the function doesn't exist, return a null implementation to avoid fatal
+    // errors.
+    $severity = REQUIREMENT_OK;
+    $description = t('Past backend is configured correctly.');
+    if (!function_exists($past_backend_factory)) {
+      $severity = REQUIREMENT_ERROR;
+      $description = t('Past backend missing (%factory), install and configure a valid backend, like past_db.', array('%factory' => $past_backend_factory));
+    }
+    else {
+      $event = $past_backend_factory();
+      if (!$event) {
+        $severity = REQUIREMENT_ERROR;
+        $description = t('Past backend (%factory) did not return a valid event instance.', array('%factory' => $past_backend_factory));
+      }
+    }
+    $requirements['past'] = array(
+      'title' => t('Past backend'),
+      'description' => $description,
+      'value' => $past_backend_factory,
+      'severity' => $severity,
+    );
+  }
+
+  return $requirements;
+}
+
+/**
  * Implements hook_menu().
  */
 function past_menu() {
@@ -431,4 +464,11 @@ function _past_shutdown_function() {
  */
 function _past_current_url() {
   return $GLOBALS['base_url'] . $_SERVER['REQUEST_URI'];
+}
+
+/**
+ * Past backend factory function to create a null event.
+ */
+function past_null_create_event() {
+  return new PastEventNull();
 }

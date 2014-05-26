@@ -755,3 +755,12 @@ function past_testhidden_form_nested_validate($form, &$form_state) {
     form_set_error('wrapper][field_1', t("Field 1 doesn't contain the right value"));
   }
 }
+
+/**
+ * Past backend factory function that does not return an instance.
+ *
+ * Used to test the null fallback and requirements check.
+ */
+function past_testhidden_create_broken_event() {
+
+}

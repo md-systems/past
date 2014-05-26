@@ -68,6 +68,15 @@ CONTENTS OF THIS FILE
        works or ensure that all necessary files are loaded manually in that
        case. See past_db_create_event().
 
+ Available backends:
+  - past_db_create_event (default): Stores the logs into the database, past_db
+    must be enabled.
+  - past_null_create_event: Null implementation that can be used to disable
+    logging without breaking modules that attempt to create logs. Also used as
+    fallback if the configured backend can not be found.
+  - past_simpletest_create_event: Backend that can be enabled in tests, prints
+    logs event similar to debug() but with better formatting.
+
  EVENTS MANAGEMENT
 
  Past Bughunt is a module that provides a simple workflow to manage individual

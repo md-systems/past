@@ -9,3 +9,4 @@ files[]=past.null_argument.inc
 files[]=past.admin.inc
 files[]=past.test
 files[]=past.null.test
+files[]=past.requirements.test
