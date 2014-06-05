@@ -48,6 +48,18 @@ function past_db_schema() {
         'default' => '',
         'description' => 'The session id of the user who triggered the event.',
       ),
+      'referer' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'default' => '',
+        'description' => 'The referrer of the request who triggered the event.',
+      ),
+      'location' => array(
+        'type' => 'varchar',
+        'length' => '255',
+        'default' => '',
+        'description' => 'The URI of the request who triggered the event.',
+      ),
       'message' => array(
         'description' => 'The event message',
         'type' => 'text',
@@ -393,6 +405,28 @@ function past_db_update_7004() {
       'length' => '255',
       'default' => '',
       'description' => 'The session id of the user who triggered the event.',
+    ));
+  }
+}
+
+/**
+ * Adds {past_event}.referer and {past_event}.location.
+ */
+function past_db_update_7005() {
+  if (!db_field_exists('past_event', 'referer')) {
+    db_add_field('past_event', 'referer', array(
+      'type' => 'varchar',
+      'length' => '255',
+      'default' => '',
+      'description' => 'The referrer of the request who triggered the event.',
+    ));
+  }
+  if (!db_field_exists('past_event', 'location')) {
+    db_add_field('past_event', 'location', array(
+      'type' => 'varchar',
+      'length' => '255',
+      'default' => '',
+      'description' => 'The URI of the request who triggered the event.',
     ));
   }
 }

@@ -5,20 +5,111 @@
  * Contains the entity classes for Past DB.
  */
 class PastEvent extends Entity implements PastEventInterface {
+
+  /**
+   * The identifier of the event.
+   *
+   * @var int
+   */
   public $event_id;
+
+  /**
+   * The module that logged this event.
+   *
+   * @var string
+   */
   public $module;
+
+  /**
+   * The machine name of this event.
+   *
+   * @var string
+   */
   public $machine_name;
+
+  /**
+   * The {past_event_type}.type of this event.
+   *
+   * @var string
+   */
   public $type;
+
+  /**
+   * The subject/message of the event to be logged.
+   *
+   * @var string
+   */
   public $message;
+
+  /**
+   * The severity of the event.
+   *
+   * @var int
+   */
   public $severity;
+
+  /**
+   * The session ID of the user who triggered the event.
+   *
+   * @var string
+   */
   public $session_id;
+
+  /**
+   * The HTTP referrer of the request which triggered the event.
+   *
+   * @var string
+   */
+  public $referer;
+
+  /**
+   * The URI of the request which triggered the event.
+   *
+   * @var string
+   */
+  public $location;
+
+  /**
+   * A timestamp of when the event occurred.
+   *
+   * @var int
+   */
   public $timestamp;
+
+  /**
+   * The ID of the parent event.
+   *
+   * @var int
+   */
   public $parent_event_id;
+
+  /**
+   * The {users}.uid of the user who triggered the event.
+   *
+   * @var int
+   */
   public $uid;
 
+  /**
+   * The arguments of this event.
+   *
+   * @var PastEventArgument[]
+   */
   protected $arguments;
+
+  /**
+   * The event ID's of this event's children.
+   *
+   * @var int[]
+   */
   protected $child_events = array();
-  protected $max_recuresion;
+
+  /**
+   * The maximum recursion depth to prevent infinite recursion.
+   *
+   * @var int
+   */
+  protected $max_recursion;
 
   public function __construct(array $values = array(), $entityType = NULL) {
     parent::__construct($values, $entityType);
@@ -106,6 +197,20 @@ class PastEvent extends Entity implements PastEventInterface {
     return $this->session_id;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function getReferer() {
+    return $this->referer;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getLocation() {
+    return $this->location;
+  }
+
   public function getMessage() {
     return $this->message;
   }
@@ -134,6 +239,22 @@ class PastEvent extends Entity implements PastEventInterface {
 
   public function setSessionId($session_id) {
     $this->session_id = $session_id;
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setReferer($referer) {
+    $this->referer = $this->shortenString($referer);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setLocation($location) {
+    $this->location = $this->shortenString($location);
     return $this;
   }
 
@@ -233,6 +354,16 @@ class PastEvent extends Entity implements PastEventInterface {
       '#type' => 'item',
       '#title' => t('Actor'),
       '#markup' => $this->getActorDropbutton(FALSE),
+    );
+    $content['referer'] = array(
+      '#type' => 'item',
+      '#title' => t('Referrer'),
+      '#markup' => l($this->getReferer(), $this->getReferer()),
+    );
+    $content['location'] = array(
+      '#type' => 'item',
+      '#title' => t('Location'),
+      '#markup' => l($this->getLocation(), $this->getLocation()),
     );
 
     // show all arguments in a vertical_tab
@@ -371,6 +502,25 @@ class PastEvent extends Entity implements PastEventInterface {
     return $data;
   }
 
+  /**
+   * Shortens a string to it's first 255 chars.
+   *
+   * If longer than 255 chars, the last char is replaced with an ellipsis (…).
+   *
+   * @param string $string
+   *   The string to be shortened.
+   * @param int $max_length
+   *   (optional) The maximal desired length. Defaults to 255.
+   *
+   * @return string
+   *   The shortened string.
+   */
+  protected function shortenString($string, $max_length = 255) {
+    if (strlen($string) > $max_length) {
+      $string = substr($string, 0, $max_length - 1) . '…';
+    }
+    return $string;
+  }
 }
 
 /**

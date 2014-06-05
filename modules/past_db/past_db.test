@@ -23,6 +23,8 @@ class PastDBBaseTestCase extends DrupalWebTestCase {
     // Prepare some logs.
     for($i = 0; $i <= $count; $i++) {
       $event = past_event_create('past_db', $this->machine_name, $this->event_desc . ($i + 1));
+      $event->setReferer('http://example.com/test-referer');
+      $event->setLocation('http://example.com/this-url-gets-heavy-long/testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest/seeme.htm');
       $event->addArgument('arg1', 'First Argument');
       $event->addArgument('arg2', new stdClass());
       $event->addArgument('arg3', FALSE);
@@ -251,6 +253,10 @@ class PastDBTest extends PastDBBaseTestCase {
 
     $this->assertText($this->machine_name);
     $this->assertText($this->event_desc . 1);
+    $this->assertText('Referrer');
+    $this->assertLink('http://example.com/test-referer');
+    $this->assertText('Location');
+    $this->assertLink('http://example.com/this-url-gets-heavy-long/testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttestte…');
     $this->assertText('arg1');
     $this->assertText('arg2');
     $this->assertText('arg3');

@@ -99,6 +99,44 @@ interface PastEventInterface {
   public function setSessionId($session_id);
 
   /**
+   * Gets the URI that referred to the page where the event was logged.
+   *
+   * @return PastEventInterface
+   *   The current object.
+   */
+  public function getReferer();
+
+  /**
+   * Sets the URI that referred to the page where the event was logged.
+   *
+   * @param string $referer
+   *   The referrer.
+   *
+   * @return PastEventInterface
+   *   The current object.
+   */
+  public function setReferer($referer);
+
+  /**
+   * Gets the URI of the page where the event was logged.
+   *
+   * @return string
+   *   The location.
+   */
+  public function getLocation();
+
+  /**
+   * Sets the URI of the page where the event was logged.
+   *
+   * @param string $location
+   *   The location.
+   *
+   * @return PastEventInterface
+   *   The current object.
+   */
+  public function setLocation($location);
+
+  /**
    * Add an argument to the event.
    *
    * Each argument is identified by a key and has arbitrary data. The data is

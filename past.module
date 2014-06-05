@@ -108,9 +108,9 @@ function past_event_create($module, $machine_name, $message = NULL, array $optio
     $event->setMessage($message);
   }
 
+  // @todo move to PastEventController->create() or move other defaults here ?
   if (variable_get('past_log_session_id', 1) &&
     !array_key_exists('session_id', $options)) {
-    // @todo move to PastEventController->create() or move other defaults here ?
     // Add session id if not in options.
     global $user;
     if (!empty($user->ssid)) {
@@ -123,6 +123,23 @@ function past_event_create($module, $machine_name, $message = NULL, array $optio
     else {
       $event->setSessionId(session_id());
     }
+  }
+  // Compile the full URI from protocol, host, port, uri.
+  if (isset($_SERVER['HTTP_HOST']) && isset($_SERVER['REQUEST_URI'])) {
+    $https = isset($_SERVER['HTTPS']) ? TRUE : FALSE;
+    $location = 'http' . ($https ? 's' : '') . '://';
+    $location .= $_SERVER['HTTP_HOST'];
+    if (isset($_SERVER['SERVER_PORT'])) {
+      if (($https && $_SERVER['SERVER_PORT'] != 443)
+        || ($_SERVER['SERVER_PORT'] != 80)) {
+        $location .= ':' . $_SERVER['SERVER_PORT'];
+      }
+    }
+    $location .= $_SERVER['REQUEST_URI'];
+    $event->setLocation($location);
+  }
+  if (isset($_SERVER['HTTP_REFERER'])) {
+    $event->setReferer($_SERVER['HTTP_REFERER']);
   }
 
   foreach ($options as $key => $value) {
@@ -275,10 +292,10 @@ function past_watchdog(array $log_entry) {
       $event->setUid($log_entry['uid']);
     }
     if (!empty($log_entry['request_uri'])) {
-      $watchdog_args['location'] = $log_entry['request_uri'];
+      $event->setLocation($log_entry['request_uri']);
     }
     if (!empty($log_entry['referer'])) {
-      $watchdog_args['referer'] = $log_entry['referer'];
+      $event->setReferer($log_entry['referer']);
     }
     if (!empty($log_entry['ip'])) {
       $watchdog_args['hostname'] = substr($log_entry['ip'], 0, 128);
@@ -438,15 +455,6 @@ function _past_shutdown_function() {
 
   $event->addArgument('error', $error);
 
-  // Add metadata arguments like the path and user to the past event.
-  $user_args = array();
-  $user_args['location'] = _past_current_url();
-
-  if (!empty($_SERVER['referer'])) {
-    $user_args['referer'] = $_SERVER['referer'];
-  }
-  $user_args['hostname'] = substr($_SERVER['REMOTE_ADDR'], 0, 128);
-  $event->addArgument('user_args', $user_args);
   try {
     $event->save();
   }
@@ -454,16 +462,6 @@ function _past_shutdown_function() {
     // If for some reason the saving fails here, log to the apache error log.
     error_log('Failed to save past event with message ' . $error['message'] . ' in past shutdown handler.');
   }
-}
-
-/**
- * Builds current url.
- *
- * @return string
- *   The url.
- */
-function _past_current_url() {
-  return $GLOBALS['base_url'] . $_SERVER['REQUEST_URI'];
 }
 
 /**

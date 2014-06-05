@@ -76,6 +76,20 @@ class PastEventNull implements PastEventInterface {
   /**
    * {@inheritdoc}
    */
+  public function getReferer() {
+    return NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getLocation() {
+    return NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getMessage() {
     return NULL;
   }
@@ -119,6 +133,20 @@ class PastEventNull implements PastEventInterface {
    * {@inheritdoc}
    */
   public function setSessionId($session_id) {
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setReferer($referer) {
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setLocation($location) {
     return $this;
   }
 

@@ -164,8 +164,9 @@ function past_grabber_parse_error_log($path, $position = NULL, $error_type = PAS
       'file' => $log['file'],
       'line' => $log['line'],
     ));
+    $event->setLocation($log['client']);
+    $event->setReferer($log['referer']);
     $event->addArgument('client_data', array(
-      'referer' => $log['referer'],
       'client' => $log['client'],
     ));
     $event->save();

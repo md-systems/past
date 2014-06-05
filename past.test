@@ -134,6 +134,10 @@ class PastTest extends DrupalWebTestCase {
     variable_set('past_log_watchdog', 1);
     $machine_name = 'test_watchdog';
 
+    // Simpletest does not cleanly mock these _SERVER variables.
+    $_SERVER['REQUEST_URI'] = 'mock-request-uri';
+    $_SERVER['HTTP_REFERER'] = 'mock-referer';
+
     $msg = 'something';
     watchdog($machine_name, $msg, NULL, WATCHDOG_INFO, NULL);
     $event = $this->getLastEventByMachinename($machine_name);
@@ -142,6 +146,10 @@ class PastTest extends DrupalWebTestCase {
     $this->assertEqual(WATCHDOG_INFO, $event->getSeverity());
     $this->assertEqual(1, count($event->getArguments()));
     $this->assertNotNull($event->getArgument('watchdog_args'));
+    $this->assertTrue(strpos($event->getLocation(), 'mock-request-uri')>0,
+      'Contains mock-request-uri.');
+    $this->assertTrue(strpos($event->getReferer(), 'mock-referer')===0,
+      'Contains mock-referer.');
 
     // Note that here we do not create a test user but use the user that has
     // triggered the test as this is the user captured in the watchdog().
@@ -268,7 +276,7 @@ class PastTest extends DrupalWebTestCase {
     $this->assertEqual('past', $event->getModule());
     $this->assertEqual('fatal_error', $event->getMachineName());
     $this->assertEqual(PAST_SEVERITY_CRITICAL, $event->getSeverity());
-    $this->assertEqual(2, count($event->getArguments()));
+    $this->assertEqual(1, count($event->getArguments()));
     $this->assertEqual('Cannot use object of type stdClass as array', $event->getMessage());
     $data = $event->getArgument('error')->getData();
     $this->assertEqual($data['type'], E_ERROR);

@@ -237,7 +237,9 @@ class PastGrabberTest extends DrupalWebTestCase {
     foreach ($events as $event) {
       $test_line = array_shift($test_data);
       $this->assertEqual($event->getArgument('php')->getData(), $test_line['php']);
-      $this->assertEqual($event->getArgument('client_data')->getData(), $test_line['user']);
+      $test_line_user = $test_line['user'];
+      unset($test_line_user['referer']);
+      $this->assertEqual($event->getArgument('client_data')->getData(), $test_line_user);
     }
   }
 
