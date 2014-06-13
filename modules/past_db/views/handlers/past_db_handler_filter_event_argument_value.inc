@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Contains a views filter handler.

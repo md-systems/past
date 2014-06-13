@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * Generates an E_STRICT level error.
+ */
 
 /**
  * Example class to trigger an E_STRICT error.

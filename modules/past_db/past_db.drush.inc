@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Past DB commands for Drush.
+ */
+
+/**
  * Implementation of hook_drush_command().
  */
 function past_db_drush_command() {
@@ -233,6 +238,9 @@ function past_db_drush_show_many($filter = NULL) {
   }
 }
 
+/**
+ * Update, print and flush table.
+ */
 function past_drush_table(&$tbl, &$table, $header, &$last_format) {
   if (!count($table)) {
     return;
@@ -294,6 +302,14 @@ function past_db_event_format_result($event, $show_arguments = FALSE, $nested = 
 
 /**
  * Prepare argument for presentation.
+ *
+ * @param PastEventArgument $argument
+ *   The argument to present.
+ * @param bool $nested
+ *   Whether non-scalar values should be presented in detail, rather than
+ *   simply by its type.
+ *
+ * @return mixed
  */
 function past_db_argument($argument, $nested) {
   $data = array();

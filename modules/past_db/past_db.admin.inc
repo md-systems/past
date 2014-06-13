@@ -5,7 +5,6 @@
  * Profile type editing UI.
  */
 
-
 /**
  * Generates the past_event type editing form.
  */

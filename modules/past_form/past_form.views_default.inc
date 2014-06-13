@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Past Form views for the Views module.
+ */
+
+/**
  * Implements hook_views_default_views().
  */
 function past_form_views_default_views() {

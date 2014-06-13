@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains tests for the past requirements
+ * Contains tests for the Past requirements.
  */
 
 class PastRequirementsTest extends DrupalWebTestCase {

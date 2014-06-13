@@ -1,4 +1,9 @@
 <?php
+/**
+ * @file
+ * Generates an E_STRICT level error.
+ */
+
 // Define a class with method that accepts
 // one argument.
 class ParentClass {

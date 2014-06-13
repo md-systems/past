@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains tests for the past_bughunt Admin UI.
+ * Contains tests for the Past Bughunt Admin UI.
  */
 
 class PastDBBugHuntTest extends PastDBBaseTestCase {

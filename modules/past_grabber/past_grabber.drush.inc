@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Past Grabber drush file.
+ * Past Grabber commands for Drush.
  */
 
 /**

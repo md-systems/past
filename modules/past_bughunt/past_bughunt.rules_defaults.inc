@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Default rules configuration of the past_bughunt module.
+ * Default rules configuration of the Past Bughunt module.
  */
 
 /**

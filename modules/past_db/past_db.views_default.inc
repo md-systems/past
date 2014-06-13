@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Past DB views for the Views module.
+ */
+
 function past_db_views_default_views() {
 
   $view = new view();

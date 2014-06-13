@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Past grabber tests.
+ * Past Grabber tests.
  */
 
 class PastGrabberTest extends DrupalWebTestCase {

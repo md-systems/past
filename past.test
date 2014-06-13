@@ -1,8 +1,8 @@
 <?php
 
-/*
+/**
  * @file
- * Contains tests for the past modules
+ * Contains tests for the Past modules.
  */
 
 class PastTest extends DrupalWebTestCase {

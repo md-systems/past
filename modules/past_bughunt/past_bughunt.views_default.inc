@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * Past Bughunt views for the Views module.
+ */
 
 function past_bughunt_views_default_views() {
   $views = array();

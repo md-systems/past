@@ -16,6 +16,9 @@ class PastEventController extends EntityAPIController {
    */
   protected $insert;
 
+  /**
+   * {@inheritdoc}
+   */
   public function create(array $values = array()) {
     $entity = parent::create($values);
 
@@ -34,6 +37,10 @@ class PastEventController extends EntityAPIController {
     return $entity;
   }
 
+  /**
+   * Permanently saves the given event entity.
+   * {@inheritdoc}
+   */
   public function save($entity, DatabaseTransaction $transaction = NULL) {
     // Limit length of message.
     if (strlen($entity->message) > 255) {
@@ -60,6 +67,9 @@ class PastEventController extends EntityAPIController {
     // If running in a WebTestCase environment, propagate the log into simpletest log.
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function delete($ids, \DatabaseTransaction $transaction = NULL) {
     // Delete the arguments first.
     $query = new EntityFieldQuery();
@@ -80,6 +90,9 @@ class PastEventController extends EntityAPIController {
  */
 class PastEventArgumentController extends EntityAPIController {
 
+  /**
+   * {@inheritdoc}
+   */
   public function create(array $values = array()) {
 
     $entity = parent::create($values);
@@ -87,6 +100,9 @@ class PastEventArgumentController extends EntityAPIController {
     return $entity;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function save($entity, DatabaseTransaction $transaction = NULL) {
 
     // Make sure the type is set.
@@ -108,6 +124,9 @@ class PastEventArgumentController extends EntityAPIController {
     }
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function delete($ids, \DatabaseTransaction $transaction = NULL) {
     // Delete the data first.
     db_delete('past_event_data')

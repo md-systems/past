@@ -12,6 +12,9 @@ class PastDBBaseTestCase extends DrupalWebTestCase {
   protected $severities;
   protected $events = array();
 
+  /**
+   * Creates some sample events.
+   */
   protected function createEvents($count = 99) {
     // Set some for log creation.
     $this->machine_name = 'machine name';
@@ -35,7 +38,10 @@ class PastDBBaseTestCase extends DrupalWebTestCase {
   }
 
   /**
+   * Loads created sample events.
+   *
    * @return PastEvent[]
+   *   The created sample events.
    */
   protected function loadEvents() {
     $query = new EntityFieldQuery();
@@ -47,6 +53,9 @@ class PastDBBaseTestCase extends DrupalWebTestCase {
 
 class PastDBTest extends PastDBBaseTestCase {
 
+  /**
+   * {@inheritdoc}
+   */
   static function getInfo() {
     return array(
       'name' => 'Past DB tests',
@@ -58,6 +67,9 @@ class PastDBTest extends PastDBBaseTestCase {
     );
   }
 
+  /**
+   * Creates an administrator user and sample events.
+   */
   function setUp() {
     parent::setUp(array('views', 'past', 'past_db', 'entityreference'));
     $admin = $this->drupalCreateUser(array('administer past', 'view past reports'));
@@ -183,7 +195,7 @@ class PastDBTest extends PastDBBaseTestCase {
   }
 
   /**
-   * Tests the pas event log UI.
+   * Tests the Past event log UI.
    */
   public function testAdminUI() {
     // Open the event log.
@@ -278,6 +290,14 @@ class PastDBTest extends PastDBBaseTestCase {
     $this->assertText(t('You are not authorized to access this page'));
   }
 
+  /**
+   * Creates an entityreference field and adds an instance of it to a bundle.
+   *
+   * @param $bundle
+   *
+   * @return array
+   *   The definition of the field instance.
+   */
   protected function addField($bundle) {
     $field_info = array(
       'entity_types' => array('past_event'),

@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * Generates an E_DEPRECATED level error.
+ */
 
 // Calling a PHP deprecated method. See
 // http://php.net/manual/en/migration53.deprecated.php

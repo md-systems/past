@@ -4,6 +4,10 @@
  * @file
  * Contains the entity classes for Past DB.
  */
+
+/**
+ * A log event.
+ */
 class PastEvent extends Entity implements PastEventInterface {
 
   /**
@@ -116,6 +120,9 @@ class PastEvent extends Entity implements PastEventInterface {
     $this->max_recursion = variable_get('past_max_recursion', 10);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function addArgument($key, $data, array $options = array()) {
     if (!is_array($this->arguments)) {
       $this->arguments = array();
@@ -150,6 +157,9 @@ class PastEvent extends Entity implements PastEventInterface {
     return $this->arguments[$key];
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function addArgumentArray($key_prefix, array $data, array $options = array()) {
     $arguments = array();
     foreach ($data as $key => $value) {
@@ -158,6 +168,9 @@ class PastEvent extends Entity implements PastEventInterface {
     return $arguments;
   }
 
+  /**
+   * Loads and caches all arguments for this event.
+   */
   protected function loadArguments() {
     if (!is_array($this->arguments)) {
       $this->arguments = array();
@@ -167,32 +180,53 @@ class PastEvent extends Entity implements PastEventInterface {
     }
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getArgument($key) {
     $this->loadArguments();
     return isset($this->arguments[$key]) ? $this->arguments[$key] : NULL;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getArguments() {
     $this->loadArguments();
     return $this->arguments;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function addException(Exception $exception, array $options = array()) {
     $this->addArgument('exception', $exception, $options);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getMachineName() {
     return $this->machine_name;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getModule() {
     return $this->module;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getSeverity() {
     return $this->severity;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getSessionId() {
     return $this->session_id;
   }
@@ -211,32 +245,53 @@ class PastEvent extends Entity implements PastEventInterface {
     return $this->location;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getMessage() {
     return $this->message;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getTimestamp() {
     return $this->timestamp;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getUid() {
     return (int)$this->uid;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function id() {
     return $this->event_id;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function setParentEventId($event_id) {
     $this->parent_event_id = $event_id;
     return $this;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function setSeverity($severity) {
     $this->severity = $severity;
     return $this;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function setSessionId($session_id) {
     $this->session_id = $session_id;
     return $this;
@@ -258,36 +313,57 @@ class PastEvent extends Entity implements PastEventInterface {
     return $this;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function setMessage($message) {
     $this->message = $message;
     return $this;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function setTimestamp($timestamp) {
     $this->timestamp = $timestamp;
     return $this;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function setMachineName($machine_name) {
     $this->machine_name = $machine_name;
     return $this;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function setModule($module) {
     $this->module = $module;
     return $this;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function setUid($uid) {
     $this->uid = $uid;
     return $this;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function addChildEvent($event_id) {
     $this->child_events[] = $event_id;
     return $this;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getChildEvents() {
     return $this->child_events;
   }
@@ -444,7 +520,17 @@ class PastEvent extends Entity implements PastEventInterface {
     return t('Unknown');
   }
 
-
+  /**
+   * Formats an argument in HTML markup.
+   *
+   * @param string $name
+   *   Name of the argument.
+   * @param PastEventArgument $argument
+   *   Argument instance.
+   *
+   * @return string
+   *   A HTML div describing the argument and its data.
+   */
   protected function formatArgument($name, $argument) {
     $back = '';
     $data = $argument->getData();
@@ -460,6 +546,18 @@ class PastEvent extends Entity implements PastEventInterface {
     return $back;
   }
 
+  /**
+   * Formats an object in HTML markup.
+   *
+   * @param object $obj
+   *   The value to be formatted. Any type is accepted.
+   * @param int $recursive
+   *   (optional) Recursion counter to avoid long HTML for deep structures.
+   *   Should be unset for any calls from outside the function itself.
+   *
+   * @return string
+   *   A HTML div describing the value.
+   */
   protected function parseObject($obj, $recursive = 0) {
     if ($recursive > $this->max_recursion) {
       return t('<em>Too many nested objects ( @recursion )</em>', array('@recursion' => $this->max_recursion));
@@ -524,7 +622,7 @@ class PastEvent extends Entity implements PastEventInterface {
 }
 
 /**
- * Contains the entity classes for Past DB.
+ * An argument for an event.
  */
 class PastEventArgument extends Entity implements PastEventArgumentInterface {
 
@@ -535,6 +633,9 @@ class PastEventArgument extends Entity implements PastEventArgumentInterface {
   public $type;
   public $raw;
 
+  /**
+   * {@inheritdoc}
+   */
   public function getData() {
     $return = NULL;
     $result = db_query('SELECT * FROM {past_event_data} WHERE argument_id = :argument_id', array(':argument_id' => $this->argument_id));
@@ -558,18 +659,30 @@ class PastEventArgument extends Entity implements PastEventArgumentInterface {
     return $return;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getKey() {
     return $this->name;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getRaw() {
     return $this->raw;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getType() {
     return $this->type;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function setRaw($data, $json_encode = TRUE) {
 
   }
@@ -578,6 +691,9 @@ class PastEventArgument extends Entity implements PastEventArgumentInterface {
     return $this->original_data;
   }
 
+  /**
+   * Sets the argument type according to the type of the original data.
+   */
   public function ensureType() {
     if (isset($this->original_data)) {
       if (is_object($this->original_data)) {
@@ -589,6 +705,12 @@ class PastEventArgument extends Entity implements PastEventArgumentInterface {
     }
   }
 
+  /**
+   * Defines the argument entity label.
+   *
+   * @return string
+   *   Entity label.
+   */
   public function defaultLabel() {
     return $this->getKey();
   }
@@ -598,19 +720,29 @@ class PastEventArgument extends Entity implements PastEventArgumentInterface {
  * Past event data entity.
  */
 class PastEventData extends Entity implements PastEventDataInterface {
+
   public $data_id;
   public $argument_id;
   public $name;
   public $type;
 
+  /**
+   * {@inheritdoc}
+   */
   public function id() {
     return $this->data_id;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getKey() {
     return $this->name;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getType() {
     return $this->type;
   }
