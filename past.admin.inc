@@ -8,7 +8,7 @@
 /**
  * Defines form for Past settings.
  *
- * $return array
+ * @return array
  *   Form structure, as returned from system_settings_form().
  */
 function past_admin_settings() {

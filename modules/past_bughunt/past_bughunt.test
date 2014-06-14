@@ -7,6 +7,9 @@
 
 class PastDBBugHuntTest extends PastDBBaseTestCase {
 
+  /**
+   * {@inheritdoc}
+   */
   static function getInfo() {
     return array(
       'name' => 'Past Bughunt tests',
@@ -16,6 +19,9 @@ class PastDBBugHuntTest extends PastDBBaseTestCase {
     );
   }
 
+  /**
+   * {@inheritdoc}
+   */
   function setUp() {
     parent::setUp(array('past_bughunt'));
   }

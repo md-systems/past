@@ -31,6 +31,9 @@ class PastEventSimpletest implements PastEventInterface {
     }
   }
 
+  /**
+   * Outputs debugging information for saving the event.
+   */
   public function save() {
     // Prepare all arguments.
     foreach ($this->getArguments() as $argument) {
@@ -55,6 +58,9 @@ class PastEventSimpletest implements PastEventInterface {
     debug($out);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function addArgument($key, $data, array $options = array()) {
     if (!is_array($this->arguments)) {
       $this->arguments = array();
@@ -89,6 +95,9 @@ class PastEventSimpletest implements PastEventInterface {
     return $this->arguments[$key];
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function addArgumentArray($key_prefix, array $data, array $options = array()) {
     $arguments = array();
     foreach ($data as $key => $value) {
@@ -97,91 +106,162 @@ class PastEventSimpletest implements PastEventInterface {
     return $arguments;
   }
 
+  /**
+   * {@inheritdoc]}
+   */
   protected function loadArguments() {
     if (!is_array($this->arguments)) {
       $this->arguments = array();
     }
   }
 
+  /**
+   * {@inheritdoc]}
+   */
   public function getArgument($key) {
     $this->loadArguments();
     return isset($this->arguments[$key]) ? $this->arguments[$key] : NULL;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getArguments() {
     $this->loadArguments();
     return $this->arguments;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function addException(Exception $exception, array $options = array()) {
     $this->addArgument('exception', $exception, $options);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getMachineName() {
     return $this->machine_name;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getModule() {
     return $this->module;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getSeverity() {
     return $this->severity;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getMessage() {
     return $this->message;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getTimestamp() {
     return $this->timestamp;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function id() {
     return $this->event_id;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function setParentEventId($event_id) {
     $this->parent_event_id = $event_id;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function setSeverity($severity) {
     $this->severity = $severity;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function setMessage($message) {
     $this->message = $message;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function setTimestamp($timestamp) {
     $this->timestamp = $timestamp;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function setUid($uid) {
     $this->uid = $uid;
     return $this;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getUid() {
     return $this->uid;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function setMachineName($machine_name) {
     $this->machine_name = $machine_name;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function setModule($module) {
     $this->module = $module;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function addChildEvent($event_id) {
     $this->child_events[] = $event_id;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getChildEvents() {
     return $this->child_events;
   }
 
+  /**
+   * Formats an argument in HTML markup.
+   *
+   * @param string $name
+   *   Name of the argument.
+   * @param PastEventArgument $argument
+   *   Argument instance.
+   *
+   * @return string
+   *   A HTML div describing the argument and its data.
+   */
   protected function formatArgument($name, $argument) {
     $back = '';
     $data = $argument->getData();
@@ -198,6 +278,18 @@ class PastEventSimpletest implements PastEventInterface {
     return $back;
   }
 
+  /**
+   * Formats an object in HTML markup.
+   *
+   * @param object $obj
+   *   The value to be formatted. Any type is accepted.
+   * @param int $recursive
+   *   (optional) Recursion counter to avoid long HTML for deep structures.
+   *   Should be unset for any calls from outside the function itself.
+   *
+   * @return string
+   *   A HTML div describing the value.
+   */
   protected function parseObject($obj, $recursive = 0) {
     if ($recursive > $this->max_recursion) {
       return t('_Too many nested objects ( @recursion )_', array('@recursion' => $this->max_recursion));
@@ -232,30 +324,51 @@ class PastEventSimpletestArgument implements PastEventArgumentInterface {
     }
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getData() {
     return $this->original_data;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getKey() {
     return $this->name;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getRaw() {
     return $this->raw;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getType() {
     return $this->type;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function setRaw($data, $json_encode = TRUE) {
     $this->raw = $json_encode ? drupal_json_encode($data) : $data;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getOriginalData() {
     return $this->original_data;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function ensureType() {
     if (isset($this->original_data)) {
       if (is_object($this->original_data)) {
@@ -267,6 +380,9 @@ class PastEventSimpletestArgument implements PastEventArgumentInterface {
     }
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function defaultLabel() {
     return $this->getKey();
   }

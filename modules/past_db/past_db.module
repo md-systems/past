@@ -1,11 +1,12 @@
 <?php
 
 /**
+ * @file
  * Module file for the Past DB module.
  */
 
 /**
- * Implements hook_entity_info()
+ * Implements hook_entity_info().
  */
 function past_db_entity_info() {
   $info['past_event'] = array(
@@ -68,20 +69,20 @@ function past_db_entity_info() {
     ),
   );
 
-   $info['past_event_data'] = array(
-     'label' => t('Past Event Data'),
-     'module' => 'past_db',
-     'controller class' => 'EntityAPIController',
-     'metadata controller class' => 'PastDBEventDataMetadataController',
-     'entity class' => 'PastEventData',
-     'base table' => 'past_event_data',
-     'uri callback' => 'entity_class_uri',
-     'label callback' => 'entity_class_label',
-     'access callback' => 'past_db_access',
-     'entity keys' => array(
-       'id' => 'data_id',
-     ),
-   );
+  $info['past_event_data'] = array(
+    'label' => t('Past Event Data'),
+    'module' => 'past_db',
+    'controller class' => 'EntityAPIController',
+    'metadata controller class' => 'PastDBEventDataMetadataController',
+    'entity class' => 'PastEventData',
+    'base table' => 'past_event_data',
+    'uri callback' => 'entity_class_uri',
+    'label callback' => 'entity_class_label',
+    'access callback' => 'past_db_access',
+    'entity keys' => array(
+      'id' => 'data_id',
+    ),
+  );
 
   $info['past_event_type'] = array(
     'label' => t('Past Event type'),
@@ -115,7 +116,7 @@ function past_db_entity_info() {
 /**
  * Menu argument loader; Load a event type by string.
  *
- * @param $type
+ * @param string $type
  *   The machine-readable name of a event type to load.
  *
  * @return array
@@ -146,7 +147,7 @@ function past_event_type_create($type, $label, $values = array()) {
 /**
  * Gets an array of all past event types, keyed by the type name.
  *
- * @param $type_name
+ * @param string $type_name
  *   If set, the type with the given name is returned.
  *
  * @return PastEventType[]
@@ -166,12 +167,14 @@ function past_event_type_access($op, $type = NULL, $account = NULL) {
 
 /**
  * Access callback implementation.
- * @param $operation
+ *
+ * @param $op
  *   The performed operation - view, delete, create, update, customs...
  * @param $entity
  *   (optional) The entity on which $operation should be performed.
  * @param $account
  *   (optional) The account to check if it has access.
+ *
  * @return boolean
  *    TRUE if $account can perform $operation on $entity
  */
@@ -200,6 +203,7 @@ function past_db_cron() {
 
 /**
  * Implements views arguments details.
+ *
  * defined in PastDBEventUIController::hook_menu().
  */
 function past_db_event_view($event) {
@@ -243,7 +247,7 @@ function past_db_preprocess_views_view_table(&$vars) {
  *
  * This works only if the field past_event_severity is added to the view.
  *
- * @param $vars
+ * @param array $vars
  *   The variables array as passed into the theme function.
  */
 function past_db_add_row_colors(&$vars) {

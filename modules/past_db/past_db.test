@@ -5,6 +5,9 @@
  * Contains tests for the past_db Admin UI.
  */
 
+/**
+ * Base class for Past DB tests.
+ */
 class PastDBBaseTestCase extends DrupalWebTestCase {
 
   protected $event_desc;
@@ -24,14 +27,14 @@ class PastDBBaseTestCase extends DrupalWebTestCase {
     $this->event_desc = 'message #';
 
     // Prepare some logs.
-    for($i = 0; $i <= $count; $i++) {
+    for ($i = 0; $i <= $count; $i++) {
       $event = past_event_create('past_db', $this->machine_name, $this->event_desc . ($i + 1));
       $event->setReferer('http://example.com/test-referer');
       $event->setLocation('http://example.com/this-url-gets-heavy-long/testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest/seeme.htm');
       $event->addArgument('arg1', 'First Argument');
       $event->addArgument('arg2', new stdClass());
       $event->addArgument('arg3', FALSE);
-      $event->setSeverity($severities_codes[$i%$severities_count]);
+      $event->setSeverity($severities_codes[$i % $severities_count]);
       $event->save();
       $this->events[$event->event_id] = $event;
     }
@@ -51,12 +54,15 @@ class PastDBBaseTestCase extends DrupalWebTestCase {
   }
 }
 
+/**
+ * Tests Past DB.
+ */
 class PastDBTest extends PastDBBaseTestCase {
 
   /**
    * {@inheritdoc}
    */
-  static function getInfo() {
+  public static function getInfo() {
     return array(
       'name' => 'Past DB tests',
       'description' => 'Tests for DB backend of the Past module.',
@@ -70,7 +76,7 @@ class PastDBTest extends PastDBBaseTestCase {
   /**
    * Creates an administrator user and sample events.
    */
-  function setUp() {
+  public function setUp() {
     parent::setUp(array('views', 'past', 'past_db', 'entityreference'));
     $admin = $this->drupalCreateUser(array('administer past', 'view past reports'));
     $this->drupalLogin($admin);
@@ -80,7 +86,7 @@ class PastDBTest extends PastDBBaseTestCase {
   /**
    * Tests event bundles.
    */
-  function testEventBundles() {
+  public function testEventBundles() {
     $event_type = past_event_type_create('test_event', 'Test event');
     $event_type->save();
 
@@ -102,7 +108,7 @@ class PastDBTest extends PastDBBaseTestCase {
   /**
    * Tests event extra fields display.
    */
-  function testEventExtraFields() {
+  public function testEventExtraFields() {
     // Check for default bundle.
     $this->drupalGet('admin/config/development/past-types');
     $this->assertText('Machine name: past_event', 'Default bundle was found.');
@@ -119,7 +125,7 @@ class PastDBTest extends PastDBBaseTestCase {
     // Add new bundle.
     $edit = array(
       'label' => 'Test bundle',
-      'type' => 'test_bundle'
+      'type' => 'test_bundle',
     );
     $this->drupalPost('admin/config/development/past-types/add', $edit, t('Save past event type'));
     $this->assertText('Machine name: ' . $edit['type'], 'Create bundle was found.');
@@ -140,6 +146,7 @@ class PastDBTest extends PastDBBaseTestCase {
       'module' => 'testmodule',
       'machine_name' => 'testmachinename',
     );
+    /* @var PastEvent $event */
     $event = entity_create('past_event', $values);
     $event->save();
     $this->drupalGet('admin/reports/past/' . $event->event_id);
@@ -148,7 +155,10 @@ class PastDBTest extends PastDBBaseTestCase {
     $this->assertText($values['machine_name']);
   }
 
-  function testFieldability() {
+  /**
+   * Test fieldability.
+   */
+  public function testFieldability() {
     // Add new bundle.
     $bundle = 'test_bundle';
     $edit = array(
@@ -172,11 +182,11 @@ class PastDBTest extends PastDBBaseTestCase {
 
     // Create an event of the bundle.
     $values = array(
-      //'bundle' => $bundle,
       'message' => 'testmessage',
       'module' => 'testmodule',
       'machine_name' => 'testmachinename',
     );
+    /* @var PastEvent $event */
     $event = entity_create('past_event', $values);
     $event->{$field_instance['field_name']}[LANGUAGE_NONE][0]['target_id'] = $referenced_event->event_id;
     $event->type = $bundle;
@@ -215,7 +225,7 @@ class PastDBTest extends PastDBBaseTestCase {
     // Test if we have correct classes for severities.
     $class_names = past_db_severity_css_classes_map();
     $i = 0;
-    /** @var SimpleXMLElement $row */
+    /* @var SimpleXMLElement $row */
     foreach ($this->xpath('//table[contains(@class, @views-table)]/tbody/tr') as $row) {
       // Testing first 10 should be enough.
       if ($i > 9) {
@@ -260,7 +270,7 @@ class PastDBTest extends PastDBBaseTestCase {
     $this->assertText('‹ previous');
     $this->assertText('« first');
 
-    // Go to the first detail page
+    // Go to the first detail page.
     $this->drupalGet('admin/reports/past/1');
 
     $this->assertText($this->machine_name);
@@ -293,7 +303,8 @@ class PastDBTest extends PastDBBaseTestCase {
   /**
    * Creates an entityreference field and adds an instance of it to a bundle.
    *
-   * @param $bundle
+   * @param string $bundle
+   *   The bundle name.
    *
    * @return array
    *   The definition of the field instance.

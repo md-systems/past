@@ -48,8 +48,8 @@ function past_form_views_api() {
  * A form has a default #submit handler with name FORM_ID_submit.
  * If an element has its own #submit handler, the global one isn't called.
  *
- * We extend the global form handler. If not yet defined, we add the default one first.
- * Same story for #validate handlers.
+ * We extend the global form handler. If not yet defined, we add the default one
+ * first. Same story for #validate handlers.
  * We add element specific handlers if there are already specific defined.
  * Views exposed forms are excluded.
  */
@@ -76,7 +76,7 @@ function past_form_form_alter(&$form, &$form_state, $form_id) {
   if (!$log_form) {
     return;
   }
-  if (!empty($form_state['always_process']) && $form_state['always_process']==TRUE) {
+  if (!empty($form_state['always_process']) && $form_state['always_process'] == TRUE) {
     // Views does always_process to TRUE that leads to "fake" validate/submit
     // even for regular views page loads with exposed forms.
     // @todo find a way to identify real validations/submits in this case.
@@ -136,7 +136,7 @@ function past_form_attach_recursive(&$subform, $form_state, $form_id) {
     $element =& $subform[$key];
     if (!empty($element['#type']) && $element['#type'] == 'submit') {
       if (!empty($element['#submit']) ||
-          (array_key_exists('#submit', $element) && count($element['#submit']) == 0) ) {
+          (array_key_exists('#submit', $element) && count($element['#submit']) == 0)) {
         // Add past_form submit handler if there is a specific one already.
         // Check also for empty array, to make sure we log all submission.
         $element['#submit'][] = 'past_form_submit';
@@ -146,7 +146,7 @@ function past_form_attach_recursive(&$subform, $form_state, $form_id) {
     if (variable_get('past_form_log_validations', 0)) {
       if (!empty($element['#type']) &&
         (in_array('submit', $element) || in_array('button', $element) ||
-         in_array('image_button', $element)) ) {
+         in_array('image_button', $element))) {
         if (!empty($element['#validate']) ||
             (array_key_exists('#validate', $element) && count($element['#validate']) == 0)) {
           // Only add the validation handler if there is a specific one already.
@@ -156,13 +156,18 @@ function past_form_attach_recursive(&$subform, $form_state, $form_id) {
       }
     }
 
-    // Check further subelements.
+    // Check further sub elements.
     past_form_attach_recursive($element, $form_state, $form_id);
   }
 }
 
 /**
  * Process submission.
+ *
+ * @param array $form
+ *   The form array of which an event will be saved for.
+ * @param array &$form_state
+ *   The form state array of the form of which an event will be saved for.
  */
 function past_form_submit($form, &$form_state) {
   _past_form_save_event($form, $form_state);
@@ -170,6 +175,11 @@ function past_form_submit($form, &$form_state) {
 
 /**
  * Process validation.
+ *
+ * @param array $form
+ *   The form array of which an event will be saved for.
+ * @param array &$form_state
+ *   The form state array of the form of which an event will be saved for.
  */
 function past_form_validate($form, &$form_state) {
   $errors = form_get_errors();
@@ -187,7 +197,7 @@ function past_form_validate($form, &$form_state) {
  *   The form state array of the form of which an event will be saved for.
  * @param string $machine_name
  *   The machine name of the event.
- * @param string $machine_name
+ * @param string $message_prefix
  *   Prefix of the event message.
  * @param array $errors
  *   Validation errors that will be logged.

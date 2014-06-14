@@ -12,6 +12,9 @@ class PastNullTestTestNull extends DrupalWebTestCase {
 
   protected $profile = 'testing';
 
+  /**
+   * {@inheritdoc}
+   */
   static function getInfo() {
     return array(
       'name' => 'Past Null Event implementation tests',
@@ -20,6 +23,9 @@ class PastNullTestTestNull extends DrupalWebTestCase {
     );
   }
 
+  /**
+   * {@inheritdoc}
+   */
   function setUp() {
     parent::setUp(array('past'));
   }

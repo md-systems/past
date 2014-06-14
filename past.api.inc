@@ -13,7 +13,7 @@ interface PastEventInterface {
   /**
    * Returns the ID of the event, if saved.
    *
-   * @return integer
+   * @return int
    *   The event ID.
    */
   public function id();
@@ -36,6 +36,7 @@ interface PastEventInterface {
    * identify past events.
    *
    * @param string $machine_name
+   *   The machine name.
    *
    * @return PastEventInterface
    *   The current object.
@@ -44,7 +45,7 @@ interface PastEventInterface {
 
   /**
    *
-   * @param type $message
+   * @param string $message
    *
    * @return PastEventInterface
    *   The current object.
@@ -182,7 +183,7 @@ interface PastEventInterface {
   /**
    * Returns all arguments of this event.
    *
-   * @return array
+   * @return PastEventArgumentInterface[]
    *   Array of all arguments of this event, keyed by key.
    */
   public function getArguments();
@@ -190,7 +191,7 @@ interface PastEventInterface {
   /**
    * Returns a specific argument based on the key.
    *
-   * @param $key
+   * @param string $key
    *   The key of the argument.
    *
    * @return PastEventArgumentInterface
@@ -201,7 +202,7 @@ interface PastEventInterface {
   /**
    * Adds an exception.
    *
-   * @param $exception
+   * @param Exception $exception
    *   The exception.
    * @param array $options
    *   Options for the argument. Currently supported:
@@ -216,7 +217,7 @@ interface PastEventInterface {
   /**
    * Allows to reference this to a parent event.
    *
-   * @param $event_id
+   * @param int $event_id
    *   The event id of the event this belongs to.
    *
    * @return PastEventInterface
@@ -227,7 +228,7 @@ interface PastEventInterface {
   /**
    * Sets the event timestamp.
    *
-   * @param integer $timestamp
+   * @param int $timestamp
    *   The unix timestamp when this event happened.
    *
    * @return PastEventInterface
@@ -257,7 +258,7 @@ interface PastEventInterface {
   /**
    * Returns the timestamp when the event happened.
    *
-   * @return integer
+   * @return int
    *   The timestamp when the event happened.
    */
   public function getTimestamp();
@@ -338,10 +339,10 @@ interface PastEventArgumentInterface {
   /**
    * Add raw data to the argument, which will be saved as a serialized string.
    *
-   * Use this if it is required to have acess to the original data structure
+   * Use this if it is required to have access to the original data structure
    * later on.
    *
-   * @param mixd $raw
+   * @param mixed $raw
    *   Any serializable data structure.
    */
   public function setRaw($raw);
@@ -355,7 +356,7 @@ interface PastEventDataInterface {
   /**
    * Returns the ID of the data, if saved.
    *
-   * @return integer
+   * @return int
    *   The event ID.
    */
   public function id();

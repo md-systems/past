@@ -4,6 +4,9 @@
  * Past Bughunt views for the Views module.
  */
 
+/**
+ * Implements hook_views_default_views().
+ */
 function past_bughunt_views_default_views() {
   $views = array();
   // TODO view.

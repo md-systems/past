@@ -99,6 +99,9 @@ class PastGrabberTest extends DrupalWebTestCase {
 
   protected $log_file;
 
+  /**
+   * {@inheritdoc}
+   */
   static function getInfo() {
     return array(
       'name' => 'Past Grabber tests',
@@ -107,6 +110,9 @@ class PastGrabberTest extends DrupalWebTestCase {
     );
   }
 
+  /**
+   * {@inheritdoc}
+   */
   function setUp() {
     parent::setUp(array('past', 'past_db', 'past_grabber'));
     $log = '';
@@ -125,6 +131,9 @@ class PastGrabberTest extends DrupalWebTestCase {
     file_put_contents($this->log_file, $log);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   function tearDown() {
     // Cleanup our temporary test log file.
     unlink($this->log_file);
@@ -268,6 +277,13 @@ if (!function_exists('drush_get_option')) {
   /**
    * Fake drush function drush_get_option().
    *
+   * @param string $option
+   *   Not used.
+   * @param string $default
+   *   (optional) The value to return.
+   * @param string $context
+   *   (optional) Not used.
+   *
    * @return string
    *   Default option value.
    */
@@ -277,6 +293,11 @@ if (!function_exists('drush_get_option')) {
 
   /**
    * Fake drush function drush_print().
+   *
+   * @param string $message
+   *   (optional) Not used.
+   * @param int $indent
+   *   (optional) Not used.
    */
   function drush_print($message = '', $indent = 0) {
   }
@@ -285,6 +306,14 @@ if (!function_exists('drush_get_option')) {
    * Fake drush function dt().
    *
    * Pass call to t().
+   *
+   * @param string $string
+   *   A string containing the English string to translate.
+   * @param array $args
+   *   (optional) An associative array of replacements to make after translation.
+   *
+   * @return string
+   *   The translated string.
    */
   function dt($string, $args = array()) {
     return t($string, $args);

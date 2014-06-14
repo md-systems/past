@@ -35,6 +35,11 @@ function past_grabber_drush_command() {
 
 /**
  * Will run grabber for provided error log file.
+ *
+ * @param string $path
+ *   (optional) Path to the error log file.
+ * @param string $type
+ *   (optional) PHP Error type. Use names as they appear in the log file.
  */
 function past_grabber_drush_grab($path = NULL, $type = NULL) {
   if ($path === NULL) {

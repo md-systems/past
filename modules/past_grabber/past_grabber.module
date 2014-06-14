@@ -46,6 +46,9 @@ function past_grabber_form_past_admin_settings_alter(&$form, &$form_state) {
 
 /**
  * Submit callback to reset log file pointer.
+ *
+ * @param array $form
+ * @param array &$form_state
  */
 function _past_grabber_reset_error_log_line_pointer($form, &$form_state) {
   variable_set('past_grabber_log_file_line', 0);
@@ -53,6 +56,9 @@ function _past_grabber_reset_error_log_line_pointer($form, &$form_state) {
 
 /**
  * Validate callback for grabber settings.
+ *
+ * @param array $form
+ * @param array &$form_state
  */
 function past_grabber_admin_settings_validate(&$form, &$form_state) {
   if (!empty($form_state['values']['past_grabber_file_path']) && !is_readable($form_state['values']['past_grabber_file_path'])) {
@@ -85,15 +91,15 @@ function past_grabber_cron() {
  * @param string $path
  *   Error log file path.
  * @param $position
- *   File pointer position
+ *   (optional) File pointer position
  * @param string $error_type
- *   Error type to be logged.
+ *   (optional) Error type to be logged.
  * @param int $limit
- *   Limit for processed error log entries.
+ *   (optional) Limit for processed error log entries.
  * @param int $severity
- *   Past severity.
+ *   (optional) Past severity.
  * @param string $machine_name
- *   Past event machine name.
+ *   (optional) Past event machine name.
  *
  * @return array
  *   - position - new file pointer position.
@@ -196,7 +202,7 @@ function past_grabber_parse_error_log($path, $position = NULL, $error_type = PAS
  * @param string $line
  *   Log entry to parse.
  * @param string $type
- *   What error type to parse.
+ *   (optiona) What error type to parse.
  *
  * @return array
  *   Associative array with parsed data.

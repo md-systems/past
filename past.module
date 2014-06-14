@@ -6,7 +6,7 @@
  */
 
 /**
- * Severities correspond to Log message severity from WATCHDOG
+ * Severities correspond to Log message severity from WATCHDOG.
  * @see bootstrap.inc
  */
 define('PAST_SEVERITY_EMERGENCY', 0);
@@ -23,9 +23,9 @@ define('PAST_SEVERITY_DEBUG', 7);
  *
  * @param string $module
  *   The name of the module which is logging the event.
- * @param $machine_name
+ * @param string $machine_name
  *   The machine name of the event.
- * @param type $message
+ * @param string $message
  *   A description of the event.
  * @param array $arguments
  *   An array of arguments to be saved with the event. They array key is used
@@ -38,6 +38,7 @@ define('PAST_SEVERITY_DEBUG', 7);
  *     - uid: Drupal user id.
  *
  * @return PastEventInterface
+ *   The event created.
  *
  * @see past_event_create()
  */
@@ -56,21 +57,20 @@ function past_event_save($module, $machine_name, $message, array $arguments = ar
  *
  * @param string $module
  *   The name of the module which is logging the event.
- * @param $machine_name
+ * @param string $machine_name
  *   The machine name of the event.
- * @param type $message
+ * @param string $message
  *   A description of the event.
- * @param array $arguments
- *   An array of arguments to be saved with the event. They array key is used
- *   as the argument key and the value is the argument data.
  * @param array $options
  *   An array of additional options. Any of the following:
  *     - timestamp: Override the timestamp, defaults to REQUEST_TIME
  *     - severity: One of PAST_SEVERITY_DEBUG, PAST_SEVERITY_INFO,
  *         PAST_SEVERITY_WARNING and PAST_SEVERITY_ERROR.
  *     - uid: Drupal user id.
+ *     - session_id: Session ID.
  *
  * @return PastEventInterface
+ *   The event created.
  *
  * @see past_event_save()
  */
@@ -78,12 +78,12 @@ function past_event_create($module, $machine_name, $message = NULL, array $optio
   $past_backend_factory = variable_get('past_backend', 'past_db_create_event');
   // If the function doesn't exist, return a null implementation to avoid fatal
   // errors.
-  // Explicit check for past_db is necessary when tests are executed and past_db is
-  // in the parent site.enabled.
+  // Explicit check for past_db is necessary when tests are executed and past_db
+  // is in the parent site.enabled.
   if (!function_exists($past_backend_factory) ||
     (!module_exists('past_db') && $past_backend_factory == 'past_db_create_event')) {
     // In certain conditions, for example an E_STRICT error during class auto
-    // loading, we can not autoload classes, so do it manually.
+    // loading, we can not auto load classes, so do it manually.
     if (!class_exists('PastEventNull')) {
       require_once drupal_get_path('module', 'past') . '/past.api.inc';
       require_once drupal_get_path('module', 'past') . '/past.null.inc';
@@ -117,7 +117,7 @@ function past_event_create($module, $machine_name, $message = NULL, array $optio
       // HTTPS Session.
       $event->setSessionId($user->ssid);
     }
-    else if (!empty($user->sid)) {
+    elseif (!empty($user->sid)) {
       $event->setSessionId($user->sid);
     }
     else {
@@ -166,6 +166,10 @@ function past_event_create($module, $machine_name, $message = NULL, array $optio
 
 /**
  * Returns an array of past event severities.
+ *
+ * @return array
+ *   The severities of Past events. Keys are severity codes, values are
+ *   readable names.
  */
 function past_event_severities() {
   return array(
@@ -193,38 +197,6 @@ function past_init() {
   }
 }
 
-/**
- * Implements hook_requirements().
- */
-function past_requirements($phase) {
-  $requirements = array();
-  if ($phase == 'runtime') {
-    $past_backend_factory = variable_get('past_backend', 'past_db_create_event');
-    // If the function doesn't exist, return a null implementation to avoid fatal
-    // errors.
-    $severity = REQUIREMENT_OK;
-    $description = t('Past backend is configured correctly.');
-    if (!function_exists($past_backend_factory)) {
-      $severity = REQUIREMENT_ERROR;
-      $description = t('Past backend missing (%factory), install and configure a valid backend, like past_db.', array('%factory' => $past_backend_factory));
-    }
-    else {
-      $event = $past_backend_factory();
-      if (!$event) {
-        $severity = REQUIREMENT_ERROR;
-        $description = t('Past backend (%factory) did not return a valid event instance.', array('%factory' => $past_backend_factory));
-      }
-    }
-    $requirements['past'] = array(
-      'title' => t('Past backend'),
-      'description' => $description,
-      'value' => $past_backend_factory,
-      'severity' => $severity,
-    );
-  }
-
-  return $requirements;
-}
 
 /**
  * Implements hook_menu().
@@ -318,6 +290,9 @@ function past_form_system_logging_settings_alter(&$form, &$form_state) {
 
 /**
  * Custom exception handler.
+ *
+ * @param Exception $exception
+ *   The exception for which an event is created.
  */
 function _past_exception_handler($exception) {
   require_once DRUPAL_ROOT . '/includes/errors.inc';
@@ -335,7 +310,8 @@ function _past_exception_handler($exception) {
   }
   catch (Exception $exception2) {
     // Another uncaught exception was thrown while handling the first one.
-    // If we are displaying errors, then do so with no possibility of a further uncaught exception being thrown.
+    // If we are displaying errors, then do so with no possibility of a further
+    // uncaught exception being thrown.
     if (error_displayable()) {
       print '<h1>Additional uncaught exception thrown while handling exception.</h1>';
       print '<h2>Original</h2><p>' . _drupal_render_exception_safe($exception) . '</p>';
@@ -346,6 +322,9 @@ function _past_exception_handler($exception) {
 
 /**
  * Provides the default enabled watchdog severities to include in backtrace.
+ *
+ * @return array
+ *   Keys are Watchdog severity levels, values are unset.
  */
 function _past_watchdog_severity_defaults() {
   return drupal_map_assoc(array(
@@ -359,12 +338,21 @@ function _past_watchdog_severity_defaults() {
 
 /**
  * Ported format_backtrace from D8 and customized.
+ *
+ * @param string $severity_level
+ *   The name of a Watchdog severity level.
+ * @param int $slice
+ *   How many entries to skip. Default is 5, because those will always be the
+ *   same.
+ *
+ * @return string
+ *   Plain-text backtrace.
  */
 function _past_get_formatted_backtrace($severity_level, $slice = 5) {
   $log_backtrace = variable_get('past_backtrace_include', _past_watchdog_severity_defaults());
   $severity_keyvalue = 'WATCHDOG_SEVERITY_' . $severity_level;
   if (empty($log_backtrace[$severity_keyvalue])) {
-    return;
+    return NULL;
   }
 
   // Skip the given entries (by default 5), as they'll always be the same.
@@ -407,7 +395,13 @@ function _past_get_formatted_backtrace($severity_level, $slice = 5) {
 }
 
 /**
- * Format an exception array to a past event.
+ * Prepare a watchdog error array for use as event argument.
+ *
+ * @param array $error
+ *   The error to process.
+ *
+ * @return array
+ *   The prepared argument array.
  */
 function _past_error_array_to_event($error) {
   // Make the output of the exception nicer (remove special chars).
@@ -466,6 +460,9 @@ function _past_shutdown_function() {
 
 /**
  * Past backend factory function to create a null event.
+ *
+ * @return PastEventNull
+ *   The null implementation of a past event.
  */
 function past_null_create_event() {
   return new PastEventNull();

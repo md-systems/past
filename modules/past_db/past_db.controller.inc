@@ -11,7 +11,6 @@
 class PastEventController extends EntityAPIController {
 
   /**
-   *
    * @var InsertQuery
    */
   protected $insert;
@@ -38,10 +37,10 @@ class PastEventController extends EntityAPIController {
   }
 
   /**
-   * Permanently saves the given event entity.
    * {@inheritdoc}
    */
   public function save($entity, DatabaseTransaction $transaction = NULL) {
+    /* @var PastEvent $entity */
     // Limit length of message.
     if (strlen($entity->message) > 255) {
       $entity->message = substr($entity->message, 0, 250) . '...';
@@ -56,15 +55,16 @@ class PastEventController extends EntityAPIController {
 
     // Update child events to use the parent_event_id.
     if ($child_events = $entity->getChildEvents()) {
-    db_update('past_event')
-      ->fields(array(
-        'parent_event_id' => $entity->event_id
-      ))
-      ->condition('event_id', $child_events)
-      ->execute();
+      db_update('past_event')
+        ->fields(array(
+          'parent_event_id' => $entity->event_id,
+        ))
+        ->condition('event_id', $child_events)
+        ->execute();
     }
 
-    // If running in a WebTestCase environment, propagate the log into simpletest log.
+    // If running in a WebTestCase environment, propagate the log into
+    // simpletest log.
   }
 
   /**
@@ -91,6 +91,11 @@ class PastEventController extends EntityAPIController {
 class PastEventArgumentController extends EntityAPIController {
 
   /**
+   * @var InsertQuery
+   */
+  protected $insert;
+
+  /**
    * {@inheritdoc}
    */
   public function create(array $values = array()) {
@@ -104,6 +109,7 @@ class PastEventArgumentController extends EntityAPIController {
    * {@inheritdoc}
    */
   public function save($entity, DatabaseTransaction $transaction = NULL) {
+    /* @var PastEventArgument $entity */
 
     // Make sure the type is set.
     $entity->ensureType();
@@ -113,7 +119,9 @@ class PastEventArgumentController extends EntityAPIController {
     // Save data.
     if ($data = $entity->getOriginalData()) {
       $this->insert = db_insert('past_event_data')
-        ->fields(array('argument_id', 'parent_data_id', 'type', 'name', 'value', 'serialized'));
+        ->fields(array(
+          'argument_id', 'parent_data_id', 'type', 'name', 'value', 'serialized',
+        ));
       $this->normalizeData($entity->argument_id, $data);
       try {
         $this->insert->execute();
@@ -137,8 +145,11 @@ class PastEventArgumentController extends EntityAPIController {
   }
 
   /**
+   * Normalize data.
    *
-   * @param type $data
+   * @param $argument_id
+   * @param $data
+   * @param int $parent_data_id
    */
   protected function normalizeData($argument_id, $data, $parent_data_id = 0) {
     if (is_array($data) || is_object($data)) {

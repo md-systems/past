@@ -184,7 +184,7 @@ function past_testhidden_form_empty_submit_array($form_state) {
 }
 
 /**
- * Empty submit handler form' submit handler
+ * Empty submit handler form submit handler.
  */
 function past_testhidden_form_empty_submit_array_submit($form, &$form_state) {
   drupal_set_message(format_string('global submit handler called by !form_id', array('!form_id' => $form['#form_id'])));
@@ -212,7 +212,7 @@ function past_testhidden_form_default_submit_handler($form_state) {
 }
 
 /**
- * Default submit handler form' submit handler.
+ * Default submit handler form submit handler.
  */
 function past_testhidden_form_default_submit_handler_submit($form, &$form_state) {
   drupal_set_message(format_string('global submit handler called by !form_id', array('!form_id' => $form['#form_id'])));
@@ -301,7 +301,9 @@ function past_testhidden_form_three_buttons($form_state) {
 
 /**
  * Form with three buttons each having a custom submit handler.
- * There is also a global submit handler, which again never will be called, as overwritten.
+ *
+ * There is also a global submit handler, which again never will be called, as
+ * overwritten.
  */
 function past_testhidden_form_three_buttons_with_submit_handlers($form_state) {
   drupal_set_message('form handler called by past_testhidden_form_three_buttons_with_submit_handlers');

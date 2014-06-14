@@ -7,7 +7,10 @@
 
 class PastFormTest extends DrupalWebTestCase {
 
-  static function getInfo() {
+  /**
+   * {@inheritdoc}
+   */
+  public static function getInfo() {
     return array(
       'name' => 'Past Form tests',
       'description' => 'Generic Form tests using the database backend',
@@ -15,7 +18,10 @@ class PastFormTest extends DrupalWebTestCase {
     );
   }
 
-  function setUp() {
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
     parent::setUp(array('past', 'past_db', 'past_form', 'past_testhidden'));
     variable_set('past_form_log_form_ids', '*');
   }
@@ -23,7 +29,7 @@ class PastFormTest extends DrupalWebTestCase {
   /**
    * Tests an empty submit handler array.
    */
-  function testFormEmptyArray() {
+  public function testFormEmptyArray() {
     // Given a simple form with one button with empty #submit array.
     // Submit the global submit button.
     // Check if the default form handler is executed.
@@ -45,7 +51,7 @@ class PastFormTest extends DrupalWebTestCase {
   /**
    * Tests the exclusion of views exposed form submission.
    */
-  function testViewsExposedForm() {
+  public function testViewsExposedForm() {
     // Check that views_exposed_filter is not recorded.
     $admin = $this->drupalCreateUser(array('view past reports'));
     $this->drupalLogin($admin);
@@ -70,9 +76,9 @@ class PastFormTest extends DrupalWebTestCase {
   }
 
   /**
-   * Tests a form without submit hanlder.
+   * Tests a form without submit handler.
    */
-  function testFormNoSubmithandler() {
+  public function testFormNoSubmithandler() {
     // Given a simple form with one button with default #submit function entry.
     // Same as above.
     $edit = array();
@@ -94,7 +100,7 @@ class PastFormTest extends DrupalWebTestCase {
   /**
    * Tests a forms with global/custom submit hanlder.
    */
-  function testFormCustomSubmithandler() {
+  public function testFormCustomSubmithandler() {
     // Given a simple form with one button with special #submit function..
     // Submit a form with global submit handler.
     // Check if the form handler is executed.
@@ -134,7 +140,7 @@ class PastFormTest extends DrupalWebTestCase {
   /**
    * Tests a form with several submits.
    */
-  function testFormThreeButtons() {
+  public function testFormThreeButtons() {
     // Given a simple form with three buttons without specific handlers
     // Submit each button.
     // Check the logs if the submissions where captured.
@@ -188,7 +194,7 @@ class PastFormTest extends DrupalWebTestCase {
   /**
    * Tests a form with several submits having submit handlers.
    */
-  function testFormThreeButtonsWithHandlers() {
+  public function testFormThreeButtonsWithHandlers() {
     // Given a simple form with three buttons.
     // Each of the buttons has an own #submit handler.
     // Submit each button.
@@ -248,7 +254,7 @@ class PastFormTest extends DrupalWebTestCase {
   /**
    * Tests a form with type=button submits having submit handlers.
    */
-  function testFormUseButtonAsSubmit() {
+  public function testFormUseButtonAsSubmit() {
     // Capture #type=button submissions.
     $edit = array();
     $form_id = 'past_testhidden_form_normal_button';
@@ -264,7 +270,7 @@ class PastFormTest extends DrupalWebTestCase {
   /**
    * Tests a form validation.
    */
-  function testFormValidation() {
+  public function testFormValidation() {
     // Enable validation logging.
     variable_set('past_form_log_validations', TRUE);
     // Capture case for a failing validations.
@@ -307,7 +313,7 @@ class PastFormTest extends DrupalWebTestCase {
         'submitted' => '2',
       ),
     );
-    $this->assertSameEvent($event, $event_to_be, $form_id, $button_value, NULL, $errors_to_be);
+    $this->assertSameEvent($event, $event_to_be, $form_id, $button_value, array(), $errors_to_be);
 
 
     $edit = array();
@@ -324,11 +330,11 @@ class PastFormTest extends DrupalWebTestCase {
     $errors_to_be = array(
       'sample_select' => array(
         'message' => 'Sample Select: says, don\'t be a maybe ..',
-        'submitted' => '2'
+        'submitted' => '2',
       ),
     );
     // @todo wrong!
-    $this->assertSameEvent($event, $event_to_be, $form_id, $button_value, NULL, $errors_to_be);
+    $this->assertSameEvent($event, $event_to_be, $form_id, $button_value, array(), $errors_to_be);
 
     // Test validation logging of nested form elements.
     $form_id = 'past_testhidden_form_nested';
@@ -350,7 +356,7 @@ class PastFormTest extends DrupalWebTestCase {
       ),
     );
     // Compare artificial event with logged event.
-    $this->assertSameEvent($event, $event_to_be, $form_id, $button_value, NULL, $errors_to_be, TRUE, 'Validation of nested elements was logged correctly.');
+    $this->assertSameEvent($event, $event_to_be, $form_id, $button_value, array(), $errors_to_be, 'Validation of nested elements was logged correctly.');
 
     // Test if submission is logged as expected.
     $edit = array(
@@ -366,13 +372,13 @@ class PastFormTest extends DrupalWebTestCase {
         'field_2' => $edit['wrapper[field_2]'],
       ),
     );
-    $this->assertSameEvent($event, $event_to_be, $form_id, $button_value, $values_to_be, NULL, TRUE, 'Submission of nested elements was logged correctly');
+    $this->assertSameEvent($event, $event_to_be, $form_id, $button_value, $values_to_be, array(), 'Submission of nested elements was logged correctly');
   }
 
   /**
    * Tests a multi step form.
    */
-  function testFormMultistep() {
+  public function testFormMultistep() {
     // Capture multistep submissions.
     $edit = array();
     $form_id = 'past_testhidden_form_multistep';
@@ -423,7 +429,7 @@ class PastFormTest extends DrupalWebTestCase {
       'back' => 'Back',
     );
 
-    $this->assertSameEvent($event, $event_to_be, $form_id, $button_value, $values_to_be, NULL, FALSE);
+    $this->assertSameEvent($event, $event_to_be, $form_id, $button_value, $values_to_be);
 
     $button_value = 'Next';
     $this->drupalPost(NULL, $edit, $button_value);
@@ -437,7 +443,7 @@ class PastFormTest extends DrupalWebTestCase {
       'back' => 'Back',
     );
 
-    $this->assertSameEvent($event, $event_to_be, $form_id, $button_value, $values_to_be, NULL, FALSE);
+    $this->assertSameEvent($event, $event_to_be, $form_id, $button_value, $values_to_be);
 
     $button_value = 'Submit';
     $this->drupalPost(NULL, $edit, $button_value);
@@ -456,23 +462,23 @@ class PastFormTest extends DrupalWebTestCase {
   /**
    * Tests an ajax form.
    */
-  function testFormAjax() {
+  public function testFormAjax() {
     // Capture ajax submissions.
     $edit = array();
     $form_id = 'past_testhidden_form_simple_ajax';
     $button_value = 'Submit';
     $this->drupalGet($form_id);
     $this->assertRaw('form handler called by ' . $form_id);
-    $values = $this->drupalPostAJAX(NULL, $edit,  array('op' => $button_value), 'system/ajax', array(), array(), str_replace('_', '-', $form_id));
+    $values = $this->drupalPostAJAX(NULL, $edit, array('op' => $button_value), 'system/ajax', array(), array(), str_replace('_', '-', $form_id));
 
-    $got_glboal_handler = FALSE;
+    $got_global_handler = FALSE;
     $got_custom_handler = FALSE;
     $got_ajax = FALSE;
     foreach ($values as $value) {
       foreach ($value as $key => $val) {
         if ($key == 'data') {
           if (strrpos($val, 'global submit handler called by ' . $form_id) !== FALSE) {
-            $got_glboal_handler = TRUE;
+            $got_global_handler = TRUE;
           }
           elseif (strrpos($val, 'custom submit handler called by ' . $form_id) !== FALSE) {
             $got_custom_handler = TRUE;
@@ -483,7 +489,7 @@ class PastFormTest extends DrupalWebTestCase {
         }
       }
     }
-    $this->assertFalse($got_glboal_handler, 'Global submit handler for ' . $form_id . ' was called.');
+    $this->assertFalse($got_global_handler, 'Global submit handler for ' . $form_id . ' was called.');
     $this->assertTrue($got_custom_handler, 'Custom submit handler for ' . $form_id . ' was called.');
     $this->assertTrue($got_ajax, 'Expected AJAX value is in JSON response.');
 
@@ -498,7 +504,7 @@ class PastFormTest extends DrupalWebTestCase {
   /**
    * Tests the include filter.
    */
-  function testFormIDFilter() {
+  public function testFormIDFilter() {
     $edit = array();
     $form_id = 'past_testhidden_form_empty_submit_array';
     $button_value = 'Submit';
@@ -524,7 +530,8 @@ class PastFormTest extends DrupalWebTestCase {
     $this->drupalGet($form_id);
     $this->drupalPost(NULL, $edit, $button_value);
 
-    // This new event should not be logged, so still the old event should be fetched.
+    // This new event should not be logged, so still the old event should be
+    // fetched.
     $event = $this->getLastEventByMachinename('submit');
     $this->assertSameEvent($event, $event_to_be, 'past_testhidden_form_empty_submit_array', $button_value);
 
@@ -637,7 +644,17 @@ class PastFormTest extends DrupalWebTestCase {
   /**
    * Returns a standard past_form event.
    *
+   * @param string $machine_name
+   *   The machine name of the event.
+   * @param string $form_id
+   *   The machine name of the form.
+   * @param string $button_value
+   *   The string shown on the submit button.
+   * @param string $message
+   *   (optional) A description of the event.
+   *
    * @return PastEvent
+   *   The event created.
    */
   public function getEventToBe($machine_name, $form_id, $button_value, $message = 'Form submitted:') {
     $event = past_event_create('past_form', $machine_name, $message . ' ' . $form_id . ', ' . $button_value);
@@ -647,8 +664,21 @@ class PastFormTest extends DrupalWebTestCase {
 
   /**
    * Compares two past_form events.
+   *
+   * @param PastEventInterface $first
+   * @param PastEventInterface $second
+   * @param string $form_id
+   *   The machine name of the form.
+   * @param string $button_value
+   *   The string shown on the submit button.
+   * @param array $values
+   *   (optional) Values to check on 'values' argument.
+   * @param array $errors
+   *   (optional) Errors to check on 'errors' argument.
+   * @param string|null $message
+   *   (optional) A description of the event.
    */
-  public function assertSameEvent($first, $second, $form_id, $button_value, $values = array(), $errors = NULL, $check_form_id_and_op = TRUE, $message = NULL) {
+  public function assertSameEvent(PastEventInterface $first, PastEventInterface $second, $form_id, $button_value, array $values = array(), array $errors = array(), $message = NULL) {
     if (!empty($first)) {
       $mismatch = array();
 
@@ -671,17 +701,13 @@ class PastFormTest extends DrupalWebTestCase {
         $mismatch[] = 'operation';
       }
 
-      if (empty($values)) {
-        $values = array();
-      }
-      $arg_values = $first->getArgument('values')->getData();
-      foreach ($values as $k => $v) {
-        if ($arg_values[$k] != $v) {
-          $mismatch[] = 'value: ' . $v;
+      if (!empty($values)) {
+        $arg_values = $first->getArgument('values')->getData();
+        foreach ($values as $k => $v) {
+          if ($arg_values[$k] != $v) {
+            $mismatch[] = 'value: ' . $v;
+          }
         }
-      }
-      if (!empty($mismatch)) {
-        $this->fail('The following properties do not match: ' . implode(', ', $mismatch));
       }
 
       if (!empty($errors)) {
@@ -691,10 +717,12 @@ class PastFormTest extends DrupalWebTestCase {
             $mismatch[] = 'error value: ' . $v;
           }
         }
-        if (!empty($mismatch)) {
-          $this->fail('The following properties do not match: ' . implode(', ', $mismatch));
-        }
       }
+
+      if (!empty($mismatch)) {
+        $this->fail('The following properties do not match: ' . implode(', ', $mismatch));
+      }
+
       $this->assertTrue(empty($mismatch), ($message ? $message : t('Event @first is equal to @second.', array('@first' => $first->getMessage(), '@second' => $second->getMessage()))));
     }
     else {

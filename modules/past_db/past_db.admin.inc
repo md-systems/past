@@ -8,7 +8,7 @@
 /**
  * Generates the past_event type editing form.
  */
-function past_event_type_form($form, &$form_state, $past_event_type, $op = 'edit') {
+function past_event_type_form($form, &$form_state, PastEventType $past_event_type, $op = 'edit') {
 
   if ($op == 'clone') {
     $past_event_type->label .= ' (cloned)';
@@ -59,7 +59,7 @@ function past_event_type_form($form, &$form_state, $past_event_type, $op = 'edit
       '#value' => t('Delete past_event type'),
       '#weight' => 45,
       '#limit_validation_errors' => array(),
-      '#submit' => array('past_event_type_form_submit_delete')
+      '#submit' => array('past_event_type_form_submit_delete'),
     );
   }
   return $form;

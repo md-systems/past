@@ -9,6 +9,9 @@ class PastTest extends DrupalWebTestCase {
 
   protected $profile = 'testing';
 
+  /**
+   * {@inheritdoc}
+   */
   static function getInfo() {
     return array(
       'name' => 'Past API tests',
@@ -17,6 +20,9 @@ class PastTest extends DrupalWebTestCase {
     );
   }
 
+  /**
+   * {@inheritdoc}
+   */
   function setUp() {
     parent::setUp(array('past', 'past_db', 'past_testhidden'));
   }
@@ -335,6 +341,9 @@ class PastTest extends DrupalWebTestCase {
 
   /**
    * Asserts if $text contains $chunk.
+   *
+   * @param string $text
+   * @param string $chunk
    */
   function assertTextContains($text, $chunk) {
     $this->assert(strpos($text, $chunk) !== FALSE,
@@ -345,6 +354,9 @@ class PastTest extends DrupalWebTestCase {
   }
   /**
    * Asserts if $text starts with $chunk.
+   *
+   * @param string $text
+   * @param string $chunk
    */
   function assertTextStartsWith($text, $chunk) {
     $this->assert(strpos($text, $chunk) === 0,

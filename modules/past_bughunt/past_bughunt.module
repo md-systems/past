@@ -5,8 +5,6 @@
  * Module file for the past_bughunt module.
  */
 
-
-
 /**
  * Implements hook_views_api().
  */
@@ -118,7 +116,9 @@ function past_bughunt_entity_view($entity, $type, $view_mode, $langcode) {
 }
 
 /**
- * Add special classes to the rows.
+ * Implements hook_preprocess_views_view_table().
+ *
+ * Adds special classes to the rows.
  */
 function past_bughunt_preprocess_views_view_table(&$vars) {
   // Do this only for the Past views.

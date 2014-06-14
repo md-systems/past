@@ -244,6 +244,7 @@ function past_db_schema() {
  */
 function past_db_enable() {
   // Create default past event type.
+  /* @var PastEventType $event_type */
   $event_type = entity_create('past_event_type', array(
     'type' => 'past_event',
     'label' => t('Default'),
@@ -328,8 +329,8 @@ function past_db_update_7001() {
           'status' => array(
             'type' => 'int',
             'not null' => TRUE,
-            // Set the default to ENTITY_CUSTOM without using the constant as it is
-            // not safe to use it at this point.
+            // Set the default to ENTITY_CUSTOM without using the constant as it
+            // is not safe to use it at this point.
             'default' => 0x01,
             'size' => 'tiny',
             'description' => 'The exportable status of the entity.',
@@ -358,7 +359,7 @@ function past_db_update_7001() {
       // The default bundle machine_name
       'default' => 'past_event',
     ));
-    // index
+    // Index.
     db_add_index('past_event', 'type', array(
       'type',
     ));

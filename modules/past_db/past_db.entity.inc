@@ -115,8 +115,11 @@ class PastEvent extends Entity implements PastEventInterface {
    */
   protected $max_recursion;
 
-  public function __construct(array $values = array(), $entityType = NULL) {
-    parent::__construct($values, $entityType);
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(array $values = array(), $entity_type = NULL) {
+    parent::__construct($values, $entity_type);
     $this->max_recursion = variable_get('past_max_recursion', 10);
   }
 
@@ -181,7 +184,10 @@ class PastEvent extends Entity implements PastEventInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Returns a specific argument based on the key.
+   *
+   * return PastEventArgument
+   *   The past event argument.
    */
   public function getArgument($key) {
     $this->loadArguments();
@@ -189,7 +195,10 @@ class PastEvent extends Entity implements PastEventInterface {
   }
 
   /**
-   * {@inheritdoc}
+   * Returns all arguments of this event.
+   *
+   * return PastEventArgument[]
+   *   The past event arguments.
    */
   public function getArguments() {
     $this->loadArguments();
@@ -263,7 +272,7 @@ class PastEvent extends Entity implements PastEventInterface {
    * {@inheritdoc}
    */
   public function getUid() {
-    return (int)$this->uid;
+    return (int) $this->uid;
   }
 
   /**
@@ -369,8 +378,7 @@ class PastEvent extends Entity implements PastEventInterface {
   }
 
   /**
-   * Overrides Entity::defaultUri().
-   * @return array
+   * {@inheritdoc}
    */
   public function defaultUri() {
     return array(
@@ -380,7 +388,7 @@ class PastEvent extends Entity implements PastEventInterface {
   }
 
   /**
-   * Overrides Entity::defaultLabel().
+   * {@inheritdoc}
    */
   public function defaultLabel() {
     if (!empty($this->defaultLabel)) {
@@ -397,10 +405,7 @@ class PastEvent extends Entity implements PastEventInterface {
   }
 
   /**
-   * Overrides Entity::buildContent().
-   * @param string $view_mode
-   * @param null $langcode
-   * @return mixed
+   * {@inheritdoc}
    */
   public function buildContent($view_mode = 'full', $langcode = NULL) {
     $content = array();
@@ -442,7 +447,7 @@ class PastEvent extends Entity implements PastEventInterface {
       '#markup' => l($this->getLocation(), $this->getLocation()),
     );
 
-    // show all arguments in a vertical_tab
+    // Show all arguments in a vertical_tab.
     $content['arguments'] = array(
       '#type' => 'vertical_tabs',
       '#tree' => TRUE,
@@ -500,7 +505,8 @@ class PastEvent extends Entity implements PastEventInterface {
       );
       if (!empty($sid)) {
         $links[] = array(
-          'title' => t('Trace session: @session', array('@session' => truncate_utf8($sid, 10, FALSE, TRUE))),
+          'title' => t('Trace session: @session', array(
+            '@session' => truncate_utf8($sid, 10, FALSE, TRUE))),
           'href' => $uri,
           'query' => array('session_id' => $sid),
           'attributes' => array('title' => check_plain($sid)),
@@ -513,7 +519,8 @@ class PastEvent extends Entity implements PastEventInterface {
 
     // If we only have a session ID, display that.
     if ($sid) {
-      $title = t('Session: @session', array('@session' => $truncate ? truncate_utf8($sid, $truncate, FALSE, TRUE) : $sid));
+      $title = t('Session: @session', array(
+        '@session' => $truncate ? truncate_utf8($sid, $truncate, FALSE, TRUE) : $sid));
       return l($title, $uri, array('query' => array('session_id' => $sid)));
     }
 
@@ -584,6 +591,7 @@ class PastEvent extends Entity implements PastEventInterface {
    *   The exception to decode.
    * @param int $level
    *   (optional) The nesting level, only used internally.
+   *
    * @return array
    *   An array containing the decoded exception including the backtrace.
    */
@@ -645,7 +653,8 @@ class PastEventArgument extends Entity implements PastEventArgumentInterface {
         $return[$row->name] = $row->serialized ? unserialize($row->value) : $row->value;
       }
     }
-    elseif (!in_array($this->type, array('integer', 'string', 'double', 'boolean'))) {
+    elseif (!in_array($this->type, array(
+      'integer', 'string', 'double', 'boolean'))) {
       $return = new stdClass();
       foreach ($result as $row) {
         $return->{$row->name} = $row->serialized ? unserialize($row->value) : $row->value;
@@ -687,6 +696,12 @@ class PastEventArgument extends Entity implements PastEventArgumentInterface {
 
   }
 
+  /**
+   * Provides the original data.
+   *
+   * @return mixed
+   *   The original data.
+   */
   public function getOriginalData() {
     return $this->original_data;
   }
@@ -757,18 +772,22 @@ class PastEventType extends Entity {
   public $label;
   public $weight = 0;
 
+  /**
+   * {@inheritdoc}
+   */
   public function __construct($values = array()) {
     parent::__construct($values, 'past_event_type');
   }
 
   /**
-   * Returns whether the past_event type is locked, thus may not be deleted or renamed.
+   * Returns whether the past_event type is locked.
    *
-   * PastEvent types provided in code are automatically treated as locked, as well
-   * as any fixed past_event type.
+   * A locked event type may not be deleted or renamed.
+   *
+   * PastEvent types provided in code are automatically treated as locked, as
+   * well as any fixed past_event type.
    */
   public function isLocked() {
     return isset($this->status) && empty($this->is_new) && (($this->status & ENTITY_IN_CODE) || ($this->status & ENTITY_FIXED));
   }
 }
-

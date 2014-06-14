@@ -6,7 +6,7 @@
  */
 
 /**
- * Implementation of hook_drush_command().
+ * Implements hook_drush_command().
  */
 function past_db_drush_command() {
   $items['past-show'] = array(
@@ -16,14 +16,14 @@ function past_db_drush_command() {
       'event_id' => 'Optional id of a past event to show in detail. If not provided, a listing of most recent 10 events will be displayed.',
     ),
     'options' => array(
-      // Filter
+      // Filter.
       'count' => 'The number of messages to show. Defaults to 10.',
       'severity' => 'Restrict to messages of a given severity level.',
       'module' => 'Restrict to messages of a given module.',
       'machine_name' => 'Restrict to messages of a given machine name.',
       'tail' => 'Continuously show new past events until interrupted.',
       'sleep-delay' => 'To be used in conjunction with --tail. This is the number of seconds to wait between each poll to the database. Delay is 1 second by default.',
-      // Presentation
+      // Presentation.
       'full' => 'Full table information about each message.',
       'detail' => 'Return extended information about each message.',
       'detail-filter' => 'Return extended information about messages containing filter.',
@@ -81,8 +81,8 @@ function drush_past_db_past_show($arg = NULL) {
  * Key: Value
  * Keys are ucfirst machine keys with removed underscores.
  *
- * @param $event_id
- *    The id of the message to show.
+ * @param int $event_id
+ *   The id of the message to show.
  */
 function past_db_drush_show_one($event_id) {
   $event = entity_load_single('past_event', $event_id);
@@ -112,7 +112,7 @@ function past_db_drush_show_one($event_id) {
 /**
  * Print a table of watchdog messages.
  *
- * @param $filter
+ * @param string $filter
  *   String to filter the message's text by.
  */
 function past_db_drush_show_many($filter = NULL) {
@@ -123,7 +123,7 @@ function past_db_drush_show_many($filter = NULL) {
   $tail = drush_get_option('tail', FALSE);
   $full = drush_get_option('full', FALSE);
   $detail = drush_get_option('detail', FALSE);
-  $display = $full?'full':'normal';
+  $display = $full ? 'full' : 'normal';
   if ($detail) {
     $display = 'detail';
   }
@@ -131,24 +131,26 @@ function past_db_drush_show_many($filter = NULL) {
 
   // Prepare table data.
   $none = TRUE;
-  $table = array();
   $tbl = new Console_Table(CONSOLE_TABLE_ALIGN_LEFT, '');
 
   drush_log(dt('Most recent !count past event messages:', array('!count' => $count)));
 
   // Prepare header.
   $header = NULL;
-  if ($display!='normal') {
-    $header = array(dt('Id'), dt('Date'), dt('Severity'), dt('Module'), dt('Machine name'), dt('Message'));
-    if ($display=='full') {
+  if ($display != 'normal') {
+    $header = array(dt('Id'), dt('Date'), dt('Severity'), dt('Module'),
+      dt('Machine name'), dt('Message'));
+    if ($display == 'full') {
       $header[] = dt('Arguments');
     }
     //array_unshift($table, $header);
     $tbl->setHeaders($header);
   }
 
-  // We will reuse the table object to display each line generated while in tail mode.
-  // To make it possible some hacking is done on the object: remove the header and reset the rows on each iteration.
+  // We will reuse the table object to display each line generated while in
+  // tail mode.
+  // To make it possible some hacking is done on the object: remove the header
+  // and reset the rows on each iteration.
   $last_event_id = 0;
   $last_format = NULL;
   // sleep-delay
@@ -166,7 +168,7 @@ function past_db_drush_show_many($filter = NULL) {
     $result = $query->execute();
     if ($result) {
       $none = FALSE;
-      // Initi this cycle.
+      // Init this cycle.
       $table = array();
       // Reset table rows.
       $tbl->_data = array();
@@ -175,8 +177,9 @@ function past_db_drush_show_many($filter = NULL) {
       $events = array_reverse($events);
 
       foreach ($events as $event) {
-        $detail_line = $display=='detail';
-        $full_line = $display=='full';
+        /* @var PastEvent $event */
+        $detail_line = $display == 'detail';
+        $full_line = $display == 'full';
         // Check arguments if this line is a special case.
         $arguments = $event->getArguments();
         if ($detail_filter && ($arguments[$detail_filter])) {
@@ -186,20 +189,21 @@ function past_db_drush_show_many($filter = NULL) {
         if ($full_filter && ($arguments[$full_filter])) {
           $full_line = TRUE;
         }
-        // Prepare result, with arguments if requested
+        // Prepare result, with arguments if requested.
         $arguments_line = $full_line || $detail_line;
         $result = past_db_event_format_result($event, $arguments_line, $nested);
-    
+
         if ($detail_line) {
-          // preflush table.
+          // Preflush table.
           past_drush_table($tbl, $table, $header, $last_format);
-          // display single detail record.
+          // Display single detail record.
           past_db_drush_show_one($event->event_id);
           $last_format = 'detail';
         }
         else {
           $row = array(
-            $result->event_id, $result->date, $result->severity, $result->module, $result->machine_name, $result->message
+            $result->event_id, $result->date, $result->severity,
+            $result->module, $result->machine_name, $result->message,
           );
           if ($full_line) {
             $argstr = '';
@@ -219,9 +223,9 @@ function past_db_drush_show_many($filter = NULL) {
           $table[] = $row;
         }
       }
-      // display table.
+      // Display table.
       past_drush_table($tbl, $table, $header, $last_format);
-      // terminate this loop.
+      // Terminate this loop.
       $last = array_pop($events);
       $last_event_id = $last->event_id;
     }
@@ -261,17 +265,20 @@ function past_drush_table(&$tbl, &$table, $header, &$last_format) {
 /**
  * Format a past event entity.
  *
- * @param PastEventInterface $event
+ * @param PastEvent $event
  *   Past event entity.
- * @param $show_arguments
- *   Boolean. Return extended details.
- * @return
- *   Array. The result object with some attributes themed.
+ * @param bool $show_arguments
+ *   Return extended details.
+ * @param bool $nested
+ *   Consider nested data.
+ *
+ * @return object
+ *   The result object with some attributes themed.
  *
  * @todo Unsetting $event variables is unclean. Build a new array.
  * @todo Return currently is object, NOT array.
  */
-function past_db_event_format_result($event, $show_arguments = FALSE, $nested = FALSE) {
+function past_db_event_format_result(PastEvent $event, $show_arguments = FALSE, $nested = FALSE) {
   $result = clone $event;
   // Severity.
   $severities = past_event_severities();
@@ -311,7 +318,7 @@ function past_db_event_format_result($event, $show_arguments = FALSE, $nested = 
  *
  * @return mixed
  */
-function past_db_argument($argument, $nested) {
+function past_db_argument(PastEventArgument $argument, $nested) {
   $data = array();
   $argument_data = $argument->getData();
   if (is_array($argument_data) || is_object($argument_data)) {
@@ -325,7 +332,7 @@ function past_db_argument($argument, $nested) {
   else {
     $data = $argument_data;
   }
-  return $data; 
+  return $data;
 }
 
 /**
@@ -376,14 +383,20 @@ function drush_core_watchdog_delete($arg = NULL) {
   }
 }
 */
+
 /**
  * Build a EQF query based on given parameters.
  *
+ * @param string $filter
+ *   (optional) Filter to apply.
  * @param $severity
- *   Int or String for a valid watchdog severity message.
- * @param $filter
- *   String. Value to filter watchdog messages by.
- * @return
+ *   (optional) Int or String for a valid watchdog severity message.
+ * @param string $module
+ *   (optional) Value to filter watchdog messages by.
+ * @param string $machine_name
+ *   (optional) Machine name.
+ *
+ * @return EntityFieldQuery
  *   False or array with structure ('where' => string, 'args' => array())
  **/
 function past_db_drush_query_events($filter = NULL, $severity = NULL, $module = NULL, $machine_name = NULL) {

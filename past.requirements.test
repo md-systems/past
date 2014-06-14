@@ -9,6 +9,9 @@ class PastRequirementsTest extends DrupalWebTestCase {
 
   protected $profile = 'testing';
 
+  /**
+   * {@inheritdoc}
+   */
   static function getInfo() {
     return array(
       'name' => 'Past requirements tests',
@@ -17,12 +20,18 @@ class PastRequirementsTest extends DrupalWebTestCase {
     );
   }
 
+  /**
+   * {@inheritdoc}
+   */
   function setUp() {
     parent::setUp(array('past', 'past_testhidden'));
     $admin = $this->drupalCreateUser(array('administer site configuration'));
     $this->drupalLogin($admin);
   }
 
+  /**
+   * Tests that the module requirements are correctly set.
+   */
   function testRequirements() {
     // Check if error message appears when past_db is disabled.
     variable_set('past_backend', 'past_db_create_event');
