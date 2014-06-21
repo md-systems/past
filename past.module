@@ -188,7 +188,7 @@ function past_event_severities() {
  * Implements hook_init().
  */
 function past_init() {
-  if (variable_get('past_exception_handling', 0) == 1) {
+  if (variable_get('past_exception_handling', 1) == 1) {
     set_exception_handler('_past_exception_handler');
   }
 

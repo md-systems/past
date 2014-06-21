@@ -235,17 +235,7 @@ class PastTest extends DrupalWebTestCase {
     $account = $this->drupalCreateUser();
     $this->drupalLogin($account);
 
-    // Let's produce an exception, the exception handler is disabled by default.
-    $this->drupalGet('past_trigger_error/Exception');
-    $this->assertText(t('The website encountered an unexpected error. Please try again later.'));
-    $this->assertText('Exception: This is an exception.');
-
-    // No exception should have been logged.
-    $event = $this->getLastEventByMachinename('unhandled_exception');
-    $this->assertNull($event);
-
-    // Enable exception handling and re-throw the exception.
-    variable_set('past_exception_handling', 1);
+    // Let's produce an exception, the exception handler is enabled by default.
     $this->drupalGet('past_trigger_error/Exception');
     $this->assertText(t('The website encountered an unexpected error. Please try again later.'));
     $this->assertText('Exception: This is an exception.');
@@ -259,6 +249,16 @@ class PastTest extends DrupalWebTestCase {
     $data = $event->getArgument('exception')->getData();
     $this->assertTrue(array_key_exists('backtrace', $data));
     $this->assertEqual($account->uid, $event->getUid());
+
+    // Disable exception handling and re-throw the exception.
+    variable_set('past_exception_handling', 0);
+    $this->drupalGet('past_trigger_error/Exception');
+    $this->assertText(t('The website encountered an unexpected error. Please try again later.'));
+    $this->assertText('Exception: This is an exception.');
+
+    // No new exception should have been logged.
+    $event_2 = $this->getLastEventByMachinename('unhandled_exception');
+    $this->assertEqual($event->id(), $event_2->id(), 'No new event was logged');
   }
 
   /**
