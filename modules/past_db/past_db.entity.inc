@@ -697,17 +697,14 @@ class PastEventArgument extends Entity implements PastEventArgumentInterface {
   }
 
   /**
-   * Provides the original data.
-   *
-   * @return mixed
-   *   The original data.
+   * {@inheritdoc}
    */
   public function getOriginalData() {
     return $this->original_data;
   }
 
   /**
-   * Sets the argument type according to the type of the original data.
+   * {@inheritdoc}
    */
   public function ensureType() {
     if (isset($this->original_data)) {

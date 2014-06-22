@@ -320,8 +320,8 @@ interface PastEventArgumentInterface {
   /**
    * Returns the type of the argument.
    *
-   * This is detected automatically on save and is either a native php type or
-   * the name of the class if data was an object.
+   * The argument type is automatically detected on save by ensureType().
+   * It is either a native php type or the class name if data was an object.
    *
    * @return string
    *   The type of the argument data.
@@ -346,6 +346,19 @@ interface PastEventArgumentInterface {
    *   Any serializable data structure.
    */
   public function setRaw($raw);
+
+  /**
+   * Provides the original data.
+   *
+   * @return mixed
+   *   The original data.
+   */
+  public function getOriginalData();
+
+  /**
+   * Sets the argument type according to the type of the original data.
+   */
+  public function ensureType();
 }
 
 /**
