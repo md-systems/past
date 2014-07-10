@@ -69,15 +69,10 @@ class PastSettingsForm extends ConfigFormBase {
       '#description' => t('When enabled, Past will take watchdog log entries. <em>To avoid redundancy, you can turn off the database logging module.</em>'),
     );
 
-    $severities = array();
-    foreach (watchdog_severity_levels() as $key => $value) {
-      $severities['WATCHDOG_SEVERITY_' . $key] = $value;
-    }
-
     $form['watchdog']['backtrace_include'] = array(
       '#type' => 'checkboxes',
       '#default_value' => $config->get('backtrace_include'),
-      '#options' => $severities,
+      '#options' => watchdog_severity_levels(),
       '#title' => t('Watchdog severity levels from writing backtraces'),
       '#description' => t('A backtrace is logged for all severities that are checked.'),
       '#states' => array('visible' => array('input[name="log_watchdog"]' => array('checked' => TRUE))),
@@ -99,11 +94,17 @@ class PastSettingsForm extends ConfigFormBase {
    * @see book_remove_button_submit()
    */
   public function submitForm(array &$form, array &$form_state) {
+    $included_severity_levels = array();
+    foreach ($form_state['values']['backtrace_include'] as $level => $enabled) {
+      if ($enabled) {
+        $included_severity_levels[] = $level;
+      }
+    }
     \Drupal::config('past.settings')
       ->set('events_expire', $form_state['values']['events_expire'])
       ->set('exception_handling', $form_state['values']['exception_handling'])
       ->set('log_watchdog', $form_state['values']['log_watchdog'])
-      ->set('backtrace_include', $form_state['values']['backtrace_include'])
+      ->set('backtrace_include', $included_severity_levels)
       ->set('shutdown_handling', $form_state['values']['shutdown_handling'])
       ->set('log_session_id', $form_state['values']['log_session_id'])
       ->save();
