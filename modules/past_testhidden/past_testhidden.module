@@ -712,10 +712,10 @@ function past_testhidden_custom_submit_handler($form, &$form_state) {
 function past_testhidden_form_multi_validation_element_sample_select_validate($element, &$form_state, $form) {
   if ($element['#name'] == 'sample_select') {
     if ($element['#value'] == '') {
-      form_set_error($element['#name'], $element['#title'] . ' field is required.');
+      \Drupal::formBuilder()->setErrorByName($element['#name'], $form_state, $element['#title'] . ' field is required.');
     }
     elseif ($element['#value'] == '2') {
-      form_set_error($element['#name'], $element['#title'] . ': says, don\'t be a maybe ..');
+      \Drupal::formBuilder()->setErrorByName($element['#name'], $form_state, $element['#title'] . ': says, don\'t be a maybe ..');
     }
   }
 }

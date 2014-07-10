@@ -1,7 +1,0 @@
-name=Past Hidden Test Module
-description=should not be visible
-package = Logging
-core=7.x
-hidden=true
-
-dependencies[] = past
