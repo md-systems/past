@@ -2,62 +2,24 @@
 
 /**
  * @file
- * Contains tests for the past_db Admin UI.
+ * Contains \Drupal\past_db\PastDBTest.
  */
 
-/**
- * Base class for Past DB tests.
- */
-class PastDBBaseTestCase extends DrupalWebTestCase {
+namespace Drupal\past_db\Tests;
 
-  protected $event_desc;
-  protected $machine_name;
-  protected $severities;
-  protected $events = array();
-
-  /**
-   * Creates some sample events.
-   */
-  protected function createEvents($count = 99) {
-    // Set some for log creation.
-    $this->machine_name = 'machine name';
-    $this->severities = past_event_severities();
-    $severities_codes = array_keys($this->severities);
-    $severities_count = count($this->severities);
-    $this->event_desc = 'message #';
-
-    // Prepare some logs.
-    for ($i = 0; $i <= $count; $i++) {
-      $event = past_event_create('past_db', $this->machine_name, $this->event_desc . ($i + 1));
-      $event->setReferer('http://example.com/test-referer');
-      $event->setLocation('http://example.com/this-url-gets-heavy-long/testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest/seeme.htm');
-      $event->addArgument('arg1', 'First Argument');
-      $event->addArgument('arg2', new stdClass());
-      $event->addArgument('arg3', FALSE);
-      $event->setSeverity($severities_codes[$i % $severities_count]);
-      $event->save();
-      $this->events[$event->event_id] = $event;
-    }
-  }
-
-  /**
-   * Loads created sample events.
-   *
-   * @return PastEvent[]
-   *   The created sample events.
-   */
-  protected function loadEvents() {
-    $query = new EntityFieldQuery();
-    $query->entityCondition('entity_type', 'past_event');
-    $result = $query->execute();
-    return entity_load('past_event', array_keys($result['past_event']));
-  }
-}
+use Drupal\past_db\Tests\PastDBBaseTestCase;
 
 /**
  * Tests Past DB.
  */
 class PastDBTest extends PastDBBaseTestCase {
+
+  public static $modules = array(
+    'views',
+    'past',
+    'past_db',
+    'entity_reference',
+  );
 
   /**
    * {@inheritdoc}
@@ -77,7 +39,7 @@ class PastDBTest extends PastDBBaseTestCase {
    * Creates an administrator user and sample events.
    */
   public function setUp() {
-    parent::setUp(array('views', 'past', 'past_db', 'entityreference'));
+    parent::setUp();
     $admin = $this->drupalCreateUser(array('administer past', 'view past reports'));
     $this->drupalLogin($admin);
     $this->createEvents();
