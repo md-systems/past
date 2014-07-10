@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\past_db\Tests\PastDBBaseTestCase.
+ * Contains \Drupal\past_db\Tests\PastDBTestBase.
  */
 
 namespace Drupal\past_db\Tests;
@@ -12,7 +12,7 @@ use Drupal\simpletest\WebTestBase;
 /**
  * Base class for Past DB tests.
  */
-class PastDBBaseTestCase extends WebTestBase {
+class PastDBTestBase extends WebTestBase {
 
   protected $event_desc;
   protected $machine_name;

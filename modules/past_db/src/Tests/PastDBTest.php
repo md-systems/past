@@ -7,12 +7,10 @@
 
 namespace Drupal\past_db\Tests;
 
-use Drupal\past_db\Tests\PastDBBaseTestCase;
-
 /**
  * Tests Past DB.
  */
-class PastDBTest extends PastDBBaseTestCase {
+class PastDBTest extends PastDBTestBase {
 
   public static $modules = array(
     'views',
