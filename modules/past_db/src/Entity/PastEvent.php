@@ -171,23 +171,7 @@ class PastEvent extends Entity implements PastEventInterface {
    * Implements Drupal\Core\Entity\EntityInterface::id().
    */
   public function id() {
-    return $this->get('event_id')->value;
-  }
-
-  /**
-   * Overrides \Drupal\Core\Entity\EntityNG::init().
-   */
-  protected function init() {
-    parent::init();
-    unset($this->uuid);
-    unset($this->event_id);
-    unset($this->module);
-    unset($this->machine_name);
-    unset($this->type);
-    unset($this->message);
-    unset($this->severity);
-    unset($this->timestamp);
-    unset($this->parent_event_id);
+    return $this->event_id;
   }
 
   /**
@@ -283,21 +267,21 @@ class PastEvent extends Entity implements PastEventInterface {
    * {@inheritdoc}
    */
   public function getMachineName() {
-    return $this->get('machine_name')->value;
+    return $this->machine_name;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getModule() {
-    return $this->get('module')->value;
+    return $this->module;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getSeverity() {
-    return $this->get('severity')->value;
+    return $this->severity;
   }
 
   /**
@@ -325,21 +309,21 @@ class PastEvent extends Entity implements PastEventInterface {
    * {@inheritdoc}
    */
   public function getMessage() {
-    return $this->get('message')->value;
+    return $this->message;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getTimestamp() {
-    return $this->get('timestamp')->value;
+    return $this->timestamp;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getUid() {
-    return $this->get('uid')->value;
+    return $this->uid;
   }
 
   /**
