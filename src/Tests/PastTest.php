@@ -12,6 +12,9 @@ use Drupal\past\Entity\PastEventInterface;
 use Drupal\past\Entity\PastEventArgumentInterface;
 use Drupal\past\Entity\PastEventDataInterface;
 
+/**
+ * Tests for the Past logger.
+ */
 class PastTest extends WebTestBase {
 
   protected $profile = 'testing';
@@ -24,9 +27,20 @@ class PastTest extends WebTestBase {
   protected $config;
 
   /**
+   * Modules required to run the tests.
+   *
+   * @var string[]
+   */
+  public static $modules = array(
+    'past',
+    'past_db',
+    'past_testhidden',
+  );
+
+  /**
    * {@inheritdoc}
    */
-  static function getInfo() {
+  public static function getInfo() {
     return array(
       'name' => 'Past API tests',
       'description' => 'Generic API tests using the database backend',
@@ -37,15 +51,15 @@ class PastTest extends WebTestBase {
   /**
    * {@inheritdoc}
    */
-  function setUp() {
-    parent::setUp(array('past', 'past_db', 'past_testhidden'));
+  public function setUp() {
+    parent::setUp();
     $this->config = \Drupal::config('past.settings');
   }
 
   /**
    * Tests the functional Past interface.
    */
-  function testSave() {
+  public function testSave() {
     past_event_save('past', 'test', 'A test log entry');
     $event = $this->getLastEventByMachinename('test');
     $this->assertEqual('past', $event->getModule());
@@ -152,7 +166,7 @@ class PastTest extends WebTestBase {
     global $user;
 
     // First enable watchdog logging.
-    $config->set('log_watchdog', 1);
+    $this->config->set('log_watchdog', 1);
     $machine_name = 'test_watchdog';
 
     // Simpletest does not cleanly mock these _SERVER variables.
@@ -160,7 +174,7 @@ class PastTest extends WebTestBase {
     $_SERVER['HTTP_REFERER'] = 'mock-referer';
 
     $msg = 'something';
-    watchdog($machine_name, $msg, NULL, WATCHDOG_INFO, NULL);
+    watchdog($machine_name, $msg, array(), WATCHDOG_INFO, NULL);
     $event = $this->getLastEventByMachinename($machine_name);
     $this->assertEqual('watchdog', $event->getModule());
     $this->assertEqual($msg, $event->getMessage());
@@ -195,7 +209,7 @@ class PastTest extends WebTestBase {
     $this->assertEqual($nice_url, $event->getArgument('link')->getData());
 
     // Now we disable watchdog logging.
-    $config->set('log_watchdog', 0);
+    $this->config->set('log_watchdog', 0);
     watchdog($machine_name, 'something Past will not see', NULL, WATCHDOG_INFO, NULL);
     $event = $this->getLastEventByMachinename($machine_name);
     // And still the previous message should be found.
@@ -227,7 +241,7 @@ class PastTest extends WebTestBase {
     $event = $this->getLastEventByMachinename('test_ssid');
     $this->assertEqual($user->ssid, $event->getSessionId());
 
-    $config->set('log_session_id', 0);
+    $this->config->set('log_session_id', 0);
     past_event_save('past', 'test1', 'Another test log entry');
     $event = $this->getLastEventByMachinename('test1');
     $this->assertEqual('', $event->getSessionId());
@@ -238,7 +252,7 @@ class PastTest extends WebTestBase {
     $event = $this->getLastEventByMachinename('test2');
     $this->assertEqual('trace me', $event->getSessionId());
 
-    $config->set('log_session_id', 1);
+    $this->config->set('log_session_id', 1);
     $event = past_event_create('past', 'test3', 'And Yet Another test log entry');
     $event->setSessionId('trace me too');
     $event->save();
@@ -279,7 +293,7 @@ class PastTest extends WebTestBase {
     $this->assertEqual($account->uid, $event->getUid());
 
     // Disable exception handling and re-throw the exception.
-    $config->set('exception_handling', 0);
+    $this->config->set('exception_handling', 0);
     $this->drupalGet('past_trigger_error/Exception');
     $this->assertText(t('The website encountered an unexpected error. Please try again later.'));
     $this->assertText('Exception: This is an exception.');
@@ -321,7 +335,7 @@ class PastTest extends WebTestBase {
    */
   public function testErrors() {
     // Enable hook_watchdog capture.
-    $config->set('log_watchdog', 1);
+    $this->config->set('log_watchdog', 1);
 
     $this->drupalGet('past_trigger_error/E_COMPILE_ERROR');
     $event = $this->getLastEventByMachinename('php');
@@ -394,7 +408,7 @@ class PastTest extends WebTestBase {
    * Test that watchdog logs of type 'php' don't produce notices.
    */
   public function testErrorArray() {
-    $config->set('log_watchdog', TRUE);
+    $this->config->set('log_watchdog', TRUE);
     watchdog('php', 'This is some test watchdog log of type php', array());
   }
 
@@ -451,7 +465,7 @@ class PastTest extends WebTestBase {
   public function getLastEventByMachinename($machine_name) {
     $event_id = db_query_range('SELECT event_id FROM {past_event} WHERE machine_name = :machine_name ORDER BY event_id DESC', 0, 1, array(':machine_name' => $machine_name))->fetchField();
     if ($event_id) {
-      return entity_load_single('past_event', $event_id);
+      return entity_load('past_event', $event_id);
     }
   }
 
