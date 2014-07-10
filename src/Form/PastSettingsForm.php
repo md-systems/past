@@ -100,11 +100,13 @@ class PastSettingsForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, array &$form_state) {
     \Drupal::config('past.settings')
-        ->set('events_expire', $form_state['values']['events_expire'])
-        ->set('exception_handling', $form_state['values']['exception_handling'])
-        ->set('log_watchdog', $form_state['values']['log_watchdog'])
-        ->set('backtrace_include', $form_state['values']['backtrace_include'])
-        ->save();
+      ->set('events_expire', $form_state['values']['events_expire'])
+      ->set('exception_handling', $form_state['values']['exception_handling'])
+      ->set('log_watchdog', $form_state['values']['log_watchdog'])
+      ->set('backtrace_include', $form_state['values']['backtrace_include'])
+      ->set('shutdown_handling', $form_state['values']['shutdown_handling'])
+      ->set('log_session_id', $form_state['values']['log_session_id'])
+      ->save();
 
     parent::SubmitForm($form, $form_state);
   }
