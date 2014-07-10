@@ -132,6 +132,12 @@ function past_db_views_default_views() {
   $handler->display->display_options['fields']['timestamp']['table'] = 'past_event';
   $handler->display->display_options['fields']['timestamp']['field'] = 'timestamp';
   $handler->display->display_options['fields']['timestamp']['date_format'] = 'short';
+  /* Field: User: Name */
+  $handler->display->display_options['fields']['name']['id'] = 'name';
+  $handler->display->display_options['fields']['name']['table'] = 'users';
+  $handler->display->display_options['fields']['name']['field'] = 'name';
+  $handler->display->display_options['fields']['name']['relationship'] = 'uid';
+  $handler->display->display_options['fields']['name']['label'] = 'User';
   /* Sort criterion: Past Event: Past event ID */
   $handler->display->display_options['sorts']['event_id']['id'] = 'event_id';
   $handler->display->display_options['sorts']['event_id']['table'] = 'past_event';
@@ -211,6 +217,7 @@ function past_db_views_default_views() {
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page_1');
+  $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
   $handler->display->display_options['path'] = 'admin/reports/past/default';
   $handler->display->display_options['menu']['type'] = 'default tab';
   $handler->display->display_options['menu']['title'] = 'Past event log';
@@ -392,6 +399,12 @@ function past_db_views_default_views() {
   $handler->display->display_options['fields']['timestamp']['table'] = 'past_event';
   $handler->display->display_options['fields']['timestamp']['field'] = 'timestamp';
   $handler->display->display_options['fields']['timestamp']['date_format'] = 'short';
+  /* Field: User: Name */
+  $handler->display->display_options['fields']['name']['id'] = 'name';
+  $handler->display->display_options['fields']['name']['table'] = 'users';
+  $handler->display->display_options['fields']['name']['field'] = 'name';
+  $handler->display->display_options['fields']['name']['relationship'] = 'uid';
+  $handler->display->display_options['fields']['name']['label'] = 'User';
   /* Sort criterion: Past Event: Timestamp */
   $handler->display->display_options['sorts']['timestamp']['id'] = 'timestamp';
   $handler->display->display_options['sorts']['timestamp']['table'] = 'past_event';
@@ -521,6 +534,7 @@ function past_db_views_default_views() {
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page_1');
+  $handler->display->display_options['defaults']['hide_admin_links'] = FALSE;
   $handler->display->display_options['path'] = 'admin/reports/past/extended';
   $handler->display->display_options['menu']['type'] = 'tab';
   $handler->display->display_options['menu']['title'] = 'Extended Search';
@@ -563,6 +577,7 @@ function past_db_views_default_views() {
     t('Actor'),
     t('Page'),
   );
+
 
   $views[$view->name] = $view;
   return $views;

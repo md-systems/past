@@ -1,0 +1,5 @@
+name: Past
+type: module
+description: Provides logging capabilities to log events with arguments in a normalized way.
+core: 8.x
+

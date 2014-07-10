@@ -12,10 +12,10 @@
  * other implementations.
  */
 function past_install() {
-  db_update('system')
-    ->condition('name', 'past')
-    ->fields(array('weight' => -1000))
-    ->execute();
+//  db_update('system')
+//    ->condition('name', 'past')
+//    ->fields(array('weight' => -1000))
+//    ->execute();
 }
 
 /**

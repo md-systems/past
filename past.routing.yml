@@ -1,0 +1,6 @@
+past_settings:
+  pattern: 'admin/config/development/past'
+  defaults:
+    _form: '\Drupal\past\Form\PastSettingsForm'
+  requirements:
+    _permission: 'administer past'

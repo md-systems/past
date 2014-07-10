@@ -5,10 +5,52 @@
  * Contains the entity classes for Past DB.
  */
 
+namespace Drupal\past_db\Plugin\Core\Entity;
+
+use \Drupal\past\Entity\PastEventInterface;
+use \Drupal\Core\Entity\Entity;
+use \Exception;
+
 /**
- * A log event.
+ * Defines the past event entity.
+ *
+ * @EntityType(
+ *   id = "past_event",
+ *   label = @Translation("Past event"),
+ *   bundle_label = @Translation("Type"),
+ *   module = "past_db",
+ *   controllers = {
+ *     "storage" = "Drupal\past\PastEventStorageController",
+ *     "render" = "Drupal\past\PastEventRenderController",
+ *     "access" = "Drupal\past\PastEventAccessController",
+ *   },
+ *   base_table = "past_event",
+ *   uri_callback = "past_event_entity_uri",
+ *   fieldable = TRUE,
+ *   entity_keys = {
+ *     "id" = "event_id",
+ *     "bundle" = "type",
+ *     "label" = "event_id",
+ *     "uuid" = "uuid"
+ *   },
+ *   bundle_keys = {
+ *     "bundle" = "type"
+ *   },
+ *   links = {
+ *     "canonical" = "/admin/reports/past/{past_event}",
+ *   },
+ *   menu_base_path = "admin/reports/past/%past_event",
+ *   route_base_path = "admin/config/development/past-types/{bundle}",
+ *   permission_granularity = "entity_type"
+ * )
  */
 class PastEvent extends Entity implements PastEventInterface {
+  /**
+   * The event UUID.
+   *
+   * @var string
+   */
+  public $uuid;
 
   /**
    * The identifier of the event.
@@ -32,7 +74,7 @@ class PastEvent extends Entity implements PastEventInterface {
   public $machine_name;
 
   /**
-   * The {past_event_type}.type of this event.
+   * The event type/bundle.
    *
    * @var string
    */
@@ -124,6 +166,29 @@ class PastEvent extends Entity implements PastEventInterface {
   }
 
   /**
+   * Implements Drupal\Core\Entity\EntityInterface::id().
+   */
+  public function id() {
+    return $this->get('event_id')->value;
+  }
+
+  /**
+   * Overrides \Drupal\Core\Entity\EntityNG::init().
+   */
+  protected function init() {
+    parent::init();
+    unset($this->uuid);
+    unset($this->event_id);
+    unset($this->module);
+    unset($this->machine_name);
+    unset($this->type);
+    unset($this->message);
+    unset($this->severity);
+    unset($this->timestamp);
+    unset($this->parent_event_id);
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function addArgument($key, $data, array $options = array()) {
@@ -177,7 +242,7 @@ class PastEvent extends Entity implements PastEventInterface {
   protected function loadArguments() {
     if (!is_array($this->arguments)) {
       $this->arguments = array();
-      foreach (entity_load_multiple_by_name('past_event_argument', FALSE, array('event_id' => $this->event_id)) as $argument) {
+      foreach (entity_load_multiple_by_properties('past_event_argument', array('event_id' => $this->event_id)) as $argument) {
         $this->arguments[$argument->name] = $argument;
       }
     }
@@ -216,21 +281,21 @@ class PastEvent extends Entity implements PastEventInterface {
    * {@inheritdoc}
    */
   public function getMachineName() {
-    return $this->machine_name;
+    return $this->get('machine_name')->value;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getModule() {
-    return $this->module;
+    return $this->get('module')->value;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getSeverity() {
-    return $this->severity;
+    return $this->get('severity')->value;
   }
 
   /**
@@ -258,28 +323,21 @@ class PastEvent extends Entity implements PastEventInterface {
    * {@inheritdoc}
    */
   public function getMessage() {
-    return $this->message;
+    return $this->get('message')->value;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getTimestamp() {
-    return $this->timestamp;
+    return $this->get('timestamp')->value;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getUid() {
-    return (int) $this->uid;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function id() {
-    return $this->event_id;
+    return $this->get('uid')->value;
   }
 
   /**
@@ -626,165 +684,5 @@ class PastEvent extends Entity implements PastEventInterface {
       $string = substr($string, 0, $max_length - 1) . '…';
     }
     return $string;
-  }
-}
-
-/**
- * An argument for an event.
- */
-class PastEventArgument extends Entity implements PastEventArgumentInterface {
-
-  public $argument_id;
-  public $event_id;
-  protected $original_data;
-  public $name;
-  public $type;
-  public $raw;
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getData() {
-    $return = NULL;
-    $result = db_query('SELECT * FROM {past_event_data} WHERE argument_id = :argument_id', array(':argument_id' => $this->argument_id));
-    if ($this->type == 'array') {
-      $return = array();
-      foreach ($result as $row) {
-        $return[$row->name] = $row->serialized ? unserialize($row->value) : $row->value;
-      }
-    }
-    elseif (!in_array($this->type, array(
-      'integer', 'string', 'double', 'boolean'))) {
-      $return = new stdClass();
-      foreach ($result as $row) {
-        $return->{$row->name} = $row->serialized ? unserialize($row->value) : $row->value;
-      }
-    }
-    else {
-      if ($row = $result->fetchObject()) {
-        $return = $row->value;
-      }
-    }
-    return $return;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getKey() {
-    return $this->name;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getRaw() {
-    return $this->raw;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getType() {
-    return $this->type;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setRaw($data, $json_encode = TRUE) {
-
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getOriginalData() {
-    return $this->original_data;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function ensureType() {
-    if (isset($this->original_data)) {
-      if (is_object($this->original_data)) {
-        $this->type = get_class($this->original_data);
-      }
-      else {
-        $this->type = gettype($this->original_data);
-      }
-    }
-  }
-
-  /**
-   * Defines the argument entity label.
-   *
-   * @return string
-   *   Entity label.
-   */
-  public function defaultLabel() {
-    return $this->getKey();
-  }
-}
-
-/**
- * Past event data entity.
- */
-class PastEventData extends Entity implements PastEventDataInterface {
-
-  public $data_id;
-  public $argument_id;
-  public $name;
-  public $type;
-
-  /**
-   * {@inheritdoc}
-   */
-  public function id() {
-    return $this->data_id;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getKey() {
-    return $this->name;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getType() {
-    return $this->type;
-  }
-}
-
-/**
- * Use a separate class for past_event types so we can specify some defaults
- * modules may alter.
- */
-class PastEventType extends Entity {
-  public $type;
-  public $label;
-  public $weight = 0;
-
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct($values = array()) {
-    parent::__construct($values, 'past_event_type');
-  }
-
-  /**
-   * Returns whether the past_event type is locked.
-   *
-   * A locked event type may not be deleted or renamed.
-   *
-   * PastEvent types provided in code are automatically treated as locked, as
-   * well as any fixed past_event type.
-   */
-  public function isLocked() {
-    return isset($this->status) && empty($this->is_new) && (($this->status & ENTITY_IN_CODE) || ($this->status & ENTITY_FIXED));
   }
 }

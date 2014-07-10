@@ -5,7 +5,14 @@
  * Contains tests for the Past modules.
  */
 
-class PastTest extends DrupalWebTestCase {
+namespace Drupal\past\Tests;
+
+use Drupal\simpletest\WebTestBase;
+use Drupal\past\Entity\PastEventInterface;
+use Drupal\past\Entity\PastEventArgumentInterface;
+use Drupal\past\Entity\PastEventDataInterface;
+
+class PastTest extends WebTestBase {
 
   protected $profile = 'testing';
 
@@ -161,6 +168,10 @@ class PastTest extends DrupalWebTestCase {
     // triggered the test as this is the user captured in the watchdog().
     $this->assertEqual($user->uid, $event->getUid());
 
+    // Note that here we do not create a test user but use the user that has
+    // triggered the test as this is the user captured in the watchdog().
+    $this->assertEqual($user->uid, $event->getUid());
+
     $msg = 'something new';
     $nice_url = 'http://www.md-systems.ch';
     watchdog($machine_name, $msg, NULL, WATCHDOG_NOTICE, $nice_url);
@@ -235,6 +246,15 @@ class PastTest extends DrupalWebTestCase {
     $account = $this->drupalCreateUser();
     $this->drupalLogin($account);
 
+    // Let's produce an exception, the exception handler is disabled by default.
+    $this->drupalGet('past_trigger_error/Exception');
+    $this->assertText(t('The website encountered an unexpected error. Please try again later.'));
+    $this->assertText('Exception: This is an exception.');
+
+    // No exception should have been logged.
+    $event = $this->getLastEventByMachinename('unhandled_exception');
+    $this->assertNull($event);
+
     // Let's produce an exception, the exception handler is enabled by default.
     $this->drupalGet('past_trigger_error/Exception');
     $this->assertText(t('The website encountered an unexpected error. Please try again later.'));
@@ -265,10 +285,6 @@ class PastTest extends DrupalWebTestCase {
    * Tests the shutdown function.
    */
   public function testShutdownFunction() {
-    // The shutdown error handler is on by default.
-    // Enable shutdown error capture.
-    //variable_set('past_shutdown_handling', 1);
-
     // Create user to test logged uid.
     $account = $this->drupalCreateUser();
     $this->drupalLogin($account);

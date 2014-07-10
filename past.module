@@ -5,6 +5,8 @@
  * Module file for the past project.
  */
 
+use Drupal\past\Entity\PastEventInterface;
+
 /**
  * Severities correspond to Log message severity from WATCHDOG.
  * @see bootstrap.inc
@@ -75,30 +77,15 @@ function past_event_save($module, $machine_name, $message, array $arguments = ar
  * @see past_event_save()
  */
 function past_event_create($module, $machine_name, $message = NULL, array $options = array()) {
-  $past_backend_factory = variable_get('past_backend', 'past_db_create_event');
-  // If the function doesn't exist, return a null implementation to avoid fatal
-  // errors.
-  // Explicit check for past_db is necessary when tests are executed and past_db
-  // is in the parent site.enabled.
-  if (!function_exists($past_backend_factory) ||
-    (!module_exists('past_db') && $past_backend_factory == 'past_db_create_event')) {
-    // In certain conditions, for example an E_STRICT error during class auto
-    // loading, we can not auto load classes, so do it manually.
-    if (!class_exists('PastEventNull')) {
-      require_once drupal_get_path('module', 'past') . '/past.api.inc';
-      require_once drupal_get_path('module', 'past') . '/past.null.inc';
-      require_once drupal_get_path('module', 'past') . '/past.null_argument.inc';
-    }
-    return new PastEventNull();
-  }
-  $event = $past_backend_factory();
-  if (!$event) {
-    if (!class_exists('PastEventNull')) {
-      require_once drupal_get_path('module', 'past') . '/past.api.inc';
-      require_once drupal_get_path('module', 'past') . '/past.null.inc';
-      require_once drupal_get_path('module', 'past') . '/past.null_argument.inc';
-    }
-    return new PastEventNull();
+  switch (config('past.settings')->get('backend')) {
+    case 'past_simpletest':
+      $event = new PastEventSimpletest(array());
+      break;
+
+    case 'past_db':
+    default:
+      // @todo Handle past_db not being enabled
+      $event = entity_create('past_event', array());
   }
 
   /* @var $event PastEventInterface */
@@ -185,30 +172,13 @@ function past_event_severities() {
 }
 
 /**
- * Implements hook_init().
- */
-function past_init() {
-  if (variable_get('past_exception_handling', 1) == 1) {
-    set_exception_handler('_past_exception_handler');
-  }
-
-  if (variable_get('past_shutdown_handling', 1) == 1) {
-    drupal_register_shutdown_function('_past_shutdown_function');
-  }
-}
-
-
-/**
  * Implements hook_menu().
  */
 function past_menu() {
-  $items['admin/config/development/past/settings'] = array(
+  $items['admin/config/development/past'] = array(
     'title' => 'Past settings',
-    'description' => 'Configure relevance settings for past events.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('past_admin_settings'),
-    'access arguments' => array('administer past'),
-    'file' => 'past.admin.inc',
+    'description' => 'Administer past.',
+    'route_name' => 'past_settings',
   );
   return $items;
 }
@@ -281,6 +251,7 @@ function past_watchdog(array $log_entry) {
 
 /**
  * Implements hook_form_alter().
+ * ??????
  */
 function past_form_system_logging_settings_alter(&$form, &$form_state) {
   $form['past_info']['#prefix'] = t('See also <a href="!settings_url">past settings</a>',

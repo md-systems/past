@@ -1,0 +1,43 @@
+# Schema for the configuration files of the Past module.
+
+past.settings:
+  type: mapping
+  label: 'Past settings'
+  mapping:
+    past_events_expire:
+      type: integer
+      label: 'Log expiration interval'
+    past_exception_handling:
+      type: boolean
+      label: 'Register PHP exception handler'
+    past_log_watchdog:
+      type: boolean
+      label: 'Log watchdog to past event log'
+    past_backtrace_exclude:
+      type: mapping
+      label: 'Exclude watchdog severity levels from writing backtraces'
+      mapping:
+        WATCHDOG_SEVERITY_0:
+          type: boolean
+          label: 'emergency'
+        WATCHDOG_SEVERITY_1:
+          type: boolean
+          label: 'alert'
+        WATCHDOG_SEVERITY_2:
+          type: boolean
+          label: 'critical'
+        WATCHDOG_SEVERITY_3:
+          type: boolean
+          label: 'error'
+        WATCHDOG_SEVERITY_4:
+          type: boolean
+          label: 'warning'
+        WATCHDOG_SEVERITY_5:
+          type: boolean
+          label: 'notice'
+        WATCHDOG_SEVERITY_6:
+          type: boolean
+          label: 'info'
+        WATCHDOG_SEVERITY_7:
+          type: boolean
+          label: 'debug'

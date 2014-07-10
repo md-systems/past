@@ -1,0 +1,5 @@
+services:
+  past_event_subscriber:
+    class: Drupal\past\EventSubscriber\PastSubscriber
+    tags:
+      - {name: event_subscriber}

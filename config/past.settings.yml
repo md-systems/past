@@ -1,0 +1,13 @@
+backend: 'past_db'
+past_events_expire: ''
+past_exception_handling: ''
+past_log_watchdog: ''
+past_backtrace_exclude:
+  WATCHDOG_SEVERITY_0: ''
+  WATCHDOG_SEVERITY_1: ''
+  WATCHDOG_SEVERITY_2: ''
+  WATCHDOG_SEVERITY_3: ''
+  WATCHDOG_SEVERITY_4: ''
+  WATCHDOG_SEVERITY_5: ''
+  WATCHDOG_SEVERITY_6: 'WATCHDOG_SEVERITY_6'
+  WATCHDOG_SEVERITY_7: 'WATCHDOG_SEVERITY_7'

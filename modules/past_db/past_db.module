@@ -5,6 +5,17 @@
  * Module file for the Past DB module.
  */
 
+use \Drupal\past\Plugin\Core\Entity\PastEvent;
+
+/**
+ * Entity URI callback for image style.
+ */
+function past_event_entity_uri(PastEvent $event) {
+  return array(
+    'path' => 'admin/reports/past/' . $event->id(),
+  );
+}
+
 /**
  * Implements hook_entity_info().
  */
@@ -154,7 +165,11 @@ function past_event_type_create($type, $label, $values = array()) {
  *   Depending whether $type isset, an array of past event types or a single one.
  */
 function past_event_get_types($type_name = NULL) {
-  $types = entity_load_multiple_by_name('past_event_type', isset($type_name) ? array($type_name) : FALSE);
+  $properties = array();
+  if (!empty($type_name)) {
+    $properties['type'] = $type_name;
+  }
+  $types = entity_load_multiple_by_properties('past_event_type', $properties);
   return isset($type_name) ? reset($types) : $types;
 }
 
