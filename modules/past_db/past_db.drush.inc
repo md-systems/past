@@ -85,7 +85,7 @@ function drush_past_db_past_show($arg = NULL) {
  *   The id of the message to show.
  */
 function past_db_drush_show_one($event_id) {
-  $event = entity_load_single('past_event', $event_id);
+  $event = entity_load('past_event', $event_id);
   if (!$event) {
     return drush_set_error(dt('Past event #!event_id not found.', array('!event_id' => $event_id)));
   }

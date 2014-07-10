@@ -153,7 +153,7 @@ class PastDBTest extends PastDBTestBase {
     $event->save();
 
     // Check whether the bundle was saved correct.
-    $event = entity_load_single('past_event', $event->event_id);
+    $event = entity_load('past_event', $event->event_id);
     $this->assertEqual($event->type, $bundle);
 
     // Check if the created fields shows up on the event display.
