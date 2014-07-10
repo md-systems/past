@@ -5,7 +5,7 @@
  * Contains the entity classes for Past DB.
  */
 
-namespace Drupal\past_db\Plugin\Core\Entity;
+namespace Drupal\past_db\Entity;
 
 use \Drupal\past\Entity\PastEventInterface;
 use \Drupal\Core\Entity\Entity;
@@ -20,9 +20,9 @@ use \Exception;
  *   bundle_label = @Translation("Type"),
  *   module = "past_db",
  *   controllers = {
- *     "storage" = "Drupal\past\PastEventStorageController",
- *     "render" = "Drupal\past\PastEventRenderController",
- *     "access" = "Drupal\past\PastEventAccessController",
+ *     "storage" = "Drupal\past_db\PastEventStorageController",
+ *     "render" = "Drupal\past_db\PastEventRenderController",
+ *     "access" = "Drupal\past_db\PastEventAccessController",
  *   },
  *   base_table = "past_event",
  *   uri_callback = "past_event_entity_uri",
@@ -162,7 +162,9 @@ class PastEvent extends Entity implements PastEventInterface {
    */
   public function __construct(array $values = array(), $entity_type = NULL) {
     parent::__construct($values, $entity_type);
-    $this->max_recursion = variable_get('past_max_recursion', 10);
+    // @todo Convert to config
+    // $this->max_recursion = variable_get('past_max_recursion', 10);
+    $this->max_recursion = 10;
   }
 
   /**

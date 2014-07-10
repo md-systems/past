@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\past_db\Plugin\Core\Entity;
+namespace Drupal\past_db\Entity;
 
 use Drupal\Core\Entity\Entity;
 

@@ -9,18 +9,18 @@ namespace Drupal\past_db;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
-use Drupal\Core\Entity\DatabaseStorageControllerNG;
+use Drupal\Core\Entity\EntityDatabaseStorage;
 use Drupal;
 
 /**
  * Defines a Controller class for past events.
  */
-class PastEventStorageController extends DatabaseStorageControllerNG {
+class PastEventStorageController extends EntityDatabaseStorage {
 
   /**
    * Overrides Drupal\Core\Entity\DatabaseStorageController::create().
    */
-  public function create(array $values) {
+  public function create(array $values = array()) {
     $entity = parent::create($values);
 
     if (empty($entity->type)) {
@@ -33,7 +33,7 @@ class PastEventStorageController extends DatabaseStorageControllerNG {
       $entity->severity = PAST_SEVERITY_INFO;
     }
     if (empty($entity->uid) && !empty($GLOBALS['user'])) {
-      $entity->uid = $GLOBALS['user']->uid;
+      $entity->uid = $GLOBALS['user']->id();
     }
     return $entity;
   }

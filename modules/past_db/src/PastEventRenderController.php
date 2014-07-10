@@ -7,12 +7,12 @@
 
 namespace Drupal\past_db;
 
-use Drupal\Core\Entity\EntityRenderController;
+use Drupal\Core\Entity\Controller\EntityViewController;
 
 /**
  * Render controller for taxonomy terms.
  */
-class PastEventRenderController extends EntityRenderController {
+class PastEventRenderController extends EntityViewController {
 
   /**
    * Overrides Drupal\Core\Entity\EntityRenderController::buildContent().

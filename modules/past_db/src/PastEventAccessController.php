@@ -14,7 +14,7 @@ use Drupal\Core\Session\AccountInterface;
 /**
  * Defines an access controller for the taxonomy term entity.
  *
- * @see \Drupal\past_db\Plugin\Core\Entity\PastEvent
+ * @see \Drupal\past_db\Entity\PastEvent
  */
 class PastEventAccessController extends EntityAccessController {
 
