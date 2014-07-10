@@ -33,8 +33,9 @@ class PastRequirementsTest extends DrupalWebTestCase {
    * Tests that the module requirements are correctly set.
    */
   function testRequirements() {
+    $config = \Drupal::config('past.settings');
     // Check if error message appears when past_db is disabled.
-    variable_set('past_backend', 'past_db_create_event');
+    $config->set('backend', 'past_db_create_event');
     $this->drupalGet('admin/reports/status');
     $this->assertRaw(t('Past backend missing (%factory), install and configure a valid backend, like past_db.', array('%factory' => 'past_db_create_event')));
 
@@ -48,12 +49,12 @@ class PastRequirementsTest extends DrupalWebTestCase {
 
     // Check if a valid function returning a false or no event instance
     // creates an error message.
-    variable_set('past_backend', 'past_testhidden_create_broken_event');
+    $config->set('backend', 'past_testhidden_create_broken_event');
     $this->drupalGet('admin/reports/status');
     $this->assertRaw(t('Past backend (%factory) did not return a valid event instance.', array('%factory' => 'past_testhidden_create_broken_event')));
 
     // Check if a non existing function creates an error message.
-    variable_set('past_backend', 'non_existing_function');
+    $config->set('backend', 'non_existing_function');
     $this->drupalGet('admin/reports/status');
     $this->assertRaw(t('Past backend missing (%factory), install and configure a valid backend, like past_db.', array('%factory' => 'non_existing_function')));
   }

@@ -4,18 +4,24 @@ past.settings:
   type: mapping
   label: 'Past settings'
   mapping:
-    past_events_expire:
+    backend:
+      type: string
+    events_expire:
       type: integer
       label: 'Log expiration interval'
-    past_exception_handling:
+    exception_handling:
       type: boolean
       label: 'Register PHP exception handler'
-    past_log_watchdog:
+    log_watchdog:
       type: boolean
       label: 'Log watchdog to past event log'
-    past_backtrace_exclude:
+    shutdown_handling:
+      type: integer
+    log_session_id:
+      type: integer
+    backtrace_include:
       type: mapping
-      label: 'Exclude watchdog severity levels from writing backtraces'
+      label: 'Include watchdog severity levels into writing backtraces'
       mapping:
         WATCHDOG_SEVERITY_0:
           type: boolean

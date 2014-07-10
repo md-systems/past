@@ -28,7 +28,7 @@ class PastSubscriber implements EventSubscriberInterface {
   }
 
   public function registerExceptionHandler(GetResponseEvent $event) {
-    if (config('past.settings')->get('past_exception_handling')) {
+    if (\Drupal::config('past.settings')->get('exception_handling')) {
       set_exception_handler('_past_exception_handler');
     }
   }

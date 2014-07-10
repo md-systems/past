@@ -77,7 +77,7 @@ function past_event_save($module, $machine_name, $message, array $arguments = ar
  * @see past_event_save()
  */
 function past_event_create($module, $machine_name, $message = NULL, array $options = array()) {
-  switch (config('past.settings')->get('backend')) {
+  switch (\Drupal::config('past.settings')->get('backend')) {
     case 'past_simpletest':
       $event = new PastEventSimpletest(array());
       break;
@@ -96,7 +96,7 @@ function past_event_create($module, $machine_name, $message = NULL, array $optio
   }
 
   // @todo move to PastEventController->create() or move other defaults here ?
-  if (variable_get('past_log_session_id', 1) &&
+  if (\Drupal::config('past.settings')->get('log_session_id') &&
     !array_key_exists('session_id', $options)) {
     // Add session id if not in options.
     global $user;
@@ -172,18 +172,6 @@ function past_event_severities() {
 }
 
 /**
- * Implements hook_menu().
- */
-function past_menu() {
-  $items['admin/config/development/past'] = array(
-    'title' => 'Past settings',
-    'description' => 'Administer past.',
-    'route_name' => 'past_settings',
-  );
-  return $items;
-}
-
-/**
  * Implements hook_permission().
  */
 function past_permission() {
@@ -201,7 +189,8 @@ function past_permission() {
  * Implements hook_watchdog().
  */
 function past_watchdog(array $log_entry) {
-  if (variable_get('past_log_watchdog', 0) && empty($log_entry['variables']['past_already_logged'])) {
+  if (\Drupal::config('past.settings')->get('log_watchdog')
+    && empty($log_entry['variables']['past_already_logged'])) {
     $message = $log_entry['message'];
 
     if (is_array($log_entry['variables'])) {
@@ -320,7 +309,8 @@ function _past_watchdog_severity_defaults() {
  *   Plain-text backtrace.
  */
 function _past_get_formatted_backtrace($severity_level, $slice = 5) {
-  $log_backtrace = variable_get('past_backtrace_include', _past_watchdog_severity_defaults());
+  $config = \Drupal::config('past.settings');
+  $log_backtrace = $config->get('backtrace_include');
   $severity_keyvalue = 'WATCHDOG_SEVERITY_' . $severity_level;
   if (empty($log_backtrace[$severity_keyvalue])) {
     return NULL;

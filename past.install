@@ -23,27 +23,27 @@ function past_install() {
  */
 function past_requirements($phase) {
   $requirements = array();
-  $t = get_t();
 
   if ($phase == 'runtime') {
-    $past_backend_factory = variable_get('past_backend', 'past_db_create_event');
+    $past_backend_factory = \Drupal::config('past.settings')
+      ->get('backend');
     // If the function doesn't exist, return a null implementation to avoid
     // fatal errors.
     $severity = REQUIREMENT_OK;
-    $description = $t('Past backend is configured correctly.');
+    $description = t('Past backend is configured correctly.');
     if (!function_exists($past_backend_factory)) {
       $severity = REQUIREMENT_ERROR;
-      $description = $t('Past backend missing (%factory), install and configure a valid backend, like past_db.', array('%factory' => $past_backend_factory));
+    $description = t('Past backend missing (%factory), install and configure a valid backend, like past_db.', array('%factory' => $past_backend_factory));
     }
     else {
       $event = $past_backend_factory();
       if (!$event) {
         $severity = REQUIREMENT_ERROR;
-        $description = $t('Past backend (%factory) did not return a valid event instance.', array('%factory' => $past_backend_factory));
+        $description = t('Past backend (%factory) did not return a valid event instance.', array('%factory' => $past_backend_factory));
       }
     }
     $requirements['past'] = array(
-      'title' => $t('Past backend'),
+      'title' => t('Past backend'),
       'description' => $description,
       'value' => $past_backend_factory,
       'severity' => $severity,

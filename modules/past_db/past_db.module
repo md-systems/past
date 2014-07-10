@@ -202,7 +202,7 @@ function past_db_access($op, $entity = NULL, $account = NULL) {
  */
 function past_db_cron() {
   // Check if expiration is enabled.
-  if ($expire = variable_get('past_events_expire', 0)) {
+  if ($expire = \Drupal::config('past_settings')->get('events_expire', 0)) {
     // Fetch up to 100 past events to delete, delete oldest first.
     $query = new EntityFieldQuery();
     $query->entityCondition('entity_type', 'past_event');
