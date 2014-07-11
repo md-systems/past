@@ -8,6 +8,7 @@
 namespace Drupal\past_db\Entity;
 
 use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\FieldDefinition;
 use \Drupal\past\Entity\PastEventInterface;
@@ -72,8 +73,9 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
       ->setDescription(t('The event log message'));
     $fields['severity'] = FieldDefinition::create('integer')
       ->setLabel(t('Severity'))
-      ->setDescription(t('The event severity.'));
-    $fields['timestamp'] = FieldDefinition::create('integer')
+      ->setDescription(t('The event severity.'))
+      ->setDefaultValue(PAST_SEVERITY_INFO);
+    $fields['timestamp'] = FieldDefinition::create('created')
       ->setLabel(t('Timestamp'))
       ->setDescription(t('The event timestamp.'));
     $fields['parent_event_id'] = FieldDefinition::create('entity_reference')
@@ -107,6 +109,20 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    * @var string
    */
   public $location;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function preCreate(EntityStorageInterface $storage, array &$values) {
+    parent::preCreate($storage, $values);
+    if (empty($values['type'])) {
+      $values['type'] = 'past_event';
+    }
+    if (empty($values['uid'])) {
+      $values['uid'] = \Drupal::currentUser()->id();
+    }
+  }
+
 
   /**
    * The arguments of this event.
