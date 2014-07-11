@@ -1,0 +1,10 @@
+past_form.settings:
+  type: mapping
+  label: 'Past form settings'
+  mapping:
+    past_form_log_form_ids:
+      type: string
+    past_form_log_validations:
+      type: boolean
+    past_form_ignored_values:
+      type: string

@@ -5,12 +5,16 @@
  * Main bootstrap file for past_grabber.
  */
 
+use Drupal\Component\Utility\NestedArray;
+
 /**
  * Implements hook_FORM_ID_alter().
  *
  * Alters past admin settings.
  */
 function past_form_form_past_admin_settings_alter(&$form, &$form_state, $form_id) {
+  $config = \Drupal::config('past_form.settings');
+
   $form['form'] = array(
     '#type' => 'fieldset',
     '#title' => t('Form logging'),
@@ -20,24 +24,16 @@ function past_form_form_past_admin_settings_alter(&$form, &$form_state, $form_id
   $form['form']['past_form_log_validations'] = array(
     '#type' => 'checkbox',
     '#title' => t('Log form validations'),
-    '#default_value' => variable_get('past_form_log_validations', 0),
+    '#default_value' => $config->get('past_form_log_validations'),
     '#description' => t('When enabled, Past will log also form validations.'),
   );
   $form['form']['past_form_log_form_ids'] = array(
     '#type' => 'textarea',
     '#title' => t("Log listed form_id's"),
-    '#default_value' => variable_get('past_form_log_form_ids', ''),
+    '#default_value' => $config->get('past_form_log_form_ids'),
     '#description' => t("A list of form_id's that will be logged. Put each on a new line. (* is supported as wildcard, for instance views_ui_*)"),
   );
-}
 
-/**
- * Implements hook_views_api().
- */
-function past_form_views_api() {
-  return array(
-    'api' => 3,
-  );
 }
 
 /**
@@ -54,8 +50,10 @@ function past_form_views_api() {
  * Views exposed forms are excluded.
  */
 function past_form_form_alter(&$form, &$form_state, $form_id) {
+  $config = \Drupal::config('past_form.settings');
+
   // @todo move the form_id globbing in a function.
-  $included_form_ids = variable_get('past_form_log_form_ids', '');
+  $included_form_ids = $config->get('past_form_log_form_ids');
   // Check the string. So that the array does not contain an empty string.
   if (empty($included_form_ids)) {
     return;
@@ -64,7 +62,7 @@ function past_form_form_alter(&$form, &$form_state, $form_id) {
   $log_form = FALSE;
   // Each line is a separate form id, make sure they don't contain spaces or
   // special characters at the beginning or end.
-  $included_form_ids = array_map('trim', explode("\n", variable_get('past_form_log_form_ids', '')));
+  $included_form_ids = array_map('trim', explode("\n", $config->get('past_form_log_form_ids')));
   foreach ($included_form_ids as $included_form_id) {
     if ($form_id == $included_form_id) {
       $log_form = TRUE;
@@ -97,7 +95,7 @@ function past_form_form_alter(&$form, &$form_state, $form_id) {
   $form['#submit'][] = 'past_form_submit';
 
   $validators = NULL;
-  if (variable_get('past_form_log_validations', 0)) {
+  if ($config->get('past_form_log_validations')) {
 
     // Recover global/default #validate handler.
     if (empty($form['#validate'])) {
@@ -111,7 +109,7 @@ function past_form_form_alter(&$form, &$form_state, $form_id) {
     $validators = $form['#validate'];
 
     // Add past form validation handler.
-    $form['#validate'][] = 'past_form_validate';
+    $validators[] = 'past_form_validate';
   }
 
   // Apply the submit handler to all submit elements.
@@ -132,7 +130,9 @@ function past_form_form_alter(&$form, &$form_state, $form_id) {
  *   The form id of the processed form.
  */
 function past_form_attach_recursive(&$subform, $form_state, $form_id) {
-  foreach (element_children($subform) as $key) {
+  $config = \Drupal::config('past_form.settings');
+
+  foreach (\Drupal\Core\Render\Element::children($subform) as $key) {
     $element =& $subform[$key];
     if (!empty($element['#type']) && $element['#type'] == 'submit') {
       if (!empty($element['#submit']) ||
@@ -143,7 +143,7 @@ function past_form_attach_recursive(&$subform, $form_state, $form_id) {
       }
     }
 
-    if (variable_get('past_form_log_validations', 0)) {
+    if ($config->get('past_form_log_validations')) {
       if (!empty($element['#type']) &&
         (in_array('submit', $element) || in_array('button', $element) ||
          in_array('image_button', $element))) {
@@ -182,8 +182,8 @@ function past_form_submit($form, &$form_state) {
  *   The form state array of the form of which an event will be saved for.
  */
 function past_form_validate($form, &$form_state) {
-  $errors = form_get_errors();
-  if (is_array($errors) && count($errors) > 0) {
+  $errors = \Drupal::formBuilder()->getErrors($form_state);
+  if ($errors) {
     _past_form_save_event($form, $form_state, 'validate', 'Form validation error:', $errors);
   }
 }
@@ -203,10 +203,12 @@ function past_form_validate($form, &$form_state) {
  *   Validation errors that will be logged.
  */
 function _past_form_save_event($form, $form_state, $machine_name = 'submit', $message_prefix = 'Form submitted:', $errors = array()) {
+  $config = \Drupal::config('past_form.settings');
+
   $form_id = $form['#form_id'];
   $form_values = $form_state['values'];
   // Do not log passwords!
-  $ignored = variable_get('past_form_ignored_values', array('pass', 'current_pass', 'pass2'));
+  $ignored = $config->get('past_form_ignored_values');
   foreach ($ignored as $key) {
     if (array_key_exists($key, $form_values)) {
       $form_values[$key] = str_repeat('*', 5);
@@ -249,7 +251,7 @@ function _past_form_save_event($form, $form_state, $machine_name = 'submit', $me
     $error_elements = array();
     foreach ($errors as $element_name => $validation_error) {
       $error_elements[$element_name]['message'] = $validation_error;
-      $error_elements[$element_name]['submitted'] = drupal_array_get_nested_value($form_values, explode('][', $element_name));
+      $error_elements[$element_name]['submitted'] = NestedArray::getValue($form, explode('][', $element_name));
     }
     $event->addArgument('errors', $error_elements);
   }

@@ -1,0 +1,8 @@
+name: Past Form
+description: Captures form submissions and logs them.
+package: Logging
+core: 8.x
+type: module
+
+dependencies:
+ - past
