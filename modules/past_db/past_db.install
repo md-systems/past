@@ -89,78 +89,8 @@ function past_db_schema() {
       'argument_id' => array('argument_id'),
     ),
   );
-  $schema['past_event_type'] = array(
-    'description' => 'Stores information about all defined past event types.',
-    'fields' => array(
-      'id' => array(
-        'type' => 'serial',
-        'not null' => TRUE,
-        'description' => 'Primary Key: Unique past event type ID.',
-      ),
-      'type' => array(
-        'description' => 'The machine-readable name of this past event type.',
-        'type' => 'varchar',
-        'length' => 32,
-        'not null' => TRUE,
-      ),
-      'label' => array(
-        'description' => 'The human-readable name of this past event type.',
-        'type' => 'varchar',
-        'length' => 255,
-        'not null' => TRUE,
-        'default' => '',
-      ),
-      'weight' => array(
-        'type' => 'int',
-        'not null' => TRUE,
-        'default' => 0,
-        'size' => 'tiny',
-        'description' => 'The weight of this past event type in relation to others.',
-      ),
-      'data' => array(
-        'type' => 'text',
-        'not null' => FALSE,
-        'size' => 'big',
-        'serialize' => TRUE,
-        'description' => 'A serialized array of additional data related to this past event type.',
-      ),
-      'status' => array(
-        'type' => 'int',
-        'not null' => TRUE,
-        // Set the default to ENTITY_CUSTOM without using the constant as it is
-        // not safe to use it at this point.
-        'default' => 0x01,
-        'size' => 'tiny',
-        'description' => 'The exportable status of the entity.',
-      ),
-      'module' => array(
-        'description' => 'The name of the providing module if the entity has been defined in code.',
-        'type' => 'varchar',
-        'length' => 255,
-        'not null' => FALSE,
-      ),
-    ),
-    'primary key' => array('id'),
-    'unique keys' => array(
-      'type' => array('type'),
-    ),
-  );
 
   return $schema;
-}
-
-/**
- * Implements hook_enable().
- */
-function past_db_enable() {
-  // Create default past event type.
-  /* @var PastEventType $event_type */
-  $event_type = entity_create('past_event_type', array(
-    'type' => 'past_event',
-    'label' => t('Default'),
-    'weight' => 0,
-  ));
-  $event_type->save();
 }
 
 /**

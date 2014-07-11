@@ -12,12 +12,9 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   id = "past_event_type",
  *   label = @Translation("Past event type"),
  *   bundle_label = @Translation("Type"),
- *   controllers = {
- *     "storage" = "Drupal\Core\Entity\EntityDatabaseStorage",
- *   },
  *   entity_keys = {
  *     "id" = "type",
- *     "label" = "name",
+ *     "label" = "label",
  *   },
  * )
  */
@@ -25,6 +22,13 @@ class PastEventType extends ConfigEntityBase {
   public $type;
   public $label;
   public $weight = 0;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function id() {
+    return $this->type;
+  }
 
   /**
    * Returns whether the past_event type is locked.
