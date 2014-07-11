@@ -154,7 +154,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    * Implements Drupal\Core\Entity\EntityInterface::id().
    */
   public function id() {
-    return $this->event_id;
+    return $this->get('event_id');
   }
 
   /**
@@ -236,7 +236,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    */
   public function getArguments() {
     $this->loadArguments();
-    return $this->arguments;
+    return $this->get('arguments');
   }
 
   /**
@@ -250,63 +250,63 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    * {@inheritdoc}
    */
   public function getMachineName() {
-    return $this->machine_name;
+    return $this->get('machine_name');
   }
 
   /**
    * {@inheritdoc}
    */
   public function getModule() {
-    return $this->module;
+    return $this->get('module');
   }
 
   /**
    * {@inheritdoc}
    */
   public function getSeverity() {
-    return $this->severity;
+    return $this->get('severity');
   }
 
   /**
    * {@inheritdoc}
    */
   public function getSessionId() {
-    return $this->session_id;
+    return $this->get('session_id');
   }
 
   /**
    * {@inheritdoc}
    */
   public function getReferer() {
-    return $this->referer;
+    return $this->get('referer');
   }
 
   /**
    * {@inheritdoc}
    */
   public function getLocation() {
-    return $this->location;
+    return $this->get('location');
   }
 
   /**
    * {@inheritdoc}
    */
   public function getMessage() {
-    return $this->message;
+    return $this->get('message');
   }
 
   /**
    * {@inheritdoc}
    */
   public function getTimestamp() {
-    return $this->timestamp;
+    return $this->get('timestamp');
   }
 
   /**
    * {@inheritdoc}
    */
   public function getUid() {
-    return $this->uid;
+    return $this->get('uid');
   }
 
   /**
@@ -321,7 +321,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    * {@inheritdoc}
    */
   public function setSeverity($severity) {
-    $this->severity = $severity;
+    $this->set('severity', $severity);
     return $this;
   }
 
@@ -329,7 +329,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    * {@inheritdoc}
    */
   public function setSessionId($session_id) {
-    $this->session_id = $session_id;
+    $this->set('session_id', $session_id);
     return $this;
   }
 
@@ -353,7 +353,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    * {@inheritdoc}
    */
   public function setMessage($message) {
-    $this->message = $message;
+    $this->set('message', $message);
     return $this;
   }
 
@@ -361,7 +361,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    * {@inheritdoc}
    */
   public function setTimestamp($timestamp) {
-    $this->timestamp = $timestamp;
+    $this->set('timestamp', $timestamp);
     return $this;
   }
 
@@ -369,7 +369,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    * {@inheritdoc}
    */
   public function setMachineName($machine_name) {
-    $this->machine_name = $machine_name;
+    $this->set('machine_name', $machine_name);
     return $this;
   }
 
@@ -377,7 +377,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    * {@inheritdoc}
    */
   public function setModule($module) {
-    $this->module = $module;
+    $this->set('module', $module);
     return $this;
   }
 
@@ -385,7 +385,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    * {@inheritdoc}
    */
   public function setUid($uid) {
-    $this->uid = $uid;
+    $this->set('uid', $uid);
     return $this;
   }
 
@@ -401,7 +401,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    * {@inheritdoc}
    */
   public function getChildEvents() {
-    return $this->child_events;
+    return $this->get('child_events');
   }
 
   /**
