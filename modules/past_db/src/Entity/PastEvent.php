@@ -7,34 +7,31 @@
 
 namespace Drupal\past_db\Entity;
 
+use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\FieldDefinition;
 use \Drupal\past\Entity\PastEventInterface;
-use \Drupal\Core\Entity\Entity;
 use \Exception;
 
 /**
  * Defines the past event entity.
  *
- * @EntityType(
+ * @ContentEntityType(
  *   id = "past_event",
  *   label = @Translation("Past event"),
  *   bundle_label = @Translation("Type"),
- *   module = "past_db",
  *   controllers = {
  *     "storage" = "Drupal\past_db\PastEventStorageController",
  *     "render" = "Drupal\past_db\PastEventRenderController",
  *     "access" = "Drupal\past_db\PastEventAccessController",
  *   },
  *   base_table = "past_event",
- *   uri_callback = "past_event_entity_uri",
  *   fieldable = TRUE,
  *   entity_keys = {
  *     "id" = "event_id",
  *     "bundle" = "type",
  *     "label" = "event_id",
  *     "uuid" = "uuid"
- *   },
- *   bundle_keys = {
- *     "bundle" = "type"
  *   },
  *   links = {
  *     "canonical" = "/admin/reports/past/{past_event}",
@@ -44,55 +41,51 @@ use \Exception;
  *   permission_granularity = "entity_type"
  * )
  */
-class PastEvent extends Entity implements PastEventInterface {
-  /**
-   * The event UUID.
-   *
-   * @var string
-   */
-  public $uuid;
+class PastEvent extends ContentEntityBase implements PastEventInterface {
 
   /**
-   * The identifier of the event.
-   *
-   * @var int
+   * {@inheritdoc}
    */
-  public $event_id;
-
-  /**
-   * The module that logged this event.
-   *
-   * @var string
-   */
-  public $module;
-
-  /**
-   * The machine name of this event.
-   *
-   * @var string
-   */
-  public $machine_name;
-
-  /**
-   * The event type/bundle.
-   *
-   * @var string
-   */
-  public $type;
-
-  /**
-   * The subject/message of the event to be logged.
-   *
-   * @var string
-   */
-  public $message;
-
-  /**
-   * The severity of the event.
-   *
-   * @var int
-   */
-  public $severity;
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
+    $fields['event_id'] = FieldDefinition::create('integer')
+      ->setLabel(t('Event ID'))
+      ->setDescription(t('The event ID.'))
+      ->setReadOnly(TRUE);
+    $fields['uuid'] = FieldDefinition::create('string')
+      ->setLabel(t('UUID'))
+      ->setDescription(t('The event UUID.'))
+      ->setReadOnly(TRUE);
+    $fields['module'] = FieldDefinition::create('string')
+      ->setLabel(t('Module'))
+      ->setDescription(t('The module which logged the event.'))
+      ->setReadOnly(TRUE);
+    $fields['machine_name'] = FieldDefinition::create('string')
+      ->setLabel(t('Machine name'))
+      ->setDescription(t('The machine name of the event.'))
+      ->setReadOnly(TRUE);
+    $fields['type'] = FieldDefinition::create('string')
+      ->setLabel(t('Type'))
+      ->setDescription(t('The node type.'))
+      ->setReadOnly(TRUE);
+    $fields['message'] = FieldDefinition::create('string')
+      ->setLabel(t('Message'))
+      ->setDescription(t('The event log message'));
+    $fields['severity'] = FieldDefinition::create('integer')
+      ->setLabel(t('Severity'))
+      ->setDescription(t('The event severity.'));
+    $fields['timestamp'] = FieldDefinition::create('integer')
+      ->setLabel(t('Timestamp'))
+      ->setDescription(t('The event timestamp.'));
+    $fields['parent_event_id'] = FieldDefinition::create('entity_reference')
+      ->setLabel(t('Parent event ID'))
+      ->setDescription(t('The parent event ID.'))
+      ->setSetting('target_type', 'past_event');
+    $fields['uid'] = FieldDefinition::create('entity_reference')
+      ->setLabel(t('User ID'))
+      ->setDescription(t('The user ID.'))
+      ->setSetting('target_type', 'user');
+    return $fields;
+  }
 
   /**
    * The session ID of the user who triggered the event.
@@ -114,27 +107,6 @@ class PastEvent extends Entity implements PastEventInterface {
    * @var string
    */
   public $location;
-
-  /**
-   * A timestamp of when the event occurred.
-   *
-   * @var int
-   */
-  public $timestamp;
-
-  /**
-   * The ID of the parent event.
-   *
-   * @var int
-   */
-  public $parent_event_id;
-
-  /**
-   * The {users}.uid of the user who triggered the event.
-   *
-   * @var int
-   */
-  public $uid;
 
   /**
    * The arguments of this event.

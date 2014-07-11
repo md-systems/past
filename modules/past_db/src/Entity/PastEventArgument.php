@@ -3,13 +3,11 @@
 namespace Drupal\past_db\Entity;
 
 use \Drupal\past\Entity\PastEventArgumentInterface;
-use \Drupal\Core\Entity\Entity;
-
 
 /**
  * An argument for an event.
  */
-class PastEventArgument extends Entity implements PastEventArgumentInterface {
+class PastEventArgument implements PastEventArgumentInterface {
 
   public $argument_id;
   public $event_id;

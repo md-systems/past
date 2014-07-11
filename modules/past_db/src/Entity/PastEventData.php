@@ -2,13 +2,12 @@
 
 namespace Drupal\past_db\Entity;
 
-use Drupal\Core\Entity\Entity;
 use \Drupal\past\Entity\PastEventDataInterface;
 
 /**
  * Past event data entity.
  */
-class PastEventData extends Entity implements PastEventDataInterface {
+class PastEventData implements PastEventDataInterface {
 
   public $data_id;
   public $argument_id;
