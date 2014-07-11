@@ -20,7 +20,6 @@ use \Exception;
  * @ContentEntityType(
  *   id = "past_event",
  *   label = @Translation("Past event"),
- *   bundle_label = @Translation("Type"),
  *   controllers = {
  *     "storage" = "Drupal\past_db\PastEventStorageController",
  *     "render" = "Drupal\past_db\PastEventRenderController",
@@ -50,30 +49,46 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields['event_id'] = FieldDefinition::create('integer')
       ->setLabel(t('Event ID'))
-      ->setDescription(t('The event ID.'))
+      ->setDescription(t('The identifier of the event.'))
+      ->setRequired(TRUE)
       ->setReadOnly(TRUE);
-    $fields['uuid'] = FieldDefinition::create('string')
+    $fields['uuid'] = FieldDefinition::create('uuid')
       ->setLabel(t('UUID'))
       ->setDescription(t('The event UUID.'))
       ->setReadOnly(TRUE);
     $fields['module'] = FieldDefinition::create('string')
       ->setLabel(t('Module'))
-      ->setDescription(t('The module which logged the event.'))
+      ->setDescription(t('The module that logged this event.'))
+      ->setSetting('max_length', 128)
       ->setReadOnly(TRUE);
     $fields['machine_name'] = FieldDefinition::create('string')
       ->setLabel(t('Machine name'))
-      ->setDescription(t('The machine name of the event.'))
+      ->setDescription(t('The machine name of this event.'))
       ->setReadOnly(TRUE);
-    $fields['type'] = FieldDefinition::create('string')
+    $fields['type'] = FieldDefinition::create('entity_reference')
       ->setLabel(t('Type'))
-      ->setDescription(t('The node type.'))
+      ->setDescription(t('The type of this event.'))
+      ->setRequired(TRUE)
+      ->setSetting('target_type', 'past_event_type')
+      ->setDefaultValue('past_event')
       ->setReadOnly(TRUE);
+    $fields['session_id'] = FieldDefinition::create('string')
+      ->setLabel(t('Session id'))
+      ->setDescription(t('The session id of the user who triggered the event.'));
+    $fields['referer'] = FieldDefinition::create('string')
+      ->setLabel('Referer')
+      ->setDescription(t('The referrer of the request who triggered the event.'));
+    $fields['location'] = FieldDefinition::create('string')
+      ->setLabel('Location')
+      ->setDescription(t('The URI of the request that triggered the event.'));
     $fields['message'] = FieldDefinition::create('string')
       ->setLabel(t('Message'))
       ->setDescription(t('The event log message'));
     $fields['severity'] = FieldDefinition::create('integer')
       ->setLabel(t('Severity'))
-      ->setDescription(t('The event severity.'))
+      ->setDescription(t('The severity of this event.'))
+      ->setSetting('size', 'small')
+      ->setRequired(TRUE)
       ->setDefaultValue(PAST_SEVERITY_INFO);
     $fields['timestamp'] = FieldDefinition::create('created')
       ->setLabel(t('Timestamp'))
@@ -84,31 +99,10 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
       ->setSetting('target_type', 'past_event');
     $fields['uid'] = FieldDefinition::create('entity_reference')
       ->setLabel(t('User ID'))
-      ->setDescription(t('The user ID.'))
+      ->setDescription(t('The id of the user who triggered the event.'))
       ->setSetting('target_type', 'user');
     return $fields;
   }
-
-  /**
-   * The session ID of the user who triggered the event.
-   *
-   * @var string
-   */
-  public $session_id;
-
-  /**
-   * The HTTP referrer of the request which triggered the event.
-   *
-   * @var string
-   */
-  public $referer;
-
-  /**
-   * The URI of the request which triggered the event.
-   *
-   * @var string
-   */
-  public $location;
 
   /**
    * {@inheritdoc}

@@ -26,6 +26,19 @@ class PastEventStorageController extends ContentEntityDatabaseStorage {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function getSchema() {
+    $schema = parent::getSchema();
+    $schema['past_event']['indexes']['severity'] = array('severity');
+    $schema['past_event']['indexes']['module'] = array('module');
+    $schema['past_event']['indexes']['machine_name'] = array('machine_name');
+    $schema['past_event']['indexes']['session_id'] = array('session_id');
+    $schema['past_event']['indexes']['type'] = array('type');
+    return $schema;
+  }
+
+  /**
    * Overrides Drupal\Core\Entity\DatabaseStorageController::postDelete().
    */
   protected function postDelete($entities) {
