@@ -12,6 +12,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\FieldDefinition;
 use \Drupal\past\Entity\PastEventInterface;
+use Drupal\past\Entity\PastEventArgumentInterface;
 use \Exception;
 
 /**
@@ -121,7 +122,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
   /**
    * The arguments of this event.
    *
-   * @var PastEventArgument[]
+   * @var PastEventArgumentInterface[]
    */
   protected $arguments;
 
@@ -189,7 +190,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
       unset($options['exclude']);
     }
 
-    $this->arguments[$key] = entity_create('past_event_argument', array('name' => $key, 'original_data' => $data) + $options);
+    $this->arguments[$key] = new PastEventArgument($key, $data, $options);
     return $this->arguments[$key];
   }
 
@@ -428,6 +429,25 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
     }
 
     return $this->defaultLabel;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function save() {
+    if (is_array($this->arguments)) {
+      foreach ($this->arguments as $argument) {
+        /** @var PastEventArgumentInterface $argument */
+        db_insert('past_event_argument')
+          ->fields(array(
+            'event_id' => $this->id(),
+            'name' => $argument->getKey(),
+            'type' => $argument->getType(),
+            'raw' => $argument->getRaw(),
+          ));
+      }
+    }
+    parent::save();
   }
 
   /**

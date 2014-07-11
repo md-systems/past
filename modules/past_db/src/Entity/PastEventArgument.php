@@ -17,6 +17,25 @@ class PastEventArgument implements PastEventArgumentInterface {
   public $raw;
 
   /**
+   * Creates a new argument.
+   *
+   * @param $name
+   * @param $original_data
+   * @param array $options
+   *   An associative array containing any number of the following properties:
+   *     - event_id
+   *     - type
+   *     - raw
+   */
+  public function __construct($name, $original_data, array $options = array()) {
+    $this->name = $name;
+    $this->original_data = $original_data;
+    foreach ($options as $key => $value) {
+      $this->$key = $value;
+    }
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function getData() {
