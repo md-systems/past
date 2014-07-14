@@ -292,7 +292,9 @@ class PastWebTest extends WebTestBase {
   public function getLastEventByMachinename($machine_name) {
     $event_id = db_query_range('SELECT event_id FROM {past_event} WHERE machine_name = :machine_name ORDER BY event_id DESC', 0, 1, array(':machine_name' => $machine_name))->fetchField();
     if ($event_id) {
-      return entity_load('past_event', $event_id);
+      return \Drupal::entityManager()
+        ->getStorage('past_event')
+        ->load($event_id);
     }
   }
 

@@ -43,12 +43,9 @@ class PastEventStorageController extends ContentEntityDatabaseStorage {
    * Overrides Drupal\Core\Entity\DatabaseStorageController::postDelete().
    */
   protected function postDelete($entities) {
-    $query = Drupal::entityQuery('past_event_argument');
-    $query->andConditionGroup()->condition('event_id', array_keys($entities));
-    $result = $query->execute();
-    if ($result) {
-      entity_delete_multiple('past_event_argument', array_keys($result['past_event_argument']));
-    }
+    db_delete('past_event_argument')
+      ->condition('event_id', array_keys($entities))
+      ->execute();
   }
 
   /**
