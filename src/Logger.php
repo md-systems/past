@@ -14,6 +14,16 @@ use Drupal\Core\Logger\LogMessageParserInterface;
 class Logger extends AbstractLogger {
 
   /**
+   * Set to TRUE when creating a log event, and to FALSE when done.
+   *
+   * No log event is created if this is already TRUE, in order to avoid infinite
+   * recursion should the creation of a log event cause another log event.
+   *
+   * @var bool
+   */
+  protected static $isCreatingEvent = FALSE;
+
+  /**
    * The message's placeholders parser.
    *
    * @var LogMessageParserInterface
@@ -34,12 +44,11 @@ class Logger extends AbstractLogger {
    * {@inheritdoc}
    */
   public function log($level, $message, array $context = array()) {
-    /*
-    if ($message == 'something') {
-      debug($message, '$message');
-      debug($context, '$context');
+    // Prevent logging recursion
+    if (self::$isCreatingEvent) {
+      return;
     }
-    */
+    self::$isCreatingEvent = TRUE;
 
     unset($context['backtrace']);
     $variables = $this->parser->parseMessagePlaceholders($message, $context);
@@ -91,10 +100,8 @@ class Logger extends AbstractLogger {
         $event->addArgument('watchdog_args', $watchdog_args);
       }
 
-      /*
-       * @todo $event->save() causes infinite recursion
-       * $event->save();
-       */
+      $event->save();
     }
+    self::$isCreatingEvent = FALSE;
   }
 }
