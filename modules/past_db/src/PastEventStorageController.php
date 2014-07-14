@@ -10,7 +10,8 @@ namespace Drupal\past_db;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Entity\ContentEntityDatabaseStorage;
-use Drupal;
+use Drupal\past_db\Entity\PastEvent;
+use Drupal\past_db\Entity\PastEventArgument;
 
 /**
  * Defines a Controller class for past events.
@@ -56,16 +57,36 @@ class PastEventStorageController extends ContentEntityDatabaseStorage {
   protected function doSave($id, EntityInterface $entity) {
     parent::doSave($id, $entity);
     // Save the arguments.
+
+    /** @var PastEvent $entity */
     foreach ($entity->getArguments() as $argument) {
-      $argument->event_id = $entity->event_id;
-      $argument->save();
+      /** @var PastEventArgument $argument */
+      $argument->ensureType();
+
+      $data = $argument->getOriginalData();
+      if ($data) {
+        $insert = db_insert('past_event_argument')
+          ->fields(array(
+            'event_id' => $entity->id(),
+            'name' => $argument->getKey(),
+            'type' => $argument->getType(),
+            'raw' => $argument->getRaw(),
+          ));
+        $argument->normalizeData($insert, $data);
+        try {
+          $insert->execute();
+        }
+        catch (\Exception $e) {
+          watchdog_exception('past', $e);
+        }
+      }
     }
 
     // Update child events to use the parent_event_id.
     if ($child_events = $entity->getChildEvents()) {
       db_update('past_event')
           ->fields(array(
-            'parent_event_id' => $entity->event_id
+            'parent_event_id' => $entity->id(),
           ))
           ->condition('event_id', $child_events)
           ->execute();
