@@ -435,19 +435,49 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    * {@inheritdoc}
    */
   public function save() {
+    parent::save();
     if (is_array($this->arguments)) {
       foreach ($this->arguments as $argument) {
-        /** @var PastEventArgumentInterface $argument */
-        db_insert('past_event_argument')
-          ->fields(array(
-            'event_id' => $this->id(),
-            'name' => $argument->getKey(),
-            'type' => $argument->getType(),
-            'raw' => $argument->getRaw(),
-          ));
+        /** @var PastEventArgument $argument */
+        $argument->ensureType();
+
+        $data = $argument->getOriginalData();
+        if ($data) {
+          $insert = db_insert('past_event_argument')
+            ->fields(array(
+              'event_id' => $this->id(),
+              'name' => $argument->getKey(),
+              'type' => $argument->getType(),
+              'raw' => $argument->getRaw(),
+            ));
+          $argument->normalizeData($insert, $data);
+          try {
+            $this->insert->execute();
+          }
+          catch (Exception $e) {
+            watchdog_exception('past', $e);
+          }
+        }
       }
     }
-    parent::save();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function delete() {
+    parent::delete();
+    if (is_array($this->arguments)) {
+      foreach ($this->arguments as $argument) {
+        // Delete the data first, then the argument.
+        db_delete('past_event_data')
+          ->condition('argument_id', $argument->argument_id)
+          ->execute();
+        db_delete('past_event_argument')
+          ->condition('argument_id', $argument->argument_id)
+          ->execute();
+      }
+    }
   }
 
   /**
