@@ -205,11 +205,15 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
   protected function loadArguments() {
     if (!is_array($this->arguments)) {
       $this->arguments = array();
-      $arguments = db_select('past_event_argument')
+      $result = db_select('past_event_argument', 'a')
+        ->fields('a')
         ->condition('event_id', $this->id())
         ->execute();
-      foreach ($arguments as $argument) {
-        $this->arguments[$argument->name] = $argument;
+      while ($row = $result->fetchAssoc()) {
+        $this->arguments[$row['name']] = new PastEventArgument($row['name'], NULL, array(
+          'type' => $row['type'],
+          'raw' => $row['raw'],
+        ));
       }
     }
   }
