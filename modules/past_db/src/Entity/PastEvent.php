@@ -151,13 +151,6 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
   }
 
   /**
-   * Implements Drupal\Core\Entity\EntityInterface::id().
-   */
-  public function id() {
-    return $this->event_id;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function addArgument($key, $data, array $options = array()) {
