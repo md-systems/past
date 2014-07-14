@@ -11,7 +11,6 @@ use \Drupal\past\Entity\PastEventArgumentInterface;
 class PastEventArgument implements PastEventArgumentInterface {
 
   public $argument_id;
-  public $event_id;
   protected $original_data;
   public $name;
   public $type;
@@ -24,7 +23,6 @@ class PastEventArgument implements PastEventArgumentInterface {
    * @param $original_data
    * @param array $options
    *   An associative array containing any number of the following properties:
-   *     - event_id
    *     - type
    *     - raw
    */
@@ -119,40 +117,5 @@ class PastEventArgument implements PastEventArgumentInterface {
    */
   public function defaultLabel() {
     return $this->getKey();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function normalizeData(Insert $insert, $data, $parent_data_id = 0)
-  {
-    if (is_array($data) || is_object($data)) {
-      foreach ($data as $name => $value) {
-
-        // @todo: Allow to make this configurable. Ignore NULL.
-        if ($value === NULL) {
-          continue;
-        }
-
-        $insert->values(array(
-          'argument_id' => $argument_id,
-          'parent_data_id' => $parent_data_id,
-          'type' => is_object($value) ? get_class($value) : gettype($value),
-          'name' => $name,
-          // @todo: Support recursive inserts.
-          'value' => is_scalar($value) ? $value : serialize($value),
-          'serialized' => is_scalar($value) ? 0 : 1,
-        ));
-      }
-    } else {
-      $insert->values(array(
-        'argument_id' => $argument_id,
-        'parent_data_id' => 0,
-        'type' => gettype($data),
-        'name' => '',
-        'value' => $data,
-        'serialized' => 0,
-      ));
-    }
   }
 }
