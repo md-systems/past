@@ -154,7 +154,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    * Implements Drupal\Core\Entity\EntityInterface::id().
    */
   public function id() {
-    return $this->get('event_id');
+    return $this->event_id;
   }
 
   /**
@@ -236,7 +236,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    */
   public function getArguments() {
     $this->loadArguments();
-    return $this->get('arguments');
+    return $this->arguments;
   }
 
   /**
@@ -250,63 +250,63 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    * {@inheritdoc}
    */
   public function getMachineName() {
-    return $this->get('machine_name');
+    return $this->get('machine_name')->value;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getModule() {
-    return $this->get('module');
+    return $this->get('module')->value;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getSeverity() {
-    return $this->get('severity');
+    return $this->get('severity')->value;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getSessionId() {
-    return $this->get('session_id');
+    return $this->get('session_id')->value;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getReferer() {
-    return $this->get('referer');
+    return $this->get('referer')->value;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getLocation() {
-    return $this->get('location');
+    return $this->get('location')->value;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getMessage() {
-    return $this->get('message');
+    return $this->get('message')->value;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getTimestamp() {
-    return $this->get('timestamp');
+    return $this->get('timestamp')->value;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getUid() {
-    return $this->get('uid');
+    return $this->get('uid')->value;
   }
 
   /**
@@ -401,7 +401,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    * {@inheritdoc}
    */
   public function getChildEvents() {
-    return $this->get('child_events');
+    return $this->child_events;
   }
 
   /**
