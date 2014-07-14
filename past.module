@@ -187,59 +187,6 @@ function past_permission() {
 }
 
 /**
- * Implements hook_watchdog().
- */
-function past_watchdog(array $log_entry) {
-  if (\Drupal::config('past.settings')->get('log_watchdog')
-    && empty($log_entry['variables']['past_already_logged'])) {
-    $message = $log_entry['message'];
-
-    if (is_array($log_entry['variables'])) {
-      // Format watchdog message with array variables as placeholders.
-      $message = format_string($log_entry['message'], $log_entry['variables']);
-    }
-    // The past message is expected to be in plain text, remove HTML tags and
-    // decode entities.
-    $event = past_event_create('watchdog', $log_entry['type'], html_entity_decode(strip_tags($message), ENT_QUOTES));
-    $event->setSeverity($log_entry['severity']);
-    $event->setTimestamp($log_entry['timestamp']);
-
-    if ($log_entry['type'] == 'php') {
-      // We handle an error report.
-      $context = _past_error_array_to_event($log_entry['variables']);
-      if (!empty($context)) {
-        $event->addArgument('php', $context);
-      }
-    }
-
-    if ($backtrace = _past_get_formatted_backtrace($log_entry['severity'])) {
-      $event->addArgument('backtrace', $backtrace);
-    }
-
-    if (!empty($log_entry['link'])) {
-      $event->addArgument('link', $log_entry['link']);
-    }
-    $watchdog_args = array();
-    if (!empty($log_entry['uid'])) {
-      $event->setUid($log_entry['uid']);
-    }
-    if (!empty($log_entry['request_uri'])) {
-      $event->setLocation($log_entry['request_uri']);
-    }
-    if (!empty($log_entry['referer'])) {
-      $event->setReferer($log_entry['referer']);
-    }
-    if (!empty($log_entry['ip'])) {
-      $watchdog_args['hostname'] = substr($log_entry['ip'], 0, 128);
-    }
-    if ($watchdog_args) {
-      $event->addArgument('watchdog_args', $watchdog_args);
-    }
-    $event->save();
-  }
-}
-
-/**
  * Implements hook_form_alter().
  * ??????
  */

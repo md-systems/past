@@ -3,3 +3,8 @@ services:
     class: Drupal\past\EventSubscriber\PastSubscriber
     tags:
       - {name: event_subscriber}
+  logger.past:
+    class: Drupal\past\Logger
+    arguments: ['@logger.log_message_parser']
+    tags:
+      - {name: logger}
