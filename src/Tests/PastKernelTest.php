@@ -7,6 +7,7 @@
 
 namespace Drupal\past\Tests;
 
+use Drupal\Core\Utility\Error;
 use Drupal\simpletest\KernelTestBase;
 use Drupal\past\Entity\PastEventInterface;
 use Drupal\past\Entity\PastEventArgumentInterface;
@@ -112,26 +113,26 @@ class PastKernelTest extends KernelTestBase {
     $exception = new \Exception('An exception', 500);
     past_event_save('past', 'test_exception', 'An exception', array('exception' => $exception));
     $event = $this->getLastEventByMachinename('test_exception');
-    $expected = _drupal_decode_exception($exception) + array('backtrace' => $exception->getTraceAsString());
+    $expected = Error::decodeException($exception) + array('backtrace' => $exception->getTraceAsString());
     $this->assertEqual($expected, $event->getArgument('exception')->getData());
     // @todo: We still need to know that this was an exception.
     $this->assertEqual('array', $event->getArgument('exception')->getType());
 
     // Created an exception with 4 nested previous exceptions, the 4th will be
     // ignored.
-    $ignored_exception = new Exception ('This exception will be ignored', 90);
-    $previous_previous_previous_exception = new Exception ('Previous previous previous exception', 99, $ignored_exception);
-    $previous_previous_exception = new Exception ('Previous previous exception', 100, $previous_previous_previous_exception);
-    $previous_exception = new Exception('Previous exception', 500, $previous_previous_exception);
-    $exception = new Exception('An exception', 500, $previous_exception);
+    $ignored_exception = new \Exception('This exception will be ignored', 90);
+    $previous_previous_previous_exception = new \Exception('Previous previous previous exception', 99, $ignored_exception);
+    $previous_previous_exception = new \Exception('Previous previous exception', 100, $previous_previous_previous_exception);
+    $previous_exception = new \Exception('Previous exception', 500, $previous_previous_exception);
+    $exception = new \Exception('An exception', 500, $previous_exception);
     past_event_save('past', 'test_exception', 'An exception', array('exception' => $exception));
     $event = $this->getLastEventByMachinename('test_exception');
 
     // Build up the expected data, each previous exception is logged one level deeper.
-    $expected = _drupal_decode_exception($exception) + array('backtrace' => $exception->getTraceAsString());
-    $expected['previous'] =_drupal_decode_exception($previous_exception) + array('backtrace' => $previous_exception->getTraceAsString());
-    $expected['previous']['previous'] =_drupal_decode_exception($previous_previous_exception) + array('backtrace' => $previous_previous_exception->getTraceAsString());
-    $expected['previous']['previous']['previous'] =_drupal_decode_exception($previous_previous_previous_exception) + array('backtrace' => $previous_previous_previous_exception->getTraceAsString());
+    $expected = Error::decodeException($exception) + array('backtrace' => $exception->getTraceAsString());
+    $expected['previous'] = Error::decodeException($previous_exception) + array('backtrace' => $previous_exception->getTraceAsString());
+    $expected['previous']['previous'] = Error::decodeException($previous_previous_exception) + array('backtrace' => $previous_previous_exception->getTraceAsString());
+    $expected['previous']['previous']['previous'] = Error::decodeException($previous_previous_previous_exception) + array('backtrace' => $previous_previous_previous_exception->getTraceAsString());
     $this->assertEqual($expected, $event->getArgument('exception')->getData());
 
     past_event_save('past', 'test_timestamp', 'Event with a timestamp', array(), array('timestamp' => REQUEST_TIME - 1));

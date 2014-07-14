@@ -11,6 +11,7 @@ use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\FieldDefinition;
+use Drupal\Core\Utility\Error;
 use \Drupal\past\Entity\PastEventInterface;
 use Drupal\past\Entity\PastEventArgumentInterface;
 use \Exception;
@@ -665,7 +666,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    *   An array containing the decoded exception including the backtrace.
    */
   protected function decodeException(Exception $exception, $level = 0) {
-    $data = _drupal_decode_exception($exception);
+    $data = Error::decodeException($exception);
     $data['backtrace'] = $exception->getTraceAsString();
 
     // If we're not deeper than 3 levels in this method, the exception has a

@@ -5,6 +5,8 @@
  * Contains the entity classes for Past Simpletest backend.
  */
 
+use Drupal\Core\Utility\Error;
+
 /**
  * The main Event class for the Past Simpletest backend.
  */
@@ -75,7 +77,7 @@ class PastEventSimpletest implements PastEventInterface {
     // Special support for exceptions, convert them to something that can be
     // stored.
     if (isset($data) && $data instanceof Exception) {
-      $data = _drupal_decode_exception($data) + array('backtrace' => $data->getTraceAsString());
+      $data = Error::decodeException($data) + array('backtrace' => $data->getTraceAsString());
     }
 
     // Remove values which were explicitly added to the exclude filter.

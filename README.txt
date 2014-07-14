@@ -160,7 +160,7 @@ function YOURMODULE_event_save($module, $machine_name, $message, array $argument
     // Decode exceptions, as trying to print_r() them results in recursions.
     foreach ($arguments as &$argument) {
       if ($argument instanceof Exception) {
-        $decoded = _drupal_decode_exception($argument);
+        $decoded = Error::decodeException($argument);
         $argument = $decoded;
       }
     }

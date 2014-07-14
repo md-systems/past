@@ -6,6 +6,7 @@
  */
 
 use Drupal\past\Entity\PastEventInterface;
+use Drupal\Core\Utility\Error;
 
 /**
  * Severities correspond to Log message severity from WATCHDOG.
@@ -264,7 +265,7 @@ function _past_exception_handler($exception) {
     $event->save();
 
     // Log the message to the watchdog and return an error page to the user.
-    $error_decoded = _drupal_decode_exception($exception);
+    $error_decoded = Error::decodeException($exception);
     $error_decoded['past_already_logged'] = TRUE;
     _drupal_log_error($error_decoded, TRUE);
   }
@@ -274,8 +275,8 @@ function _past_exception_handler($exception) {
     // uncaught exception being thrown.
     if (error_displayable()) {
       print '<h1>Additional uncaught exception thrown while handling exception.</h1>';
-      print '<h2>Original</h2><p>' . _drupal_render_exception_safe($exception) . '</p>';
-      print '<h2>Additional</h2><p>' . _drupal_render_exception_safe($exception2) . '</p><hr />';
+      print '<h2>Original</h2><p>' . Error::renderExceptionSafe($exception) . '</p>';
+      print '<h2>Additional</h2><p>' . Error::renderExceptionSafe($exception2) . '</p><hr />';
     }
   }
 }

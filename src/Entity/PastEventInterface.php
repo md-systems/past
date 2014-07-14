@@ -152,7 +152,7 @@ interface PastEventInterface {
    * @param mixed $data
    *   The data that belongs to the argument and should be logged. Supported are
    *   scalar values, arrays, and objects. Exceptions are automatically decoded
-   *   with _drupal_decode_exception() including a backtrace.
+   *   with Error::decodeException() including a backtrace.
    * @param array $options
    *   Options for the argument. Currently supported:
    *     - exclude: Array of keys/properties that should be ignored on the data
