@@ -14,7 +14,9 @@ use Drupal\past\Entity\PastEventArgumentInterface;
 use Drupal\past\Entity\PastEventDataInterface;
 
 /**
- * Tests for the Past logger.
+ * Generic API tests using the database backend.
+ *
+ * @group past
  */
 class PastKernelTest extends KernelTestBase {
 
@@ -38,17 +40,6 @@ class PastKernelTest extends KernelTestBase {
     'past_testhidden',
     'user',
   );
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Past API kernel tests',
-      'description' => 'Generic API tests using the database backend',
-      'group' => 'Past',
-    );
-  }
 
   /**
    * {@inheritdoc}

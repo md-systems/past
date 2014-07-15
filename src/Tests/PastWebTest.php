@@ -14,7 +14,9 @@ use Drupal\past\Entity\PastEventArgumentInterface;
 use Drupal\past\Entity\PastEventDataInterface;
 
 /**
- * Tests for the Past logger.
+ * Generic API web tests using the database backend.
+ *
+ * @group past
  */
 class PastWebTest extends WebTestBase {
 
@@ -37,17 +39,6 @@ class PastWebTest extends WebTestBase {
     'past_db',
     'past_testhidden',
   );
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Past API web tests',
-      'description' => 'Generic API tests using the database backend',
-      'group' => 'Past',
-    );
-  }
 
   /**
    * {@inheritdoc}

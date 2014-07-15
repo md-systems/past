@@ -8,7 +8,10 @@
 namespace Drupal\past_db\Tests;
 
 /**
- * Tests Past DB.
+ * Tests for database backend of the Past module.
+ *
+ * @group past
+ * @requires module entityreference
  */
 class PastDBTest extends PastDBTestBase {
 
@@ -18,20 +21,6 @@ class PastDBTest extends PastDBTestBase {
     'past_db',
     'entity_reference',
   );
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Past DB tests',
-      'description' => 'Tests for DB backend of the Past module.',
-      'group' => 'Past',
-      'dependencies' => array(
-        'entityreference',
-      ),
-    );
-  }
 
   /**
    * Creates an administrator user and sample events.
