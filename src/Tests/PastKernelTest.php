@@ -75,6 +75,7 @@ class PastKernelTest extends KernelTestBase {
     past_event_save('past', 'test_argument', 'A test log entry with arguments', array('test' => $test_string, 'test2' => 5));
     $event = $this->getLastEventByMachinename('test_argument');
     $this->assertEqual(2, count($event->getArguments()));
+    $this->assertEqual('string', $event->getArgument('test')->getType());
     $this->assertEqual($test_string, $event->getArgument('test')->getData());
     $this->assertEqual(5, $event->getArgument('test2')->getData());
     $this->assertEqual('test', $event->getArgument('test')->getKey());

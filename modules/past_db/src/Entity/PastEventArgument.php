@@ -44,7 +44,10 @@ class PastEventArgument implements PastEventArgumentInterface {
    */
   public function getData() {
     $return = NULL;
-    $result = db_query('SELECT * FROM {past_event_data} WHERE argument_id = :argument_id', array(':argument_id' => $this->argument_id));
+    $result = db_select('past_event_data', 'data')
+      ->fields('data')
+      ->condition('argument_id', $this->argument_id)
+      ->execute();
     if ($this->type == 'array') {
       $return = array();
       foreach ($result as $row) {
@@ -52,14 +55,14 @@ class PastEventArgument implements PastEventArgumentInterface {
       }
     }
     elseif (!in_array($this->type, array('integer', 'string', 'float', 'boolean'))) {
-      $return = new stdClass();
+      $return = new \stdClass();
       foreach ($result as $row) {
         $return->{$row->name} = $row->serialized ? unserialize($row->value) : $row->value;
       }
     }
     else {
-      if ($row = $result->fetchObject()) {
-        $return = $row->value;
+      if ($row = $result->fetchAssoc()) {
+        $return = $row['value'];
       }
     }
     return $return;
