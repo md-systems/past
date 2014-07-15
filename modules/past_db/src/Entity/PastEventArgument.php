@@ -19,6 +19,7 @@ class PastEventArgument implements PastEventArgumentInterface {
   /**
    * Creates a new argument.
    *
+   * @param $argument_id
    * @param $name
    * @param $original_data
    * @param array $options
@@ -26,11 +27,15 @@ class PastEventArgument implements PastEventArgumentInterface {
    *     - type
    *     - raw
    */
-  public function __construct($name, $original_data, array $options = array()) {
+  public function __construct($argument_id, $name, $original_data, array $options = array()) {
+    $this->argument_id = $argument_id;
     $this->name = $name;
     $this->original_data = $original_data;
-    foreach ($options as $key => $value) {
-      $this->$key = $value;
+    if (isset($options['type'])) {
+      $this->type = $options['type'];
+    }
+    if (isset($options['raw'])) {
+      $this->raw = $options['raw'];
     }
   }
 

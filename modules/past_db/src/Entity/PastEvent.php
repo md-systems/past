@@ -184,7 +184,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
       unset($options['exclude']);
     }
 
-    $this->arguments[$key] = new PastEventArgument($key, $data, $options);
+    $this->arguments[$key] = new PastEventArgument(NULL, $key, $data, $options);
     return $this->arguments[$key];
   }
 
@@ -210,7 +210,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
         ->condition('event_id', $this->id())
         ->execute();
       while ($row = $result->fetchAssoc()) {
-        $this->arguments[$row['name']] = new PastEventArgument($row['name'], NULL, array(
+        $this->arguments[$row['name']] = new PastEventArgument($row['argument_id'], $row['name'], NULL, array(
           'type' => $row['type'],
           'raw' => $row['raw'],
         ));
