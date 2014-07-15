@@ -126,7 +126,8 @@ class PastKernelTest extends KernelTestBase {
    * Tests if the watchdog replacement works as expected.
    */
   public function testWatchdogReplacement() {
-    global $user;
+    // @todo Switch to \Drupal::logger() (https://www.drupal.org/node/2270941).
+    $user = \Drupal::currentUser();
 
     // First enable watchdog logging.
     $this->config->set('log_watchdog', 1)->save();
@@ -139,7 +140,7 @@ class PastKernelTest extends KernelTestBase {
     $msg = 'something';
     watchdog($machine_name, $msg, array(), WATCHDOG_INFO, NULL);
     $event = $this->getLastEventByMachinename($machine_name);
-    $this->assertNotNull($event);
+    $this->assertNotNull($event, 'Watchdog call caused an event.');
     $this->assertEqual('watchdog', $event->getModule());
     $this->assertEqual($msg, $event->getMessage());
     $this->assertEqual(WATCHDOG_INFO, $event->getSeverity());
@@ -152,15 +153,15 @@ class PastKernelTest extends KernelTestBase {
 
     // Note that here we do not create a test user but use the user that has
     // triggered the test as this is the user captured in the watchdog().
-    $this->assertEqual($user->uid, $event->getUid());
+    $this->assertEqual($user->id(), $event->getUid());
 
     // Note that here we do not create a test user but use the user that has
     // triggered the test as this is the user captured in the watchdog().
-    $this->assertEqual($user->uid, $event->getUid());
+    $this->assertEqual($user->id(), $event->getUid());
 
     $msg = 'something new';
     $nice_url = 'http://www.md-systems.ch';
-    watchdog($machine_name, $msg, NULL, WATCHDOG_NOTICE, $nice_url);
+    watchdog($machine_name, $msg, array(), WATCHDOG_NOTICE, $nice_url);
     $event = $this->getLastEventByMachinename($machine_name);
     $this->assertEqual('watchdog', $event->getModule());
     $this->assertEqual($msg, $event->getMessage());
@@ -174,7 +175,7 @@ class PastKernelTest extends KernelTestBase {
 
     // Now we disable watchdog logging.
     $this->config->set('log_watchdog', 0);
-    watchdog($machine_name, 'something Past will not see', NULL, WATCHDOG_INFO, NULL);
+    watchdog($machine_name, 'something Past will not see', array(), WATCHDOG_INFO, NULL);
     $event = $this->getLastEventByMachinename($machine_name);
     // And still the previous message should be found.
     $this->assertEqual($msg, $event->getMessage());
