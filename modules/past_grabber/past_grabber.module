@@ -78,7 +78,7 @@ function past_grabber_cron() {
   }
 
   if (!is_readable($path)) {
-    watchdog('past_grabber', 'Unable to open log file @path', array('@path' => $path));
+    \Drupal::logger('past_grabber')->notice('Unable to open log file @path', array('@path' => $path));
     return;
   }
 

@@ -165,11 +165,11 @@ function YOURMODULE_event_save($module, $machine_name, $message, array $argument
       }
     }
 
-    watchdog((string) $module, '@name::@message <pre>@arguments</pre>', array(
+    \Drupal::logger((string) $module)->log($severity, '@name::@message <pre>@arguments</pre>', array(
       '@name' => $machine_name,
       '@message' => $message,
       '@arguments' => print_r($arguments, TRUE),
-    ), $severity);
+    ));
   }
 }
 

@@ -126,11 +126,11 @@ class PastKernelTest extends KernelTestBase {
    * Tests if the watchdog replacement works as expected.
    */
   public function testWatchdogReplacement() {
-    // @todo Switch to \Drupal::logger() (https://www.drupal.org/node/2270941).
     $user = \Drupal::currentUser();
+    $logger = \Drupal::logger('test_watchdog');
 
     // First enable watchdog logging.
-    $this->config->set('log_watchdog', 1)->save();
+    $this->config->set('log_watchdog', 1);
     $machine_name = 'test_watchdog';
 
     // Simpletest does not cleanly mock these _SERVER variables.
@@ -138,7 +138,7 @@ class PastKernelTest extends KernelTestBase {
     $_SERVER['HTTP_REFERER'] = 'mock-referer';
 
     $msg = 'something';
-    watchdog($machine_name, $msg, array(), WATCHDOG_INFO, NULL);
+    $logger->info($msg);
     $event = $this->getLastEventByMachinename($machine_name);
     $this->assertNotNull($event, 'Watchdog call caused an event.');
     $this->assertEqual('watchdog', $event->getModule());
@@ -152,16 +152,12 @@ class PastKernelTest extends KernelTestBase {
       'Contains mock-referer.');
 
     // Note that here we do not create a test user but use the user that has
-    // triggered the test as this is the user captured in the watchdog().
-    $this->assertEqual($user->id(), $event->getUid());
-
-    // Note that here we do not create a test user but use the user that has
-    // triggered the test as this is the user captured in the watchdog().
+    // triggered the test as this is the user captured in the $logger->info().
     $this->assertEqual($user->id(), $event->getUid());
 
     $msg = 'something new';
     $nice_url = 'http://www.md-systems.ch';
-    watchdog($machine_name, $msg, array(), WATCHDOG_NOTICE, $nice_url);
+    $logger->notice($msg, array('link' => $nice_url));
     $event = $this->getLastEventByMachinename($machine_name);
     $this->assertEqual('watchdog', $event->getModule());
     $this->assertEqual($msg, $event->getMessage());
@@ -175,16 +171,16 @@ class PastKernelTest extends KernelTestBase {
 
     // Now we disable watchdog logging.
     $this->config->set('log_watchdog', 0);
-    watchdog($machine_name, 'something Past will not see', array(), WATCHDOG_INFO, NULL);
+    $logger->info('something Past will not see');
     $event = $this->getLastEventByMachinename($machine_name);
     // And still the previous message should be found.
     $this->assertEqual($msg, $event->getMessage());
   }
 
-  /*
-  * Tests the session id behavior.
-  */
-  function testSessionIdBehavior() {
+  /**
+   * Tests the session id behavior.
+   */
+  public function testSessionIdBehavior() {
     global $user;
 
     // Test a global user object without a session ID.
@@ -230,7 +226,7 @@ class PastKernelTest extends KernelTestBase {
    */
   public function testErrorArray() {
     $this->config->set('log_watchdog', TRUE);
-    watchdog('php', 'This is some test watchdog log of type php', array());
+    \Drupal::logger('php')->notice('This is some test watchdog log of type php');
   }
 
   /**
