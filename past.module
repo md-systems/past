@@ -100,13 +100,13 @@ function past_event_create($module, $machine_name, $message = NULL, array $optio
   if (\Drupal::config('past.settings')->get('log_session_id') &&
     !array_key_exists('session_id', $options)) {
     // Add session id if not in options.
-    global $user;
-    if (!empty($user->ssid)) {
+    $user = \Drupal::currentUser();
+    if ($user->getSecureSessionId()) {
       // HTTPS Session.
-      $event->setSessionId($user->ssid);
+      $event->setSessionId($user->getSecureSessionId());
     }
-    elseif (!empty($user->sid)) {
-      $event->setSessionId($user->sid);
+    elseif ($user->getSessionId()) {
+      $event->setSessionId($user->getSessionId());
     }
     else {
       $event->setSessionId(session_id());

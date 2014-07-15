@@ -48,7 +48,7 @@ class PastKernelTest extends KernelTestBase {
     parent::setUp();
     $this->installEntitySchema('past_event');
     $this->installEntitySchema('user');
-    $this->installConfig(array('past_db'));
+    $this->installConfig(array('past', 'past_db'));
     $this->installSchema('past_db', array('past_event_argument', 'past_event_data'));
     $this->config = \Drupal::config('past.settings');
   }
