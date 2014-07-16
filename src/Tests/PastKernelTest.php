@@ -134,6 +134,7 @@ class PastKernelTest extends KernelTestBase {
     $machine_name = 'test_watchdog';
 
     // Simpletest does not cleanly mock these _SERVER variables.
+    // @todo Update or remove if necessary.
     $_SERVER['REQUEST_URI'] = 'mock-request-uri';
     $_SERVER['HTTP_REFERER'] = 'mock-referer';
 
@@ -146,8 +147,7 @@ class PastKernelTest extends KernelTestBase {
     $this->assertEqual(WATCHDOG_INFO, $event->getSeverity());
     $this->assertEqual(1, count($event->getArguments()));
     $this->assertNotNull($event->getArgument('watchdog_args'));
-    $this->assertTrue(strpos($event->getLocation(), 'mock-request-uri')>0,
-      'Contains mock-request-uri.');
+    $this->assertEqual($event->getLocation(), 'http://localhost/');
     $this->assertTrue(strpos($event->getReferer(), 'mock-referer')===0,
       'Contains mock-referer.');
 
