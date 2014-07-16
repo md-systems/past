@@ -48,45 +48,6 @@ class PastWebTest extends WebTestBase {
     $this->config = \Drupal::config('past.settings');
   }
 
-  public function testSave() {
-    $user = $this->drupalCreateUser();
-    past_event_save('past', 'test_user', 'Object argument', array('user' => $user));
-    $event = $this->getLastEventByMachinename('test_user');
-    $this->assertEqual($user->toArray(), $event->getArgument('user')->getData(),
-      'The user entity argument is preserved by saving and loading.');
-    $this->assertEqual('entity:user', $event->getArgument('user')->getType());
-
-    $exception = new \Exception('An exception', 500);
-    past_event_save('past', 'test_exception', 'An exception', array('exception' => $exception));
-    $event = $this->getLastEventByMachinename('test_exception');
-    $expected = Error::decodeException($exception) + array('backtrace' => $exception->getTraceAsString());
-    $this->assertEqual($expected, $event->getArgument('exception')->getData());
-    // @todo: We still need to know that this was an exception.
-    $this->assertEqual('array', $event->getArgument('exception')->getType());
-
-    // Created an exception with 4 nested previous exceptions, the 4th will be
-    // ignored.
-    $ignored_exception = new \Exception('This exception will be ignored', 90);
-    $previous_previous_previous_exception = new \Exception('Previous previous previous exception', 99, $ignored_exception);
-    $previous_previous_exception = new \Exception('Previous previous exception', 100, $previous_previous_previous_exception);
-    $previous_exception = new \Exception('Previous exception', 500, $previous_previous_exception);
-    $exception = new \Exception('An exception', 500, $previous_exception);
-    past_event_save('past', 'test_exception', 'An exception', array('exception' => $exception));
-    $event = $this->getLastEventByMachinename('test_exception');
-
-    // Build up the expected data, each previous exception is logged one level
-    // deeper.
-    $expected = Error::decodeException($exception) + array('backtrace' => $exception->getTraceAsString());
-    $expected['previous'] = Error::decodeException($previous_exception) + array('backtrace' => $previous_exception->getTraceAsString());
-    $expected['previous']['previous'] = Error::decodeException($previous_previous_exception) + array('backtrace' => $previous_previous_exception->getTraceAsString());
-    $expected['previous']['previous']['previous'] = Error::decodeException($previous_previous_previous_exception) + array('backtrace' => $previous_previous_previous_exception->getTraceAsString());
-    $this->assertEqual($expected, $event->getArgument('exception')->getData());
-
-    past_event_save('past', 'test_timestamp', 'Event with a timestamp', array(), array('timestamp' => REQUEST_TIME - 1));
-    $event = $this->getLastEventByMachinename('test_timestamp');
-    $this->assertEqual(REQUEST_TIME - 1, $event->getTimestamp());
-  }
-
   /*
    * Tests the disabled exception handler.
    */
