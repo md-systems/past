@@ -48,7 +48,7 @@ class PastEventArgument implements PastEventArgumentInterface {
       ->fields('data')
       ->condition('argument_id', $this->argument_id)
       ->execute();
-    if ($this->type == 'array') {
+    if ($this->type == 'array' || strpos($this->type, 'entity:') === 0) {
       $return = array();
       foreach ($result as $row) {
         $return[$row->name] = $row->serialized ? unserialize($row->value) : $row->value;
@@ -107,7 +107,7 @@ class PastEventArgument implements PastEventArgumentInterface {
    * {@inheritdoc}
    */
   public function ensureType() {
-    if (isset($this->original_data)) {
+    if (isset($this->original_data) && !isset($this->type)) {
       if (is_object($this->original_data)) {
         $this->type = get_class($this->original_data);
       }

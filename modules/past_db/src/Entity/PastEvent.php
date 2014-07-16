@@ -8,6 +8,7 @@
 namespace Drupal\past_db\Entity;
 
 use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\FieldDefinition;
@@ -159,15 +160,19 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
       $this->arguments = array();
     }
 
+    // Entities are complex beings, let's use toArray() rather than clone.
+    if ($data instanceof EntityInterface) {
+      $options['type'] = 'entity:' . $data->getEntityTypeId();
+      $data = $data->toArray();
+    }
     // If it is an object, clone it to avoid changing the original and log it
     // at the current state. Except when it can't, like e.g. exceptions.
-    if (is_object($data) && !($data instanceof Exception)) {
+    elseif (is_object($data) && !($data instanceof Exception)) {
       $data = clone $data;
     }
-
     // Special support for exceptions, convert them to something that can be
     // stored.
-    if (isset($data) && $data instanceof Exception) {
+    elseif (isset($data) && $data instanceof Exception) {
       $data = $this->decodeException($data);
     }
 

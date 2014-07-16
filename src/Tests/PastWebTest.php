@@ -52,8 +52,9 @@ class PastWebTest extends WebTestBase {
     $user = $this->drupalCreateUser();
     past_event_save('past', 'test_user', 'Object argument', array('user' => $user));
     $event = $this->getLastEventByMachinename('test_user');
-    $this->assertEqual($user, $event->getArgument('user')->getData());
-    $this->assertEqual('stdClass', $event->getArgument('user')->getType());
+    $this->assertEqual($user->toArray(), $event->getArgument('user')->getData(),
+      'The user entity argument is preserved by saving and loading.');
+    $this->assertEqual('entity:user', $event->getArgument('user')->getType());
 
     $exception = new \Exception('An exception', 500);
     past_event_save('past', 'test_exception', 'An exception', array('exception' => $exception));
