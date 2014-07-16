@@ -106,8 +106,9 @@ class PastKernelTest extends KernelTestBase {
     $exception = new \Exception('An exception', 500);
     past_event_save('past', 'test_exception', 'An exception', array('exception' => $exception));
     $event = $this->getLastEventByMachinename('test_exception');
-    $expected = Error::decodeException($exception) + array('backtrace' => $exception->getTraceAsString());
-    $this->assertEqual($expected, $event->getArgument('exception')->getData());
+    $expected = array('backtrace' => $exception->getTraceAsString()) + Error::decodeException($exception);
+    $this->assertEqual($expected, $event->getArgument('exception')->getData(),
+      'The exception argument is preserved by saving and loading.');
     // @todo: We still need to know that this was an exception.
     $this->assertEqual('array', $event->getArgument('exception')->getType());
 
@@ -123,11 +124,12 @@ class PastKernelTest extends KernelTestBase {
 
     // Build up the expected data, each previous exception is logged one level
     // deeper.
-    $expected = Error::decodeException($exception) + array('backtrace' => $exception->getTraceAsString());
-    $expected['previous'] = Error::decodeException($previous_exception) + array('backtrace' => $previous_exception->getTraceAsString());
-    $expected['previous']['previous'] = Error::decodeException($previous_previous_exception) + array('backtrace' => $previous_previous_exception->getTraceAsString());
-    $expected['previous']['previous']['previous'] = Error::decodeException($previous_previous_previous_exception) + array('backtrace' => $previous_previous_previous_exception->getTraceAsString());
-    $this->assertEqual($expected, $event->getArgument('exception')->getData());
+    $expected = array('backtrace' => $exception->getTraceAsString()) + Error::decodeException($exception);
+    $expected['previous'] = array('backtrace' => $previous_exception->getTraceAsString()) + Error::decodeException($previous_exception);
+    $expected['previous']['previous'] = array('backtrace' => $previous_previous_exception->getTraceAsString()) + Error::decodeException($previous_previous_exception);
+    $expected['previous']['previous']['previous'] = array('backtrace' => $previous_previous_previous_exception->getTraceAsString()) + Error::decodeException($previous_previous_previous_exception);
+    $this->assertEqual($expected, $event->getArgument('exception')->getData(),
+      'The nested exception argument is preserved by saving and loading.');
 
     past_event_save('past', 'test_timestamp', 'Event with a timestamp', array(), array('timestamp' => REQUEST_TIME - 1));
     $event = $this->getLastEventByMachinename('test_timestamp');
