@@ -155,22 +155,6 @@ function past_testhidden_errors() {
 }
 
 /**
- * Page callback that will trigger an error case of given type.
- *
- * Error cases trigger different errors or exceptions.
- *
- * @param string $type
- *   Error case type.
- *
- * @return string
- *   Returns string to get visual.
- */
-function past_testhidden_trigger_error($type) {
-  module_load_include('inc', 'past_testhidden', '/errors/past.' . $type);
-  return 'hello, world';
-}
-
-/**
  * Empty submit handler form. (Global submit handler will be suppressed).
  */
 function past_testhidden_form_empty_submit_array($form_state) {

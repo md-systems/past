@@ -1,3 +1,10 @@
+past_testhidden.trigger_error:
+  path: /past_trigger_error/{type}
+  defaults:
+    _controller: '\Drupal\past_testhidden\Controller\ErrorTrigger::trigger'
+  requirements:
+    _access: 'TRUE'
+
 form_empty_submit_array:
   path: /past_testhidden_form_empty_submit_array
   defaults:
