@@ -37,7 +37,6 @@ class PastKernelTest extends KernelTestBase {
   public static $modules = array(
     'past',
     'past_db',
-    'past_testhidden',
     'system',
     'user',
   );
