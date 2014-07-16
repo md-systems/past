@@ -14,7 +14,7 @@ use Drupal\simpletest\WebTestBase;
  *
  * @group past
  */
-class PastDBTestBase extends WebTestBase {
+abstract class PastDBTestBase extends WebTestBase {
 
   protected $event_desc;
   protected $machine_name;

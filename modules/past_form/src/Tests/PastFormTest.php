@@ -38,6 +38,7 @@ class PastFormTest extends WebTestBase {
    * {@inheritdoc}
    */
   public function setUp() {
+    parent::setUp();
     $this->config = \Drupal::config('past_form.settings');
     $this->config->set('past_form_log_form_ids', '*')->save();
   }

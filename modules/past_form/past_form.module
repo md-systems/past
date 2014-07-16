@@ -8,11 +8,11 @@
 use Drupal\Component\Utility\NestedArray;
 
 /**
- * Implements hook_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter().
  *
  * Alters past admin settings.
  */
-function past_form_form_past_admin_settings_alter(&$form, &$form_state, $form_id) {
+function past_form_form_past_settings_alter(&$form, &$form_state, $form_id) {
   $config = \Drupal::config('past_form.settings');
 
   $form['form'] = array(
