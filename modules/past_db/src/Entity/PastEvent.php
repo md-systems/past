@@ -12,6 +12,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\FieldDefinition;
+use Drupal\Core\Field\Plugin\Field\FieldType\StringItem;
 use Drupal\Core\Utility\Error;
 use \Drupal\past\Entity\PastEventInterface;
 use Drupal\past\Entity\PastEventArgumentInterface;
@@ -359,6 +360,10 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    * {@inheritdoc}
    */
   public function setMessage($message) {
+    $max_length = StringItem::defaultSettings()['max_length'];
+    if (strlen($message) > $max_length) {
+      $message = substr($message, 0, $max_length - 3) . '...';
+    }
     $this->set('message', $message);
     return $this;
   }
