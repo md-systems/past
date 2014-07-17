@@ -344,7 +344,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    * {@inheritdoc}
    */
   public function setReferer($referer) {
-    $this->referer = $this->shortenString($referer);
+    $this->set('referer', $this->shortenString($referer));
     return $this;
   }
 
@@ -352,7 +352,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    * {@inheritdoc}
    */
   public function setLocation($location) {
-    $this->location = $this->shortenString($location);
+    $this->set('location', $this->shortenString($location));
     return $this;
   }
 
@@ -360,11 +360,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    * {@inheritdoc}
    */
   public function setMessage($message) {
-    $max_length = StringItem::defaultSettings()['max_length'];
-    if (strlen($message) > $max_length) {
-      $message = substr($message, 0, $max_length - 3) . '...';
-    }
-    $this->set('message', $message);
+    $this->set('message', $this->shortenString($message));
     return $this;
   }
 
@@ -665,7 +661,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
   }
 
   /**
-   * Shortens a string to it's first 255 chars.
+   * Shortens a string to its first 255 chars.
    *
    * If longer than 255 chars, the last char is replaced with an ellipsis (…).
    *
