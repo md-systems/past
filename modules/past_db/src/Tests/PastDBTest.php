@@ -62,7 +62,7 @@ class PastDBTest extends PastDBTestBase {
   public function testEventExtraFields() {
     // Check for default bundle.
     $this->drupalGet('admin/config/development/past-types');
-    $this->assertText('Machine name: past_event', 'Default bundle was found.');
+    $this->assertText('Default', 'Default bundle was found.');
 
     // Check for extra fields display on default bundle.
     $this->drupalGet('admin/config/development/past-types/manage/past_event/display');
