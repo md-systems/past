@@ -19,6 +19,7 @@ use Drupal\past\Entity\PastEventDataInterface;
  * @group past
  */
 class PastWebTest extends WebTestBase {
+  // @todo Maybe clear error.log in tearDown to avoid fails for expected errors.
 
   protected $profile = 'testing';
 
@@ -58,19 +59,21 @@ class PastWebTest extends WebTestBase {
 
     // Let's produce an exception, the exception handler is disabled by default.
     $this->drupalGet('past_trigger_error/Exception');
-    $this->assertText(t('The website encountered an unexpected error. Please try again later.'));
+    $this->assertText(t('The website has encountered an error. Please try again later.'));
     $this->assertText('Exception: This is an exception.');
 
     // No exception should have been logged.
     $event = $this->getLastEventByMachinename('unhandled_exception');
     $this->assertNull($event);
 
-    // Let's produce an exception, the exception handler is enabled by default.
+    // Now turn on exception handling and try again.
+    $this->config->set('exception_handling', TRUE)->save();
+
     $this->drupalGet('past_trigger_error/Exception');
-    $this->assertText(t('The website encountered an unexpected error. Please try again later.'));
+    $this->assertText(t('The website has encountered an error. Please try again later.'));
     $this->assertText('Exception: This is an exception.');
 
-    // Now we have an log event, assert it.
+    // Now we should have a log event, assert it.
     $event = $this->getLastEventByMachinename('unhandled_exception');
     $this->assertEqual('past', $event->getModule());
     $this->assertEqual('unhandled_exception', $event->getMachineName());
@@ -78,12 +81,12 @@ class PastWebTest extends WebTestBase {
     $this->assertEqual(1, count($event->getArguments()));
     $data = $event->getArgument('exception')->getData();
     $this->assertTrue(array_key_exists('backtrace', $data));
-    $this->assertEqual($account->uid, $event->getUid());
+    $this->assertEqual($account->id(), $event->getUid());
 
     // Disable exception handling and re-throw the exception.
-    $this->config->set('exception_handling', 0);
+    $this->config->set('exception_handling', 0)->save();
     $this->drupalGet('past_trigger_error/Exception');
-    $this->assertText(t('The website encountered an unexpected error. Please try again later.'));
+    $this->assertText(t('The website has encountered an error. Please try again later.'));
     $this->assertText('Exception: This is an exception.');
 
     // No new exception should have been logged.
@@ -112,7 +115,7 @@ class PastWebTest extends WebTestBase {
     $this->assertEqual('Cannot use object of type stdClass as array', $event->getMessage());
     $data = $event->getArgument('error')->getData();
     $this->assertEqual($data['type'], E_ERROR);
-    $this->assertEqual($account->uid, $event->getUid());
+    $this->assertEqual($account->id(), $event->getUid());
   }
 
   /**
@@ -123,7 +126,7 @@ class PastWebTest extends WebTestBase {
    */
   public function testErrors() {
     // Enable hook_watchdog capture.
-    $this->config->set('log_watchdog', 1);
+    $this->config->set('log_watchdog', 1)->save();
 
     $this->drupalGet('past_trigger_error/E_COMPILE_ERROR');
     $event = $this->getLastEventByMachinename('php');
@@ -155,14 +158,12 @@ class PastWebTest extends WebTestBase {
     // Make sure that the page is rendered correctly.
     $this->assertText('hello, world');
 
-    // Test E_STRICT errors that are thrown during parsing of a file.
     $this->drupalGet('past_trigger_error/E_STRICT_parse');
-    // This scenario can not be logged, so we just make sure that the page is
-    // rendered correctly.
+    $event = $this->getLastEventByMachinename('php');
+    $this->assertTextContains($event->getMessage(), 'Strict warning: Declaration of ChildClass::myMethod() should be compatible with ParentClass::myMethod($args)');
+    // Make sure that the page is rendered correctly.
     $this->assertText('hello, world');
     $this->assertText('Strict warning: Declaration of');
-    $event_2 = $this->getLastEventByMachinename('php');
-    $this->assertEqual($event->id(), $event_2->id(), 'No new event was logged');
   }
 
   /**
