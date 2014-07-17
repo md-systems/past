@@ -44,7 +44,7 @@ class Logger extends AbstractLogger {
    * {@inheritdoc}
    */
   public function log($level, $message, array $context = array()) {
-    // Prevent logging recursion
+    // Prevent logging recursion.
     if (self::$isCreatingEvent) {
       return;
     }

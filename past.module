@@ -197,38 +197,6 @@ function past_form_system_logging_settings_alter(&$form, &$form_state) {
 }
 
 /**
- * Custom exception handler.
- *
- * @param Exception $exception
- *   The exception for which an event is created.
- */
-function _past_exception_handler($exception) {
-  require_once DRUPAL_ROOT . '/includes/errors.inc';
-
-  try {
-    $event = past_event_create('past', 'unhandled_exception', $exception->getMessage());
-    $event->addArgument('exception', $exception);
-    $event->setSeverity(PAST_SEVERITY_ERROR);
-    $event->save();
-
-    // Log the message to the watchdog and return an error page to the user.
-    $error_decoded = Error::decodeException($exception);
-    $error_decoded['past_already_logged'] = TRUE;
-    _drupal_log_error($error_decoded, TRUE);
-  }
-  catch (Exception $exception2) {
-    // Another uncaught exception was thrown while handling the first one.
-    // If we are displaying errors, then do so with no possibility of a further
-    // uncaught exception being thrown.
-    if (error_displayable()) {
-      print '<h1>Additional uncaught exception thrown while handling exception.</h1>';
-      print '<h2>Original</h2><p>' . Error::renderExceptionSafe($exception) . '</p>';
-      print '<h2>Additional</h2><p>' . Error::renderExceptionSafe($exception2) . '</p><hr />';
-    }
-  }
-}
-
-/**
  * Provides the default enabled watchdog severities to include in backtrace.
  *
  * @return array
