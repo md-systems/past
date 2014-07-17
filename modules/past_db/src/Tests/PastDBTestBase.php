@@ -7,6 +7,7 @@
 
 namespace Drupal\past_db\Tests;
 
+use Drupal\past_db\Entity\PastEvent;
 use Drupal\simpletest\WebTestBase;
 
 /**
@@ -36,13 +37,13 @@ abstract class PastDBTestBase extends WebTestBase {
     for ($i = 0; $i <= $count; $i++) {
       $event = past_event_create('past_db', $this->machine_name, $this->event_desc . ($i + 1));
       $event->setReferer('http://example.com/test-referer');
-      $event->setLocation('http://example.com/this-url-gets-heavy-long/testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest/seeme.htm');
+      $event->setLocation('http://example.com/this-url-gets-heavy-long/testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest-testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest-testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest-testtesttesttesttesttesttest/seeme.htm');
       $event->addArgument('arg1', 'First Argument');
-      $event->addArgument('arg2', new stdClass());
+      $event->addArgument('arg2', new \stdClass());
       $event->addArgument('arg3', FALSE);
       $event->setSeverity($severities_codes[$i % $severities_count]);
       $event->save();
-      $this->events[$event->event_id] = $event;
+      $this->events[$event->id()] = $event;
     }
   }
 
@@ -53,9 +54,8 @@ abstract class PastDBTestBase extends WebTestBase {
    *   The created sample events.
    */
   protected function loadEvents() {
-    $query = new EntityFieldQuery();
-    $query->entityCondition('entity_type', 'past_event');
-    $result = $query->execute();
-    return entity_load('past_event', array_keys($result['past_event']));
+    return \Drupal::entityManager()
+      ->getStorage('past_event')
+      ->loadMultiple();
   }
 }

@@ -2,16 +2,16 @@
 
 /**
  * @file
- * Contains \Drupal\past_db\PastDBTest.
+ * Contains \Drupal\past_db\Tests\PastDBTest.
  */
 
 namespace Drupal\past_db\Tests;
+use Drupal\past_db\Entity\PastEvent;
 
 /**
  * Tests for database backend of the Past module.
  *
  * @group past
- * @requires module entityreference
  */
 class PastDBTest extends PastDBTestBase {
 
@@ -48,10 +48,12 @@ class PastDBTest extends PastDBTestBase {
     $event->save();
 
     $events = $this->loadEvents();
+    /** @var PastEvent $event */
     $event = array_pop($events);
 
-    $wrapper = entity_metadata_wrapper('past_event', $event);
-    $this->assertEqual($wrapper->getBundle(), 'test_event');
+//    $wrapper = entity_metadata_wrapper('past_event', $event);
+//    $this->assertEqual($wrapper->getBundle(), 'test_event');
+    $this->assertEqual($event->bundle(), 'test_event');
   }
 
   /**
@@ -76,7 +78,7 @@ class PastDBTest extends PastDBTestBase {
       'label' => 'Test bundle',
       'type' => 'test_bundle',
     );
-    $this->drupalPost('admin/config/development/past-types/add', $edit, t('Save past event type'));
+    $this->drupalPostForm('admin/config/development/past-types/add', $edit, t('Save past event type'));
     $this->assertText('Machine name: ' . $edit['type'], 'Create bundle was found.');
 
     // Check for extra fields display on default bundle.
@@ -114,7 +116,7 @@ class PastDBTest extends PastDBTestBase {
       'label' => 'Test bundle',
       'type' => $bundle,
     );
-    $this->drupalPost('admin/config/development/past-types/add', $edit, t('Save past event type'));
+    $this->drupalPostForm('admin/config/development/past-types/add', $edit, t('Save past event type'));
 
     // Create an entity reference field on the bundle.
     $field_instance = $this->addField($bundle);
@@ -137,13 +139,13 @@ class PastDBTest extends PastDBTestBase {
     );
     /* @var PastEvent $event */
     $event = entity_create('past_event', $values);
-    $event->{$field_instance['field_name']}[LANGUAGE_NONE][0]['target_id'] = $referenced_event->event_id;
+    $event->{$field_instance['field_name']}->target_id = $referenced_event->event_id;
     $event->type = $bundle;
     $event->save();
 
     // Check whether the bundle was saved correct.
-    $event = entity_load('past_event', $event->event_id);
-    $this->assertEqual($event->type, $bundle);
+    $event = entity_load('past_event', $event->id());
+    $this->assertEqual($event->type, $bundle, 'Created event uses test bundle.');
 
     // Check if the created fields shows up on the event display.
     $this->drupalGet('admin/reports/past/' . $event->event_id);
@@ -227,7 +229,7 @@ class PastDBTest extends PastDBTestBase {
     $this->assertText('Referrer');
     $this->assertLink('http://example.com/test-referer');
     $this->assertText('Location');
-    $this->assertLink('http://example.com/this-url-gets-heavy-long/testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttestte…');
+    $this->assertLink('http://example.com/this-url-gets-heavy-long/testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest-testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest-testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest-testtesttesttestte…');
     $this->assertText('arg1');
     $this->assertText('arg2');
     $this->assertText('arg3');
@@ -273,7 +275,7 @@ class PastDBTest extends PastDBTestBase {
         ),
       ),
     );
-    field_create_field($field_info);
+    // @todo field_create_field($field_info);
     $instance_info = array(
       'label' => 'test entity reference',
       'display' => array(
@@ -289,7 +291,7 @@ class PastDBTest extends PastDBTestBase {
       'entity_type' => 'past_event',
       'bundle' => $bundle,
     );
-    field_create_instance($instance_info);
+    // @todo field_create_instance($instance_info);
     return $instance_info;
   }
 }
