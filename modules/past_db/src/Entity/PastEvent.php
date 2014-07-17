@@ -312,7 +312,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    * {@inheritdoc}
    */
   public function getUid() {
-    return $this->get('uid')->value;
+    return $this->get('uid')->target_id;
   }
 
   /**
