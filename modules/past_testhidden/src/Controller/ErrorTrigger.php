@@ -22,6 +22,6 @@ class ErrorTrigger {
    */
   public function trigger($type) {
     module_load_include('inc', 'past_testhidden', '/errors/past.' . $type);
-    return array();
+    return array('#markup' => 'hello, world');
   }
 }
