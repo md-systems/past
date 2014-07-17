@@ -1,9 +1,9 @@
 <?php
 /**
- * Contains \Drupal\past\Logger.
+ * Contains \Drupal\past\Logger\PastLogger.
  */
 
-namespace Drupal\past;
+namespace Drupal\past\Logger;
 
 use Psr\Log\AbstractLogger;
 use Drupal\Core\Logger\LogMessageParserInterface;
@@ -11,7 +11,7 @@ use Drupal\Core\Logger\LogMessageParserInterface;
 /**
  * A logger service for Past that creates events upon standard log messages.
  */
-class Logger extends AbstractLogger {
+class PastLogger extends AbstractLogger {
 
   /**
    * Set to TRUE when creating a log event, and to FALSE when done.

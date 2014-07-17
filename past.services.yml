@@ -4,7 +4,7 @@ services:
     tags:
       - {name: event_subscriber}
   logger.past:
-    class: Drupal\past\Logger
+    class: Drupal\past\Logger\PastLogger
     arguments: ['@logger.log_message_parser']
     tags:
       - {name: logger}
