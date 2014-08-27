@@ -117,6 +117,20 @@ function past_form_form_alter(&$form, &$form_state, $form_id) {
 }
 
 /**
+ * Implements hook_module_implements_alter().
+ */
+function past_form_module_implements_alter(&$implementations, $hook) {
+  switch ($hook) {
+    case 'form_alter':
+      // Move our hook to last.
+      $group = $implementations['past_form'];
+      unset($implementations['past_form']);
+      $implementations['past_form'] = $group;
+      break;
+  }
+}
+
+/**
  * Recursively attach #submit and #validate handlers to all element children.
  *
  * In case a specific handler is present, the global handler isn't fired.

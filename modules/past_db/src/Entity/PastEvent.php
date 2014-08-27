@@ -12,7 +12,6 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
-use Drupal\Core\Field\FieldDefinition;
 use Drupal\Core\Utility\Error;
 use Drupal\past\Entity\PastEventArgumentInterface;
 use Drupal\past\Entity\PastEventInterface;

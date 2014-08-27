@@ -57,7 +57,7 @@ class PastFormTest extends WebTestBase {
     $button_value = 'Submit';
     $this->drupalGet($form_id);
     $this->assertText('form handler called by ' . $form_id);
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
     $this->assertNoRaw('global submit handler called by ' . $form_id);
 
     $event = $this->getLastEventByMachinename('submit');
@@ -85,7 +85,7 @@ class PastFormTest extends WebTestBase {
     $this->assertTrue('Form submitted: user_login, Log in' == $event->getMessage(), 'views_exposed_form submit was not logged.');
 
     // Additional submits after the page load submit.
-    $this->drupalPost('admin/reports/past', array('module' => 'watchdog'), t('Apply'));
+    $this->drupalPostForm('admin/reports/past', array('module' => 'watchdog'), t('Apply'));
     $event = $this->getLastEventByMachinename('submit');
     $this->assertTrue('Form submitted: user_login, Log in' == $event->getMessage(), 'views_exposed_form submit was not logged.');
     // @todo This should add the submission. Wrong currently!
@@ -103,7 +103,7 @@ class PastFormTest extends WebTestBase {
     $button_value = 'Submit';
     $this->drupalGet($form_id);
     $this->assertRaw('form handler called by ' . $form_id);
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
     $this->assertRaw('global submit handler called by ' . $form_id);
 
     $event = $this->getLastEventByMachinename('submit');
@@ -127,7 +127,7 @@ class PastFormTest extends WebTestBase {
     $button_value = 'Submit';
     $this->drupalGet($form_id);
     $this->assertRaw('form handler called by ' . $form_id);
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
     $this->assertRaw('custom submit handler called by ' . $form_id);
 
     $event = $this->getLastEventByMachinename('submit');
@@ -141,7 +141,7 @@ class PastFormTest extends WebTestBase {
     $form_id = 'past_testhidden_form_mixed_submit_handlers';
     $this->drupalGet($form_id);
     $this->assertRaw('form handler called by ' . $form_id);
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
     $this->assertNoRaw('global submit handler called by ' . $form_id);
     $this->assertRaw('submit handler called by ' . $form_id);
 
@@ -166,7 +166,7 @@ class PastFormTest extends WebTestBase {
     $this->drupalGet($form_id);
     $this->assertRaw('form handler called by ' . $form_id);
     $button_value = 'Button 1';
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
 
     $event = $this->getLastEventByMachinename('submit');
     $this->eventToBe = $this->getEventToBe('submit', $form_id, $button_value);
@@ -179,7 +179,7 @@ class PastFormTest extends WebTestBase {
     $this->assertSameEvent($event, $this->eventToBe, $form_id, $button_value, $values_to_be);
 
     $button_value = 'Button 2';
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
 
     $event = $this->getLastEventByMachinename('submit');
     $this->eventToBe = $this->getEventToBe('submit', $form_id, $button_value);
@@ -192,7 +192,7 @@ class PastFormTest extends WebTestBase {
     $this->assertSameEvent($event, $this->eventToBe, $form_id, $button_value, $values_to_be);
 
     $button_value = 'Button 3';
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
 
     $event = $this->getLastEventByMachinename('submit');
     $this->eventToBe = $this->getEventToBe('submit', $form_id, $button_value);
@@ -220,7 +220,7 @@ class PastFormTest extends WebTestBase {
     $this->drupalGet($form_id);
     $this->assertRaw('form handler called by ' . $form_id);
     $button_value = 'Button 1';
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
     $this->assertNoRaw('global submit handler called by ' . $form_id);
     $this->assertRaw('custom submit handler ' . $button_value . ' called by ' . $form_id);
 
@@ -235,7 +235,7 @@ class PastFormTest extends WebTestBase {
     $this->assertSameEvent($event, $this->eventToBe, $form_id, $button_value, $values_to_be);
 
     $button_value = 'Button 2';
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
     $this->assertNoRaw('global submit handler called by ' . $form_id);
     $this->assertRaw('custom submit handler ' . $button_value . ' called by ' . $form_id);
 
@@ -250,7 +250,7 @@ class PastFormTest extends WebTestBase {
     $this->assertSameEvent($event, $this->eventToBe, $form_id, $button_value, $values_to_be);
 
     $button_value = 'Button 3';
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
     $this->assertNoRaw('global submit handler called by ' . $form_id);
     $this->assertRaw('custom submit handler ' . $button_value . ' called by ' . $form_id);
 
@@ -274,7 +274,7 @@ class PastFormTest extends WebTestBase {
     $form_id = 'past_testhidden_form_normal_button';
     $this->drupalGet($form_id);
     $this->assertRaw('form handler called by ' . $form_id);
-    $this->drupalPost(NULL, $edit, 'Button');
+    $this->drupalPostForm(NULL, $edit, 'Button');
     $this->assertNoRaw('global submit handler called by ' . $form_id);
     $this->assertNoRaw('custom submit handler called by ' . $form_id);
 
@@ -293,7 +293,7 @@ class PastFormTest extends WebTestBase {
     $form_id = 'past_testhidden_form_custom_submit_handler';
     $this->drupalGet($form_id);
     $this->assertRaw('form handler called by ' . $form_id);
-    $this->drupalPost(NULL, $edit, 'Submit');
+    $this->drupalPostForm(NULL, $edit, 'Submit');
     $this->assertNoRaw('global submit handler called by ' . $form_id);
     $this->assertFieldByXPath('//input[contains(@class, "error")]', FALSE, 'Error input form element class found.');
 
@@ -307,7 +307,7 @@ class PastFormTest extends WebTestBase {
     $button_value = 'Submit';
     $this->drupalGet($form_id);
     $this->assertRaw('form handler called by ' . $form_id);
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
     $this->assertNoRaw('global submit handler called by ' . $form_id);
     $this->assertFieldByXPath('//input[contains(@class, "error")]', FALSE, 'Error input form element class found.');
 
@@ -334,7 +334,7 @@ class PastFormTest extends WebTestBase {
     $button_value = 'Submit';
     $this->drupalGet($form_id);
     $this->assertRaw('form handler called by ' . $form_id);
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
     $this->assertNoRaw('global submit handler called by ' . $form_id);
     $this->assertFieldByXPath('//select[contains(@class, "error")]', FALSE, 'Error select form element class found.');
 
@@ -354,7 +354,7 @@ class PastFormTest extends WebTestBase {
     $button_value = t('Submit');
     $this->drupalGet($form_id);
     $edit = array('wrapper[field_1]' => 'wrong value');
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
     // Check for correct validation error messages and CSS class on field.
     $this->assertText(t("Field 1 doesn't contain the right value"), 'Validation error message gets displayed.');
     $this->assertFieldByXPath('//input[contains(@class, "error")]', FALSE, 'Error class was found on textfield 1.');
@@ -376,7 +376,7 @@ class PastFormTest extends WebTestBase {
       'wrapper[field_1]' => 'correct value',
       'wrapper[field_2]' => 'some other value',
     );
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
     $event = $this->getLastEventByMachinename('submit');
     $this->eventToBe = $this->getEventToBe('submit', $form_id, $button_value);
     $values_to_be = array(
@@ -399,7 +399,7 @@ class PastFormTest extends WebTestBase {
     $step = 1;
     $this->drupalGet($form_id);
     $this->assertRaw('form handler step ' . $step . ' called by ' . $form_id);
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
     $this->assertRaw('global submit handler step ' . $step . ' called by ' . $form_id);
     $step++;
     $this->assertRaw('form handler step ' . $step . ' called by ' . $form_id);
@@ -413,7 +413,7 @@ class PastFormTest extends WebTestBase {
 
     $this->assertSameEvent($event, $this->eventToBe, $form_id, $button_value, $values_to_be);
 
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
     $this->assertRaw('global submit handler step ' . $step . ' called by ' . $form_id);
     $step++;
     $this->assertRaw('form handler step ' . $step . ' called by ' . $form_id);
@@ -429,7 +429,7 @@ class PastFormTest extends WebTestBase {
     $this->assertSameEvent($event, $this->eventToBe, $form_id, $button_value, $values_to_be);
 
     $button_value = 'Back';
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
     $this->assertRaw('global submit handler step ' . $step . ' called by ' . $form_id);
     $step--;
     $this->assertRaw('form handler step ' . $step . ' called by ' . $form_id);
@@ -445,7 +445,7 @@ class PastFormTest extends WebTestBase {
     $this->assertSameEvent($event, $this->eventToBe, $form_id, $button_value, $values_to_be);
 
     $button_value = 'Next';
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
     $this->assertRaw('global submit handler step ' . $step . ' called by ' . $form_id);
     $step++;
     $this->assertRaw('form handler step ' . $step . ' called by ' . $form_id);
@@ -459,7 +459,7 @@ class PastFormTest extends WebTestBase {
     $this->assertSameEvent($event, $this->eventToBe, $form_id, $button_value, $values_to_be);
 
     $button_value = 'Submit';
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
     $this->assertRaw('global submit handler step ' . $step . ' called by ' . $form_id);
 
     $event = $this->getLastEventByMachinename('submit');
@@ -525,7 +525,7 @@ class PastFormTest extends WebTestBase {
     // Test exclusion.
     $this->config->set('past_form_log_form_ids', '')->save();
     $this->drupalGet($form_id);
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
 
     // Event shouldn't be logged.
     $this->assertNull($this->getLastEventByMachinename('submit'));
@@ -533,7 +533,7 @@ class PastFormTest extends WebTestBase {
     // Test inclusion.
     $this->config->set('past_form_log_form_ids', $form_id)->save();
     $this->drupalGet($form_id);
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
 
     $event = $this->getLastEventByMachinename('submit');
     $this->eventToBe = $this->getEventToBe('submit', $form_id, $button_value);
@@ -541,7 +541,7 @@ class PastFormTest extends WebTestBase {
 
     $form_id = 'past_testhidden_form_custom_submit_handler';
     $this->drupalGet($form_id);
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
 
     // This new event should not be logged, so still the old event should be
     // fetched.
@@ -553,7 +553,7 @@ class PastFormTest extends WebTestBase {
       ->set('past_form_log_form_ids', $form_id . "\n" . $this->config->get('past_form_log_form_ids', ''))
       ->save();
     $this->drupalGet($form_id);
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
 
     // Now the new event should be found.
     $event = $this->getLastEventByMachinename('submit');
@@ -564,7 +564,7 @@ class PastFormTest extends WebTestBase {
     $this->config->set('past_form_log_form_ids', '*testhidden_form_*')->save();
     $form_id = 'past_testhidden_form_empty_submit_array';
     $this->drupalGet($form_id);
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
 
     // Again the first form_id should be found.
     $event = $this->getLastEventByMachinename('submit');
@@ -573,7 +573,7 @@ class PastFormTest extends WebTestBase {
 
     $form_id = 'past_testhidden_form_custom_submit_handler';
     $this->drupalGet($form_id);
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
 
     // And also the new one.
     $event = $this->getLastEventByMachinename('submit');
@@ -583,11 +583,11 @@ class PastFormTest extends WebTestBase {
     // Check if user registration is not logged.
     $this->drupalGet('user/register');
     $register_edit = array(
-      'name' => $this->randomName(),
-      'mail' => $this->randomName() . '@example.com',
+      'name' => $this->randomMachineName(),
+      'mail' => $this->randomMachineName() . '@example.com',
     );
     $register_button_value = t('Create new account');
-    $this->drupalPost(NULL, $register_edit, $register_button_value);
+    $this->drupalPostForm(NULL, $register_edit, $register_button_value);
 
     // Load last logged submission and check whether it's not the user register
     // submission.
@@ -598,7 +598,7 @@ class PastFormTest extends WebTestBase {
     $this->config->set('past_form_log_form_ids', '*')->save();
     $form_id = 'past_testhidden_form_empty_submit_array';
     $this->drupalGet($form_id);
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
 
     // Again the first form_id should be found.
     $event = $this->getLastEventByMachinename('submit');
@@ -607,7 +607,7 @@ class PastFormTest extends WebTestBase {
 
     $form_id = 'past_testhidden_form_custom_submit_handler';
     $this->drupalGet($form_id);
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
 
     // And also the new one.
     $event = $this->getLastEventByMachinename('submit');
@@ -617,11 +617,11 @@ class PastFormTest extends WebTestBase {
     // Check if user registration is logged.
     $form_id = 'user_register_form';
     $register_edit = array(
-      'name' => $this->randomName(),
-      'mail' => $this->randomName() . '@example.com',
+      'name' => $this->randomMachineName(),
+      'mail' => $this->randomMachineName() . '@example.com',
     );
     $this->drupalGet('user/register');
-    $this->drupalPost(NULL, $register_edit, $register_button_value);
+    $this->drupalPostForm(NULL, $register_edit, $register_button_value);
 
     // Check if event was logged.
     $event = $this->getLastEventByMachinename('submit');
@@ -633,7 +633,7 @@ class PastFormTest extends WebTestBase {
     $form_id = 'past_testhidden_form_empty_submit_array';
     $this->config->set('past_form_log_form_ids', ' ' . $form_id . " \r\n other_form")->save();
     $this->drupalGet($form_id);
-    $this->drupalPost(NULL, $edit, $button_value);
+    $this->drupalPostForm(NULL, $edit, $button_value);
 
     $event = $this->getLastEventByMachinename('submit');
     $this->eventToBe = $this->getEventToBe('submit', $form_id, $button_value);

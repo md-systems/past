@@ -11,7 +11,7 @@ form_empty_submit_array:
     _title: 'Empty submit array'
     _form: 'FormEmptySubmitArray'
   requirements:
-    _permission: 'access content'
+    _access: 'TRUE'
   description: 'Representing a form with an empty submit array.'
 
 form_default_submit_handler:
@@ -20,7 +20,7 @@ form_default_submit_handler:
     _title: 'Default submit handler'
     _form: 'FormDefaultSubmitHandler'
   requirements:
-    _permission: 'access content'
+    _access: 'TRUE'
   description: 'Representing a form with the default submit handler.'
 
 form_custom_submit_handler:
@@ -29,7 +29,7 @@ form_custom_submit_handler:
     _title: 'Custom submit handler'
     _form: 'FormCustomSubmitHandler'
   requirements:
-    _permission: 'access content'
+    _access: 'TRUE'
   description: 'Representing a form with a custom submit handler.'
 
 form_mixed_submit_handlers:
@@ -38,7 +38,7 @@ form_mixed_submit_handlers:
     _title: 'Global and Custom submit handler'
     _form: 'FormMixedSubmitHandlers'
   requirements:
-    _permission: 'access content'
+    _access: 'TRUE'
   description: 'Representing a form with a global and a custom submit handler.'
 
 form_three_buttons:
@@ -47,7 +47,7 @@ form_three_buttons:
     _title: 'Three submit buttons'
     _form: 'FormMixedSubmitHandlers'
   requirements:
-    _permission: 'access content'
+    _access: 'TRUE'
   description: 'Representing a form with three submit buttons.'
 
 form_three_buttons_with_submit_handlers:
@@ -56,7 +56,7 @@ form_three_buttons_with_submit_handlers:
     _title: 'Three submit buttons with submit handlers'
     _form: 'FormThreeButtonsWithSubmitHandlers'
   requirements:
-    _permission: 'access content'
+    _access: 'TRUE'
   description: 'Representing a form with three submit buttons each having a custom submit handler.'
 
 form_normal_button:
@@ -65,7 +65,7 @@ form_normal_button:
     _title: 'Submit form via normal button'
     _form: 'FormNormalButton'
   requirements:
-    _permission: 'access content'
+    _access: 'TRUE'
   description: 'Representing a form with a normal button submission, not triggering the submit handlers.'
 
 form_simple_ajax:
@@ -74,7 +74,7 @@ form_simple_ajax:
     _title: 'AJAX Submit'
     _form: 'FormSimpleAjax'
   requirements:
-    _permission: 'access content'
+    _access: 'TRUE'
   description: 'Representing a form that does an AJAX submission.'
 
 form_multi_validation:
@@ -83,7 +83,7 @@ form_multi_validation:
     _title: 'Multi validation'
     _form: 'FormMultiValidation'
   requirements:
-    _permission: 'access content'
+    _access: 'TRUE'
   description: 'Representing a form several fields to validate.'
 
 form_custom_validation_only:
@@ -92,7 +92,7 @@ form_custom_validation_only:
     _title: 'Custom validation only'
     _form: 'FormCustomValidationOnly'
   requirements:
-    _permission: 'access content'
+    _access: 'TRUE'
   description: 'Representing a form having only a custom element_validate.'
 
 form_multistep:
@@ -101,7 +101,7 @@ form_multistep:
     _title: 'A multistep form'
     _form: 'FormMultistep'
   requirements:
-    _permission: 'access content'
+    _access: 'TRUE'
   description: 'Representing a multistep form.'
 
 form_nested:
@@ -110,5 +110,5 @@ form_nested:
     _title: 'A form with nested elements'
     _form: 'FormNested'
   requirements:
-    _permission: 'access content'
+    _access: 'TRUE'
   description: 'Form with nexted elements.'

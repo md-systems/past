@@ -7,4 +7,6 @@ past_form.settings:
     past_form_log_validations:
       type: boolean
     past_form_ignored_values:
-      type: string
+      type: sequence
+      sequence:
+        type: string
