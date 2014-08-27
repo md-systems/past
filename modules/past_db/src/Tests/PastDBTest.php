@@ -19,6 +19,7 @@ class PastDBTest extends PastDBTestBase {
     'views',
     'past',
     'past_db',
+    'field_ui',
     'entity_reference',
   );
 
@@ -27,7 +28,11 @@ class PastDBTest extends PastDBTestBase {
    */
   public function setUp() {
     parent::setUp();
-    $admin = $this->drupalCreateUser(array('administer past', 'view past reports'));
+    $admin = $this->drupalCreateUser(array(
+      'administer past',
+      'administer past_event display',
+      'view past reports',
+    ));
     $this->drupalLogin($admin);
     $this->createEvents();
   }
@@ -41,18 +46,16 @@ class PastDBTest extends PastDBTestBase {
 
     $event_type = past_event_get_types('test_event');
     $this->assertEqual($event_type->label, 'Test event');
-    $this->assertEqual($event_type->type, 'test_event');
+    $this->assertEqual($event_type->id, 'test_event');
 
     $event = past_event_create('past', 'test_event', 'test message');
-    $event->type = 'test_event';
+    $event->id = 'test_event';
     $event->save();
 
     $events = $this->loadEvents();
     /** @var PastEvent $event */
     $event = array_pop($events);
 
-//    $wrapper = entity_metadata_wrapper('past_event', $event);
-//    $this->assertEqual($wrapper->getBundle(), 'test_event');
     $this->assertEqual($event->bundle(), 'test_event');
   }
 
@@ -76,13 +79,13 @@ class PastDBTest extends PastDBTestBase {
     // Add new bundle.
     $edit = array(
       'label' => 'Test bundle',
-      'type' => 'test_bundle',
+      'id' => 'test_bundle',
     );
-    $this->drupalPostForm('admin/config/development/past-types/add', $edit, t('Save past event type'));
-    $this->assertText('Machine name: ' . $edit['type'], 'Create bundle was found.');
+    $this->drupalPostForm('admin/config/development/past-types/add', $edit, t('Save'));
+    $this->assertText('Machine name: ' . $edit['id'], 'Create bundle was found.');
 
     // Check for extra fields display on default bundle.
-    $this->drupalGet('admin/config/development/past-types/manage/' . $edit['type'] . '/display');
+    $this->drupalGet('admin/config/development/past-types/manage/' . $edit['id'] . '/display');
     $this->assertText(t('Message'));
     $this->assertText(t('Module'));
     $this->assertText(t('Machine name'));
@@ -92,7 +95,7 @@ class PastDBTest extends PastDBTestBase {
 
     // Create event of newly created type.
     $values = array(
-      'bundle' => $edit['type'],
+      'bundle' => $edit['id'],
       'message' => 'testmessage',
       'module' => 'testmodule',
       'machine_name' => 'testmachinename',
@@ -100,7 +103,7 @@ class PastDBTest extends PastDBTestBase {
     /* @var PastEvent $event */
     $event = entity_create('past_event', $values);
     $event->save();
-    $this->drupalGet('admin/reports/past/' . $event->event_id);
+    $this->drupalGet('admin/reports/past/' . $event->id());
     $this->assertText($values['message']);
     $this->assertText($values['module']);
     $this->assertText($values['machine_name']);
@@ -114,9 +117,9 @@ class PastDBTest extends PastDBTestBase {
     $bundle = 'test_bundle';
     $edit = array(
       'label' => 'Test bundle',
-      'type' => $bundle,
+      'id' => $bundle,
     );
-    $this->drupalPostForm('admin/config/development/past-types/add', $edit, t('Save past event type'));
+    $this->drupalPostForm('admin/config/development/past-types/add', $edit, t('Save'));
 
     // Create an entity reference field on the bundle.
     $field_instance = $this->addField($bundle);

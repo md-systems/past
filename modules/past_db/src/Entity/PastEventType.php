@@ -13,17 +13,20 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *   label = @Translation("Past event type"),
  *   bundle_label = @Translation("Type"),
  *   entity_keys = {
- *     "id" = "type",
+ *     "id" = "id",
  *     "label" = "label",
  *   },
  *   handlers = {
  *     "list_builder" = "Drupal\past_db\EventTypeListBuilder",
+ *     "form" = {
+ *       "default" = "Drupal\past_db\Form\PastEventTypeForm",
+ *     },
  *   },
  *   bundle_of = "past_event",
  * )
  */
 class PastEventType extends ConfigEntityBase {
-  public $type;
+  public $id;
   public $label;
   public $weight = 0;
 
@@ -31,7 +34,7 @@ class PastEventType extends ConfigEntityBase {
    * {@inheritdoc}
    */
   public function id() {
-    return $this->type;
+    return $this->id;
   }
 
   /**
@@ -43,6 +46,6 @@ class PastEventType extends ConfigEntityBase {
    * well as any fixed past_event type.
    */
   public function isLocked() {
-    return isset($this->status) && empty($this->is_new) && (($this->status & ENTITY_IN_CODE) || ($this->status & ENTITY_FIXED));
+    return isset($this->status) && empty($this->is_new) /* && (($this->status & ENTITY_IN_CODE) || ($this->status & ENTITY_FIXED)) @todo Is this concept obsolete? */;
   }
 }

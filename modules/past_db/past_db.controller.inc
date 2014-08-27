@@ -140,21 +140,6 @@ class PastDBEventUIController extends EntityDefaultUIController {
 }
 
 /**
- * UI controller.
- */
-class PastEventTypeUIController extends EntityDefaultUIController {
-
-  /**
-   * Overrides hook_menu() defaults.
-   */
-  public function hook_menu() {
-    $items = parent::hook_menu();
-    $items[$this->path]['description'] = 'Manage past event, including fields.';
-    return $items;
-  }
-}
-
-/**
  * Controller class for the Past Argument Metadata.
  */
 class PastDBEventArgumentMetadataController extends EntityDefaultMetadataController {

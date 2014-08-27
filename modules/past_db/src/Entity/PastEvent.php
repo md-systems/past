@@ -40,8 +40,7 @@ use Exception;
  *     "canonical" = "/admin/reports/past/{past_event}",
  *   },
  *   bundle_entity_type = "past_event_type",
- *   menu_base_path = "admin/reports/past/%past_event",
- *   route_base_path = "admin/config/development/past-types/{bundle}",
+ *   field_ui_base_route = "past_db.event_type.manage",
  *   permission_granularity = "entity_type"
  * )
  */

@@ -47,24 +47,6 @@ function past_db_entity_info() {
     ),
   );
 
-  // Add bundle info but bypass entity_load() as we cannot use it here.
-  $types = db_select('past_event_type', 'p')
-      ->fields('p')
-      ->execute()
-      ->fetchAllAssoc('type');
-
-  foreach ($types as $type => $bundle) {
-    $info['past_event']['bundles'][$type] = array(
-      'label' => $bundle->label,
-      'admin' => array(
-        'path' => 'admin/config/development/past-types/manage/%past_event_type',
-        'real path' => 'admin/config/development/past-types/manage/' . $type,
-        'bundle argument' => 5,
-        'access arguments' => array('administer past'),
-      ),
-    );
-  }
-
   $info['past_event_argument'] = array(
     'label' => t('Past Event Argument'),
     'module' => 'past_db',
@@ -92,32 +74,6 @@ function past_db_entity_info() {
     'access callback' => 'past_db_access',
     'entity keys' => array(
       'id' => 'data_id',
-    ),
-  );
-
-  $info['past_event_type'] = array(
-    'label' => t('Past Event type'),
-    'plural label' => t('Past Event types'),
-    //'description' => t('Past Event types.'),
-    'entity class' => 'PastEventType',
-    'controller class' => 'EntityAPIControllerExportable',
-    'base table' => 'past_event_type',
-    'fieldable' => FALSE,
-    'bundle of' => 'past_event',
-    'exportable' => TRUE,
-    'entity keys' => array(
-      'id' => 'id',
-      'name' => 'type',
-      'label' => 'label',
-    ),
-    'access callback' => 'past_event_type_access',
-    'module' => 'past_db',
-    // Enable the entity API's admin UI.
-    'admin ui' => array(
-      'path' => 'admin/config/development/past-types',
-      'file' => 'past_db.admin.inc',
-      'file path' => drupal_get_path('module', 'past_db'),
-      'controller class' => 'PastEventTypeUIController',
     ),
   );
 
@@ -150,7 +106,7 @@ function past_event_type_load($type) {
  * @return PastEventType
  */
 function past_event_type_create($type, $label, $values = array()) {
-  $values['type'] = $type;
+  $values['id'] = $type;
   $values['label'] = $label;
   return entity_create('past_event_type', $values);
 }
@@ -167,7 +123,7 @@ function past_event_type_create($type, $label, $values = array()) {
 function past_event_get_types($type_name = NULL) {
   $properties = array();
   if (!empty($type_name)) {
-    $properties['type'] = $type_name;
+    $properties['id'] = $type_name;
   }
   $types = entity_load_multiple_by_properties('past_event_type', $properties);
   return isset($type_name) ? reset($types) : $types;
@@ -320,13 +276,13 @@ function past_db_entity_past_event_type_delete($entity) {
 }
 
 /**
- * Implements hook_field_extra_fields().
+ * Implements hook_entity_extra_field_info().
  */
-function past_db_field_extra_fields() {
+function past_db_entity_extra_field_info() {
   $extra = array();
 
-  $info = entity_get_info('past_event');
-  foreach ($info['bundles'] as $key => $bundle) {
+  $info = \Drupal::entityManager()->getBundleInfo('past_event');
+  foreach ($info as $key => $bundle) {
     $extra['past_event'][$key] = array(
       'display' => array(
         'message' => array(
