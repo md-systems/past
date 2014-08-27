@@ -8,6 +8,7 @@
 namespace Drupal\past\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Displays the pants settings form.
@@ -24,7 +25,7 @@ class PastSettingsForm extends ConfigFormBase {
   /**
    * Implements \Drupal\Core\Form\FormInterface::buildForm().
    */
-  public function buildForm(array $form, array &$form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state) {
     $config = \Drupal::config('past.settings');
 
     // Options for events_expire
@@ -84,7 +85,7 @@ class PastSettingsForm extends ConfigFormBase {
   /**
    * Implements \Drupal\Core\Form\FormInterface:validateForm()
    */
-  public function validateForm(array &$form, array &$form_state) {
+  public function validateForm(array &$form, FormStateInterface $form_state) {
     parent::validateForm($form, $form_state);
   }
 
@@ -93,7 +94,7 @@ class PastSettingsForm extends ConfigFormBase {
    *
    * @see book_remove_button_submit()
    */
-  public function submitForm(array &$form, array &$form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $included_severity_levels = array();
     foreach ($form_state['values']['backtrace_include'] as $level => $enabled) {
       if ($enabled) {

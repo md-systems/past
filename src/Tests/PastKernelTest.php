@@ -10,8 +10,6 @@ namespace Drupal\past\Tests;
 use Drupal\Core\Utility\Error;
 use Drupal\simpletest\KernelTestBase;
 use Drupal\past\Entity\PastEventInterface;
-use Drupal\past\Entity\PastEventArgumentInterface;
-use Drupal\past\Entity\PastEventDataInterface;
 
 /**
  * Generic API tests using the database backend.
@@ -339,7 +337,7 @@ class PastKernelTest extends KernelTestBase {
    */
   protected function createUser(array $values = array()) {
     $user = entity_create('user', $values + array(
-        'name' => $this->randomName(),
+        'name' => $this->randomMachineName(),
         'status' => 1,
       ));
     $user->enforceIsNew()->save();

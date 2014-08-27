@@ -2,12 +2,12 @@
 
 /**
  * @file
- * Contains \Drupal\taxonomy\TermAccessController.
+ * Contains \Drupal\past_db\PastEventAccessControlHandler.
  */
 
-namespace Drupal\taxonomy;
+namespace Drupal\past_db;
 
-use Drupal\Core\Entity\EntityAccessController;
+use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 
@@ -16,7 +16,7 @@ use Drupal\Core\Session\AccountInterface;
  *
  * @see \Drupal\past_db\Entity\PastEvent
  */
-class PastEventAccessController extends EntityAccessController {
+class PastEventAccessControlHandler extends EntityAccessControlHandler {
 
   /**
    * {@inheritdoc}

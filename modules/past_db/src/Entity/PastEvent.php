@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains the entity classes for Past DB.
+ * Contains Drupal\past_db\Entity\PastEvent.
  */
 
 namespace Drupal\past_db\Entity;
@@ -11,12 +11,12 @@ use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FieldDefinition;
-use Drupal\Core\Field\Plugin\Field\FieldType\StringItem;
 use Drupal\Core\Utility\Error;
-use \Drupal\past\Entity\PastEventInterface;
 use Drupal\past\Entity\PastEventArgumentInterface;
-use \Exception;
+use Drupal\past\Entity\PastEventInterface;
+use Exception;
 
 /**
  * Defines the past event entity.
@@ -24,10 +24,10 @@ use \Exception;
  * @ContentEntityType(
  *   id = "past_event",
  *   label = @Translation("Past event"),
- *   controllers = {
- *     "storage" = "Drupal\past_db\PastEventStorageController",
+ *   handlers = {
+ *     "storage" = "Drupal\past_db\PastEventStorage",
  *     "render" = "Drupal\past_db\PastEventRenderController",
- *     "access" = "Drupal\past_db\PastEventAccessController",
+ *     "access" = "Drupal\past_db\PastEventAccessControlHandler",
  *   },
  *   base_table = "past_event",
  *   fieldable = TRUE,
@@ -52,57 +52,57 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    * {@inheritdoc}
    */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
-    $fields['event_id'] = FieldDefinition::create('integer')
+    $fields['event_id'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Event ID'))
       ->setDescription(t('The identifier of the event.'))
       ->setRequired(TRUE)
       ->setReadOnly(TRUE);
-    $fields['uuid'] = FieldDefinition::create('uuid')
+    $fields['uuid'] = BaseFieldDefinition::create('uuid')
       ->setLabel(t('UUID'))
       ->setDescription(t('The event UUID.'))
       ->setReadOnly(TRUE);
-    $fields['module'] = FieldDefinition::create('string')
+    $fields['module'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Module'))
       ->setDescription(t('The module that logged this event.'))
       ->setSetting('max_length', 128)
       ->setReadOnly(TRUE);
-    $fields['machine_name'] = FieldDefinition::create('string')
+    $fields['machine_name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Machine name'))
       ->setDescription(t('The machine name of this event.'))
       ->setReadOnly(TRUE);
-    $fields['type'] = FieldDefinition::create('entity_reference')
+    $fields['type'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Type'))
       ->setDescription(t('The type of this event.'))
       ->setRequired(TRUE)
       ->setSetting('target_type', 'past_event_type')
       ->setDefaultValue('past_event')
       ->setReadOnly(TRUE);
-    $fields['session_id'] = FieldDefinition::create('string')
+    $fields['session_id'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Session id'))
       ->setDescription(t('The session id of the user who triggered the event.'));
-    $fields['referer'] = FieldDefinition::create('string')
+    $fields['referer'] = BaseFieldDefinition::create('string')
       ->setLabel('Referer')
       ->setDescription(t('The referrer of the request who triggered the event.'));
-    $fields['location'] = FieldDefinition::create('string')
+    $fields['location'] = BaseFieldDefinition::create('string')
       ->setLabel('Location')
       ->setDescription(t('The URI of the request that triggered the event.'));
-    $fields['message'] = FieldDefinition::create('string')
+    $fields['message'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Message'))
       ->setDescription(t('The event log message'));
-    $fields['severity'] = FieldDefinition::create('integer')
+    $fields['severity'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Severity'))
       ->setDescription(t('The severity of this event.'))
       ->setSetting('size', 'small')
       ->setRequired(TRUE)
       ->setDefaultValue(PAST_SEVERITY_INFO);
-    $fields['timestamp'] = FieldDefinition::create('created')
+    $fields['timestamp'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Timestamp'))
       ->setDescription(t('The event timestamp.'));
-    $fields['parent_event_id'] = FieldDefinition::create('entity_reference')
+    $fields['parent_event_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Parent event ID'))
       ->setDescription(t('The parent event ID.'))
       ->setSetting('target_type', 'past_event');
-    $fields['uid'] = FieldDefinition::create('entity_reference')
+    $fields['uid'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('User ID'))
       ->setDescription(t('The id of the user who triggered the event.'))
       ->setSetting('target_type', 'user');

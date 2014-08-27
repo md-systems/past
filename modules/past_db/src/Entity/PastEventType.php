@@ -16,7 +16,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "id" = "type",
  *     "label" = "label",
  *   },
- *   controllers = {
+ *   handlers = {
  *     "list_builder" = "Drupal\past_db\EventTypeListBuilder",
  *   },
  *   bundle_of = "past_event",

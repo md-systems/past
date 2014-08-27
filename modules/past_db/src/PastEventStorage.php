@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Definition of Drupal\taxonomy\TermStorageController.
+ * Definition of Drupal\past_db\PastEventStorage.
  */
 
 namespace Drupal\past_db;
@@ -16,7 +16,7 @@ use Drupal\past_db\Entity\PastEventArgument;
 /**
  * Defines a Controller class for past events.
  */
-class PastEventStorageController extends ContentEntityDatabaseStorage {
+class PastEventStorage extends ContentEntityDatabaseStorage {
 
   /**
    * Overrides Drupal\Core\Entity\DatabaseStorageController::buildPropertyQuery().
