@@ -115,7 +115,7 @@ interface PastEventInterface {
    * Sets the URI that referred to the page where the event was logged.
    *
    * @param string $referer
-   *   The referrer.
+   *   The referer.
    *
    * @return PastEventInterface
    *   The current object.

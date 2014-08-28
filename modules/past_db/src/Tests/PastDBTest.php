@@ -233,10 +233,10 @@ class PastDBTest extends PastDBTestBase {
 
     $this->assertText($this->machine_name);
     $this->assertText($this->event_desc . 1);
-    $this->assertText('Referrer');
+    $this->assertText('Referer');
     $this->assertLink('http://example.com/test-referer');
     $this->assertText('Location');
-    $this->assertLink('http://example.com/this-url-gets-heavy-long/testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest-testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest-testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest-testtesttesttestte…');
+    $this->assertLink('http://example.com/this-url-gets-heavy-long/testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest-testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest-testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttest-testtesttesttes…');
     $this->assertText('arg1');
     $this->assertText('arg2');
     $this->assertText('arg3');

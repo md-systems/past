@@ -7,6 +7,7 @@
 
 namespace Drupal\past_db\Entity;
 
+use Drupal\Component\Utility\String;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -25,7 +26,7 @@ use Exception;
  *   label = @Translation("Past event"),
  *   handlers = {
  *     "storage" = "Drupal\past_db\PastEventStorage",
- *     "render" = "Drupal\past_db\PastEventRenderController",
+ *     "view_builder" = "Drupal\past_db\PastEventViewBuilder",
  *     "access" = "Drupal\past_db\PastEventAccessControlHandler",
  *     "views_data" = "Drupal\past_db\PastEventViewsData",
  *   },
@@ -38,7 +39,7 @@ use Exception;
  *     "uuid" = "uuid"
  *   },
  *   links = {
- *     "canonical" = "/admin/reports/past/{past_event}",
+ *     "canonical" = "admin/reports/past/{past_event}",
  *   },
  *   bundle_entity_type = "past_event_type",
  *   field_ui_base_route = "past_db.event_type.manage",
@@ -68,7 +69,11 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
     $fields['machine_name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Machine name'))
       ->setDescription(t('The machine name of this event.'))
-      ->setReadOnly(TRUE);
+      ->setReadOnly(TRUE)
+      ->setDisplayOptions('view', array(
+        'type' => 'string',
+        'weight' => 1,
+      ));
     $fields['type'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Type'))
       ->setDescription(t('The type of this event.'))
@@ -81,7 +86,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
       ->setDescription(t('The session id of the user who triggered the event.'));
     $fields['referer'] = BaseFieldDefinition::create('string')
       ->setLabel('Referer')
-      ->setDescription(t('The referrer of the request who triggered the event.'));
+      ->setDescription(t('The referer of the request who triggered the event.'));
     $fields['location'] = BaseFieldDefinition::create('string')
       ->setLabel('Location')
       ->setDescription(t('The URI of the request that triggered the event.'));
@@ -457,75 +462,6 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function buildContent($view_mode = 'full', $langcode = NULL) {
-    $content = array();
-
-    // global information about the event
-    $content['message'] = array(
-      '#type' => 'item',
-      '#title' => t('Message'),
-      '#markup' => check_plain($this->getMessage()),
-    );
-    $content['module'] = array(
-      '#type' => 'item',
-      '#title' => t('Module'),
-      '#markup' => check_plain($this->getModule()),
-    );
-    $content['machine_name'] = array(
-      '#type' => 'item',
-      '#title' => t('Machine name'),
-      '#markup' => check_plain($this->getMachineName()),
-    );
-    $content['timestamp'] = array(
-      '#type' => 'item',
-      '#title' => t('Date'),
-      '#markup' => format_date($this->getTimestamp(), 'long'),
-    );
-    $content['actor'] = array(
-      '#type' => 'item',
-      '#title' => t('Actor'),
-      '#markup' => $this->getActorDropbutton(FALSE),
-    );
-    $content['referer'] = array(
-      '#type' => 'item',
-      '#title' => t('Referrer'),
-      '#markup' => l($this->getReferer(), $this->getReferer()),
-    );
-    $content['location'] = array(
-      '#type' => 'item',
-      '#title' => t('Location'),
-      '#markup' => l($this->getLocation(), $this->getLocation()),
-    );
-
-    // Show all arguments in a vertical_tab.
-    $content['arguments'] = array(
-      '#type' => 'vertical_tabs',
-      '#tree' => TRUE,
-      '#weight' => 99,
-    );
-
-    foreach ($this->getArguments() as $key => $argument) {
-      $content['arguments']['fieldset_' . $key] = array(
-        '#type' => 'fieldset',
-        '#title' => ucfirst($key),
-        '#collapsible' => TRUE,
-        '#collapsed' => FALSE,
-        '#group' => 'arguments',
-        '#tree' => TRUE,
-        '#weight' => -2,
-      );
-      $content['arguments']['fieldset_' . $key]['argument_' . $key] = array(
-        '#type' => 'item',
-        '#markup' => $this->formatArgument($key, $argument),
-      );
-    }
-
-    return entity_get_controller($this->entityType)->buildContent($this, $view_mode, $langcode, $content);
-  }
-
-  /**
    * Returns the actor links as a ctools dropbutton.
    *
    * @param int $truncate
@@ -584,24 +520,24 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    *
    * @param string $name
    *   Name of the argument.
-   * @param PastEventArgument $argument
+   * @param PastEventArgumentInterface $argument
    *   Argument instance.
    *
    * @return string
    *   A HTML div describing the argument and its data.
    */
-  protected function formatArgument($name, $argument) {
+  public function formatArgument($name, PastEventArgumentInterface $argument) {
     $back = '';
     $data = $argument->getData();
     if (is_array($data) || is_object($data)) {
       foreach ($data as $k => $v) {
-        $back .= '<div style="padding-left:10px;">[<strong>' . check_plain($k) . '</strong>] (<em>' . gettype($v) . '</em>): ' . $this->parseObject($v) . '</div>';
+        $back .= '<div style="padding-left:10px;">[<strong>' . String::checkPlain($k) . '</strong>] (<em>' . gettype($v) . '</em>): ' . $this->parseObject($v) . '</div>';
       }
     }
     else {
-      $back = nl2br(check_plain($data));
+      $back = nl2br(String::checkPlain($data));
     }
-    $back = '<div><strong>' . check_plain($name) . '</strong> (<em>' . gettype($data) . '</em>): ' . $back . '</div>';
+    $back = '<div><strong>' . String::checkPlain($name) . '</strong> (<em>' . gettype($data) . '</em>): ' . $back . '</div>';
     return $back;
   }
 
@@ -622,13 +558,13 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
       return t('<em>Too many nested objects ( @recursion )</em>', array('@recursion' => $this->max_recursion));
     }
     if (is_scalar($obj) || is_null($obj)) {
-      return is_string($obj) ? nl2br(trim(check_plain($obj))) : $obj;
+      return is_string($obj) ? nl2br(trim(String::checkPlain($obj))) : $obj;
     }
 
     $back = '';
     $css = 'style="padding-left:' . ($recursive + 10) . 'px;"';
     foreach ($obj as $k => $v) {
-      $back .= '<div ' . $css . ' >[<strong>' . check_plain($k) . '</strong>] (<em>' . gettype($v) . '</em>): ' . $this->parseObject($v, $recursive + 1) . '</div>';
+      $back .= '<div ' . $css . ' >[<strong>' . String::checkPlain($k) . '</strong>] (<em>' . gettype($v) . '</em>): ' . $this->parseObject($v, $recursive + 1) . '</div>';
     }
     return $back;
   }
