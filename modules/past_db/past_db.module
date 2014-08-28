@@ -185,7 +185,7 @@ function past_db_form_views_exposed_form_alter(&$form, $form_state, $form_id) {
   $form['reset'] = array(
     '#type' => 'markup',
     '#weight' => 1000,
-    '#markup' => '<input '. drupal_attributes(array('type' => 'reset', 'value' => t('Reset') )) .' class="form-submit" onClick="javascript:jQuery(this.form).find(\':input\').each(function(){if(this.type==\'text\' || this.type==\'select-multiple\' || this.type==\'select\'){jQuery(this).val(\'\');this.setAttribute(\'value\',\'\');}});this.form.submit();" />',
+    '#markup' => '<input type="reset" value="'. t('Reset') . '" class="form-submit" onClick="javascript:jQuery(this.form).find(\':input\').each(function(){if(this.type==\'text\' || this.type==\'select-multiple\' || this.type==\'select\'){jQuery(this).val(\'\');this.setAttribute(\'value\',\'\');}});this.form.submit();" />',
   );
 }
 
@@ -209,7 +209,7 @@ function past_db_preprocess_views_view_table(&$vars) {
   if (empty($vars['view']->field['severity'])) {
     return;
   }
-  $vars['classes_array'][] = 'past-severity-colors';
+  $vars['attributes']['class'][] = 'past-severity-colors';
   past_db_add_row_colors($vars);
 }
 
@@ -226,11 +226,30 @@ function past_db_add_row_colors(&$vars) {
   $class_names = past_db_severity_css_classes_map();
   foreach ($vars['rows'] as $num => $row) {
     if (isset($vars['result'][$num]->past_event_severity) && !empty($class_names[$vars['result'][$num]->past_event_severity])) {
-      $vars['row_classes'][$num][] = $class_names[$vars['result'][$num]->past_event_severity];
+      $vars['rows'][$num]['attributes']->addClass($class_names[$vars['result'][$num]->past_event_severity]);
     }
   }
-  // Add the CSS.
-  drupal_add_css(drupal_get_path('module', 'past_db') . '/past_db.css');
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function past_db_views_pre_render(\Drupal\views\ViewExecutable $view) {
+  if (array_key_exists('past_event', $view->getBaseTables())) {
+    // Attach severity styling.
+    $view->element['#attached']['css'][drupal_get_path('module', 'past_db') . '/past_db.css'] = array();
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function past_db_preprocess_views_view_field(&$vars) {
+  // @todo Would like to do this earlier than in preprocess hook! Where?
+  if ($vars['field']->field_alias == 'past_event_severity') {
+    $severities = past_event_severities();
+    $vars['output'] = $severities[intval($vars['field']->original_value)];
+  }
 }
 
 /**

@@ -55,13 +55,15 @@ install:
   # Restart apache and test it
   - sudo service apache2 restart
   - curl -v "http://localhost"
-  # Re-enable when trying to get CodeSniffer doesn't return a 403 anymore.
-  #- composer global require drupal/coder:\>7
+  - composer global require drupal/coder:\>7
 
 before_script:
   - cd $TRAVIS_BUILD_DIR/../drupal
   # Update drupal core
+  - git reset --hard
   - git pull origin 8.x
+  - curl -sO https://www.drupal.org/files/issues/views_data-1740492-97.patch
+  - git apply *.patch
   # Install the site
   - drush -v site-install minimal --db-url=mysql://root:@localhost/drupal --yes
   - drush en --yes simpletest

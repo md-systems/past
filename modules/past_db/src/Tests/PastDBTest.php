@@ -191,7 +191,7 @@ class PastDBTest extends PastDBTestBase {
       }
       $event_id = trim($row->td);
       $event = $this->events[$event_id];
-      $class_name = $class_names[$event->severity];
+      $class_name = $class_names[$event->getSeverity()];
       $attributes = $row->attributes();
       $this->assertTrue(strpos($attributes['class'], $class_name) !== FALSE);
       $i++;

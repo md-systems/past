@@ -27,6 +27,7 @@ use Exception;
  *     "storage" = "Drupal\past_db\PastEventStorage",
  *     "render" = "Drupal\past_db\PastEventRenderController",
  *     "access" = "Drupal\past_db\PastEventAccessControlHandler",
+ *     "views_data" = "Drupal\past_db\PastEventViewsData",
  *   },
  *   base_table = "past_event",
  *   fieldable = TRUE,
