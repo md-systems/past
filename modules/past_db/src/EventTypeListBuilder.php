@@ -29,6 +29,7 @@ class EventTypeListBuilder extends ConfigEntityListBuilder {
    */
   public function buildRow(EntityInterface $entity) {
     $row['label'] = $this->getLabel($entity);
+    $row['label'] .= ' <small>(' . $this->t('Machine name: @name', array('@name' => $entity->id())) . ')</small>';
     return $row + parent::buildRow($entity);
   }
 

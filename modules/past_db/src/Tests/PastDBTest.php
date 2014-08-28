@@ -6,6 +6,9 @@
  */
 
 namespace Drupal\past_db\Tests;
+use Drupal\field\Entity\FieldInstanceConfig;
+use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\field\FieldInstanceConfigInterface;
 use Drupal\past_db\Entity\PastEvent;
 
 /**
@@ -31,6 +34,7 @@ class PastDBTest extends PastDBTestBase {
     $admin = $this->drupalCreateUser(array(
       'administer past',
       'administer past_event display',
+      'administer past_event fields',
       'view past reports',
     ));
     $this->drupalLogin($admin);
@@ -49,7 +53,7 @@ class PastDBTest extends PastDBTestBase {
     $this->assertEqual($event_type->id, 'test_event');
 
     $event = past_event_create('past', 'test_event', 'test message');
-    $event->id = 'test_event';
+    $event->type = 'test_event';
     $event->save();
 
     $events = $this->loadEvents();
@@ -82,9 +86,9 @@ class PastDBTest extends PastDBTestBase {
       'id' => 'test_bundle',
     );
     $this->drupalPostForm('admin/config/development/past-types/add', $edit, t('Save'));
-    $this->assertText('Machine name: ' . $edit['id'], 'Create bundle was found.');
+    $this->assertText(t('Machine name: @name', array('@name' => $edit['id'])), 'Created bundle was found.');
 
-    // Check for extra fields display on default bundle.
+    // Check for extra fields display on newly created bundle.
     $this->drupalGet('admin/config/development/past-types/manage/' . $edit['id'] . '/display');
     $this->assertText(t('Message'));
     $this->assertText(t('Module'));
@@ -125,9 +129,9 @@ class PastDBTest extends PastDBTestBase {
     $field_instance = $this->addField($bundle);
     // Check if the field shows up in field config of the bundle.
     $this->drupalGet('admin/config/development/past-types/manage/' . $bundle . '/fields');
-    $this->assertText($field_instance['label']);
-    $this->assertText($field_instance['field_name']);
-    $this->assertText(t('Entity Reference'));
+    $this->assertText($field_instance->label());
+    $this->assertText($field_instance->getName());
+    $this->assertText(t('Entity reference'));
 
     // Create an event that we can reference to.
     $referenced_event_message = 'Referenced Event Test message';
@@ -139,21 +143,21 @@ class PastDBTest extends PastDBTestBase {
       'message' => 'testmessage',
       'module' => 'testmodule',
       'machine_name' => 'testmachinename',
+      'type' => $bundle,
+      $field_instance->getName() => $referenced_event->id(),
     );
     /* @var PastEvent $event */
     $event = entity_create('past_event', $values);
-    $event->{$field_instance['field_name']}->target_id = $referenced_event->event_id;
-    $event->type = $bundle;
     $event->save();
 
     // Check whether the bundle was saved correct.
     $event = entity_load('past_event', $event->id());
-    $this->assertEqual($event->type, $bundle, 'Created event uses test bundle.');
+    $this->assertEqual($event->type->target_id, $bundle, 'Created event uses test bundle.');
 
     // Check if the created fields shows up on the event display.
-    $this->drupalGet('admin/reports/past/' . $event->event_id);
+    $this->drupalGet('admin/reports/past/' . $event->id());
     // Check field label display.
-    $this->assertText($field_instance['label']);
+    $this->assertText($field_instance->label());
     // Check field value display.
     $this->assertText($referenced_event_message);
   }
@@ -260,41 +264,25 @@ class PastDBTest extends PastDBTestBase {
    * @param string $bundle
    *   The bundle name.
    *
-   * @return array
+   * @return FieldInstanceConfigInterface
    *   The definition of the field instance.
    */
   protected function addField($bundle) {
-    $field_info = array(
-      'entity_types' => array('past_event'),
+    $field_storage = FieldStorageConfig::create(array(
+      'entity_type' => 'past_event',
+      'name' => 'field_fieldtest',
+      'type' => 'entity_reference',
       'settings' => array(
         'target_type' => 'past_event',
       ),
-      'field_name' => 'field_fieldtest',
-      'type' => 'entityreference',
-      'module' => 'entityreference',
-      'bundles' => array(
-        'past_event' => array(
-          0 => $bundle,
-        ),
-      ),
-    );
-    // @todo field_create_field($field_info);
-    $instance_info = array(
+    ));
+    $field_storage->save();
+    $field_instance = FieldInstanceConfig::create(array(
       'label' => 'test entity reference',
-      'display' => array(
-        'default' => array(
-          'label' => 'above',
-          'type' => 'entityreference_label',
-          'settings' => array(
-            'link' => FALSE,
-          ),
-        ),
-      ),
-      'field_name' => 'field_fieldtest',
-      'entity_type' => 'past_event',
+      'field_storage' => $field_storage,
       'bundle' => $bundle,
-    );
-    // @todo field_create_instance($instance_info);
-    return $instance_info;
+    ));
+    $field_instance->save();
+    return $field_instance;
   }
 }

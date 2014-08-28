@@ -281,8 +281,7 @@ function past_db_entity_past_event_type_delete($entity) {
 function past_db_entity_extra_field_info() {
   $extra = array();
 
-  $info = \Drupal::entityManager()->getBundleInfo('past_event');
-  foreach ($info as $key => $bundle) {
+  foreach (past_event_get_types() as $key => $bundle) {
     $extra['past_event'][$key] = array(
       'display' => array(
         'message' => array(
