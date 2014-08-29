@@ -61,7 +61,7 @@ class PastEventArgument implements PastEventArgumentInterface {
         $return = entity_create($entity_type, $return);
       }
     }
-    elseif (!in_array($this->type, array('integer', 'string', 'float', 'boolean'))) {
+    elseif (!in_array($this->type, array('integer', 'string', 'float', 'double', 'boolean'))) {
       // Object other than entity.
       $return = new \stdClass();
       foreach ($result as $row) {
@@ -71,6 +71,7 @@ class PastEventArgument implements PastEventArgumentInterface {
     else {
       // Scalar.
       if ($row = $result->fetchAssoc()) {
+        settype($row['value'], $this->type);
         $return = $row['value'];
       }
     }

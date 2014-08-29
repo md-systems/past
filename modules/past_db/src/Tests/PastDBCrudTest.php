@@ -194,8 +194,11 @@ class PastDBCrudTest extends KernelTestBase {
    * Tests saving and loading an event with an argument.
    */
   public function testArgument() {
-    // Scalar argument.
-    $this->assertArgumentPersists($this->randomString(), 'scalar');
+    // Scalar arguments.
+    $this->assertArgumentPersists($this->randomString(), 'string');
+    $this->assertArgumentPersists(rand(), 'int');
+    $this->assertArgumentPersists(TRUE, 'bool');
+    $this->assertArgumentPersists(3.14, 'float');
 
     // Array as argument.
     $this->assertArgumentPersists(array($this->randomMachineName() => $this->randomString()), 'array');
