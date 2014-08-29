@@ -8,6 +8,13 @@
 use \Drupal\past_db\Entity\PastEvent;
 
 /**
+ * Standard Past backend factory.
+ */
+function past_db_backend() {
+  return PastEvent::create();
+}
+
+/**
  * Entity URI callback for image style.
  */
 function past_event_entity_uri(PastEvent $event) {

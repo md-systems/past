@@ -1,4 +1,3 @@
-backend: 'past_db'
 events_expire: ''
 exception_handling: ''
 log_watchdog: ''

@@ -7,6 +7,7 @@
 
 namespace Drupal\past\Tests;
 
+use Drupal\Core\Site\Settings;
 use Drupal\Core\Utility\Error;
 use Drupal\simpletest\KernelTestBase;
 use Drupal\past\PastEventInterface;
@@ -50,6 +51,9 @@ class PastKernelTest extends KernelTestBase {
     $this->installSchema('past_db', array('past_event_argument', 'past_event_data'));
     $this->installSchema('system', 'sequences');
     $this->config = \Drupal::config('past.settings');
+    new Settings(Settings::getAll() + array(
+      'past_backend' => 'past_db_backend',
+    ));
   }
 
   /**

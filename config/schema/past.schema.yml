@@ -4,8 +4,6 @@ past.settings:
   type: mapping
   label: 'Past settings'
   mapping:
-    backend:
-      type: string
     events_expire:
       type: integer
       label: 'Log expiration interval'
