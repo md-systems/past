@@ -1,39 +1,38 @@
 <?php
-
 /**
  * @file
- * Contains PastTestNullImplementation.
+ * Contains \Drupal\past\Tests\PastNullTest.
  */
+
+namespace Drupal\past\Tests;
+use Drupal\past\Entity\PastEventNull;
+use Drupal\simpletest\KernelTestBase;
 
 /**
  * Tests the Past null implementation.
+ *
+ * @group
  */
-class PastNullTestTestNull extends DrupalWebTestCase {
+class PastNullTest extends KernelTestBase {
 
-  protected $profile = 'testing';
+  /**
+   * Modules to enable.
+   *
+   * @var string[]
+   */
+  public static $modules = array('past');
 
   /**
    * {@inheritdoc}
    */
-  static function getInfo() {
-    return array(
-      'name' => 'Past Null Event implementation tests',
-      'description' => 'Tests the behavior of past when no valid backend is configured.',
-      'group' => 'Past',
-    );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  function setUp() {
+  public function setUp() {
     parent::setUp(array('past'));
   }
 
   /**
    * Tests that past_event_create() returns PastEventUll when misconfigured.
    */
-  function testMissingBackend() {
+  public function testMissingBackend() {
     $event = past_event_create('past', 'test', 'A test log entry');
     $this->assertTrue($event instanceof PastEventNull);
 

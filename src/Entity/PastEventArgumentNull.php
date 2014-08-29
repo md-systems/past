@@ -1,14 +1,15 @@
 <?php
-
 /**
  * @file
- * Contains PastEventArgumentNull.
+ * Contains \Drupal\past\Entity\PastEventArgumentNull.
  */
+
+namespace Drupal\past\Entity;
+use Drupal\past\PastEventArgumentInterface;
 
 /**
  * Null implementation that is used as a fallback or when logging is disabled.
  */
-
 class PastEventArgumentNull implements PastEventArgumentInterface {
 
   /**
