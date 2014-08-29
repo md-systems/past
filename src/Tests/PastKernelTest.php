@@ -9,7 +9,7 @@ namespace Drupal\past\Tests;
 
 use Drupal\Core\Utility\Error;
 use Drupal\simpletest\KernelTestBase;
-use Drupal\past\Entity\PastEventInterface;
+use Drupal\past\PastEventInterface;
 
 /**
  * Generic API tests using the database backend.

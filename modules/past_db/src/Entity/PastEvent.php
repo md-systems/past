@@ -14,8 +14,8 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Utility\Error;
-use Drupal\past\Entity\PastEventArgumentInterface;
-use Drupal\past\Entity\PastEventInterface;
+use Drupal\past\PastEventArgumentInterface;
+use Drupal\past\PastEventInterface;
 use Exception;
 
 /**

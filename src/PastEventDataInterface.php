@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\past\Entity;
+namespace Drupal\past;
 
 /**
  * Represents event data.

@@ -5,7 +5,7 @@
  * Contains the interface definition.
  */
 
-namespace Drupal\past\Entity;
+namespace Drupal\past;
 
 use \Exception;
 

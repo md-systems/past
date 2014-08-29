@@ -7,11 +7,8 @@
 
 namespace Drupal\past\Tests;
 
-use Drupal\Core\Utility\Error;
 use Drupal\simpletest\WebTestBase;
-use Drupal\past\Entity\PastEventInterface;
-use Drupal\past\Entity\PastEventArgumentInterface;
-use Drupal\past\Entity\PastEventDataInterface;
+use Drupal\past\PastEventInterface;
 
 /**
  * Generic API web tests using the database backend.

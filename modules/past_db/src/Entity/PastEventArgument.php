@@ -2,8 +2,7 @@
 
 namespace Drupal\past_db\Entity;
 
-use Drupal\Core\Database\Query\Insert;
-use \Drupal\past\Entity\PastEventArgumentInterface;
+use \Drupal\past\PastEventArgumentInterface;
 
 /**
  * An argument for an event.

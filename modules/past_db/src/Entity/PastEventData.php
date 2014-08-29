@@ -2,7 +2,7 @@
 
 namespace Drupal\past_db\Entity;
 
-use \Drupal\past\Entity\PastEventDataInterface;
+use \Drupal\past\PastEventDataInterface;
 
 /**
  * Past event data entity.

@@ -5,8 +5,7 @@
  * Module file for the past project.
  */
 
-use Drupal\past\Entity\PastEventInterface;
-use Drupal\Core\Utility\Error;
+use Drupal\past\PastEventInterface;
 
 /**
  * Severities correspond to Log message severity from WATCHDOG.

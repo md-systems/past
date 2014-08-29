@@ -6,7 +6,7 @@
 
 namespace Drupal\past_form\Tests;
 
-use Drupal\past\Entity\PastEventInterface;
+use Drupal\past\PastEventInterface;
 use Drupal\past_db\Entity\PastEvent;
 use Drupal\simpletest\WebTestBase;
 
