@@ -7,7 +7,6 @@
 namespace Drupal\past_db\Tests;
 
 use Drupal\Core\Entity\Entity;
-use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\field\Entity\FieldInstanceConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\past_db\Entity\PastEvent;
@@ -33,28 +32,10 @@ class PastDBCrudTest extends KernelTestBase {
   );
 
   /**
-   * Entity storage of Past events.
-   *
-   * @var EntityStorageInterface
-   */
-  protected $eventStorage;
-
-  /**
-   * Entity storage of Past event types.
-   *
-   * @var EntityStorageInterface
-   */
-  protected $eventTypeStorage;
-
-  /**
    * {@inheritdoc}
    */
   public function setUp() {
     parent::setUp();
-
-    $entity_manager = $this->container->get('entity.manager');
-    $this->eventStorage = $entity_manager->getStorage('past_event');
-    $this->eventTypeStorage = $entity_manager->getStorage('past_event_type');
 
     $this->installEntitySchema('past_event');
     $this->installSchema('past_db', array('past_event_argument', 'past_event_data'));
@@ -66,19 +47,19 @@ class PastDBCrudTest extends KernelTestBase {
    */
   public function testEventType() {
     // Minimal event type.
-    $this->eventTypeStorage->create(array(
+    PastEventType::create(array(
       'id' => 'minimal',
     ))->save();
-    $event_type = $this->eventTypeStorage->load('minimal');
+    $event_type = PastEventType::load('minimal');
     $this->assertNull($event_type->label());
 
     // Full event type.
-    $this->eventTypeStorage->create(array(
+    PastEventType::create(array(
       'id' => 'full',
       'label' => 'Full event type',
       'weight' => 5,
     ))->save();
-    $event_type = $this->eventTypeStorage->load('full');
+    $event_type = PastEventType::load('full');
     $this->assertEqual($event_type->label(), 'Full event type');
     $this->assertEqual($event_type->weight, 5);
   }
@@ -88,10 +69,10 @@ class PastDBCrudTest extends KernelTestBase {
    */
   public function testEvent() {
     // Minimal event - test default values.
-    $created = $this->eventStorage->create();
+    $created = PastEvent::create();
     $created->save();
     /** @var PastEvent $loaded */
-    $loaded = $this->eventStorage->load($created->id());
+    $loaded = PastEvent::load($created->id());
     $this->assertNull($loaded->getModule());
     $this->assertNull($loaded->getMachineName());
     $this->assertEqual($loaded->bundle(), 'past_event');
@@ -116,9 +97,9 @@ class PastDBCrudTest extends KernelTestBase {
       'uid' => 2,
       // @todo Can we set current user in a KernelTest?
     );
-    $created = $this->eventStorage->create($values);
+    $created = PastEvent::create($values);
     $created->save();
-    $loaded = $this->eventStorage->load($created->id());
+    $loaded = PastEvent::load($created->id());
     $this->assertEqual($loaded->getModule(), $values['module']);
     $this->assertEqual($loaded->getMachineName(), $values['machine_name']);
     $this->assertEqual($loaded->bundle(), 'past_event');
@@ -136,19 +117,19 @@ class PastDBCrudTest extends KernelTestBase {
    */
   public function testUseEventType() {
     // Create a type.
-    $type = $this->eventTypeStorage->create(array(
+    $type = PastEventType::create(array(
       'id' => $this->randomMachineName(),
     ));
     $type->save();
 
     // Create an event of the type.
-    $created = $this->eventStorage->create(array(
+    $created = PastEvent::create(array(
       'type' => $type->id(),
     ));
     $created->save();
 
     // Assert the bundle property is set.
-    $loaded = $this->eventStorage->load($created->id());
+    $loaded = PastEvent::load($created->id());
     $this->assertEqual($loaded->bundle(), $type->id());
   }
 
@@ -186,7 +167,7 @@ class PastDBCrudTest extends KernelTestBase {
     $created->save();
 
     // Assert the field value is retrieved.
-    $loaded = $this->eventStorage->load($created->id());
+    $loaded = PastEvent::load($created->id());
     $this->assertEqual($loaded->get($field_name)->value, $field_value);
   }
 
