@@ -48,19 +48,28 @@ class PastEventArgument implements PastEventArgumentInterface {
       ->fields('data')
       ->condition('argument_id', $this->argument_id)
       ->execute();
-    if ($this->type == 'array' || strpos($this->type, 'entity:') === 0) {
+
+    $is_entity = strpos($this->type, 'entity:') === 0;
+    if ($this->type == 'array' || $is_entity) {
+      // Array or entity.
       $return = array();
       foreach ($result as $row) {
         $return[$row->name] = $row->serialized ? unserialize($row->value) : $row->value;
       }
+      if ($is_entity) {
+        $entity_type = substr(strstr($this->type, ':'), 1);
+        $return = entity_create($entity_type, $return);
+      }
     }
     elseif (!in_array($this->type, array('integer', 'string', 'float', 'boolean'))) {
+      // Object other than entity.
       $return = new \stdClass();
       foreach ($result as $row) {
         $return->{$row->name} = $row->serialized ? unserialize($row->value) : $row->value;
       }
     }
     else {
+      // Scalar.
       if ($row = $result->fetchAssoc()) {
         $return = $row['value'];
       }
