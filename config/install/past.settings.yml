@@ -1,9 +1,13 @@
-events_expire: ''
-exception_handling: ''
-log_watchdog: ''
-shutdown_handling: '1'
-log_session_id: '1'
+events_expire: 0
+exception_handling: false
+log_watchdog: false
+shutdown_handling: true
+log_session_id: true
 backtrace_include:
+  # @todo Convert to string sequence:
+  # - PAST_SEVERITY_ERROR
+  # - PAST_SEVERITY_WARNING
+  # etc.
   WATCHDOG_SEVERITY_0: 'WATCHDOG_SEVERITY_0'
   WATCHDOG_SEVERITY_1: 'WATCHDOG_SEVERITY_1'
   WATCHDOG_SEVERITY_2: 'WATCHDOG_SEVERITY_2'

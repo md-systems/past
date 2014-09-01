@@ -8,13 +8,13 @@ past.settings:
       type: integer
       label: 'Log expiration interval'
     shutdown_handling:
-      type: integer
+      type: boolean
       label: 'Register PHP shutdown error handler'
     exception_handling:
       type: boolean
       label: 'Register PHP exception handler'
     log_session_id:
-      type: integer
+      type: boolean
       label: 'Log the session id'
     log_watchdog:
       type: boolean
