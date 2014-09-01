@@ -11,7 +11,7 @@ use Drupal\simpletest\KernelTestBase;
 /**
  * Tests the Past null implementation.
  *
- * @group
+ * @group past
  */
 class PastNullTest extends KernelTestBase {
 
