@@ -218,15 +218,14 @@ class PastDBCrudTest extends KernelTestBase {
       return;
     }
 
+    // Entities are saved with toArray() applied.
+    if ($data instanceof Entity) {
+      $data = $data->toArray();
+    }
+
     $loaded_data = $loaded->getArgument($name)->getData();
     if (!$this->assertEqual(gettype($loaded_data), gettype($data))) {
       return;
-    }
-
-    // Use toArray() on entities to avoid recursion.
-    if ($data instanceof Entity) {
-      $data = $data->toArray();
-      $loaded_data = $loaded_data->toArray();
     }
 
     // Assert and maybe debug.
