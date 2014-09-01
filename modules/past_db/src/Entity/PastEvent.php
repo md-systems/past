@@ -162,21 +162,6 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
   protected $child_events = array();
 
   /**
-   * The maximum recursion depth to prevent infinite recursion.
-   *
-   * @var int
-   */
-  protected $max_recursion;
-
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct(array $values = array(), $entity_type = NULL) {
-    parent::__construct($values, $entity_type);
-    $this->max_recursion = \Drupal::config('past_db.settings')->get('max_recursion');
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function addArgument($key, $data, array $options = array()) {
@@ -572,8 +557,9 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    *   A HTML div describing the value.
    */
   protected function parseObject($obj, $recursive = 0) {
-    if ($recursive > $this->max_recursion) {
-      return t('<em>Too many nested objects ( @recursion )</em>', array('@recursion' => $this->max_recursion));
+    $max_recursion = \Drupal::config('past.settings')->get('max_recursion');
+    if ($recursive > $max_recursion) {
+      return t('<em>Too many nested objects ( @recursion )</em>', array('@recursion' => $max_recursion));
     }
     if (is_scalar($obj) || is_null($obj)) {
       return is_string($obj) ? nl2br(trim(String::checkPlain($obj))) : $obj;
