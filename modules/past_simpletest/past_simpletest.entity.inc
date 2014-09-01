@@ -26,7 +26,7 @@ class PastEventSimpletest implements PastEventInterface {
   protected static $event_id_counter = 1;
 
   public function __construct(array $values = array()) {
-    $this->max_recursion = variable_get('past_max_recursion', 10);
+    $this->max_recursion = \Drupal::config('past_db.settings')->get('max_recursion');
 
     foreach ($values as $key => $value) {
       $this->$key = $value;

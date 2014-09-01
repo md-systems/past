@@ -153,9 +153,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    */
   public function __construct(array $values = array(), $entity_type = NULL) {
     parent::__construct($values, $entity_type);
-    // @todo Convert to config
-    // $this->max_recursion = variable_get('past_max_recursion', 10);
-    $this->max_recursion = 10;
+    $this->max_recursion = \Drupal::config('past_db.settings')->get('max_recursion');
   }
 
   /**

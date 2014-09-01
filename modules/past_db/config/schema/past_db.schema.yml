@@ -11,3 +11,11 @@ past_db.past_event_type.*:
     weight:
       label: 'The weight of this event type, in relation to other event types.'
       type: integer
+
+past_db.settings:
+  type: mapping
+  label: 'Past DB settings'
+  mapping:
+    max_recursion:
+      label: 'Maximum level of recursion when printing an event argument.'
+      type: integer
