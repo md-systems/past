@@ -23,39 +23,15 @@ class PastEventViewBuilder extends EntityViewBuilder {
       /** @var PastEvent $entity */
 
       // Global information about the event.
-      $build[$id]['message'] = array(
-        '#type' => 'item',
-        '#title' => t('Message'),
-        '#markup' => $entity->getMessage(),
-      );
-      $build[$id]['module'] = array(
-        '#type' => 'item',
-        '#title' => t('Module'),
-        '#markup' => $entity->getModule(),
-      );
-      $build[$id]['machine_name'] = array(
-        '#type' => 'item',
-        '#title' => t('Machine name'),
-        '#markup' => $entity->getMachineName(),
-      );
-      $build[$id]['timestamp'] = array(
-        '#type' => 'item',
-        '#title' => t('Date'),
-        '#markup' => format_date($entity->getTimestamp(), 'long'),
-      );
 //      $content['actor'] = array(
 //        '#type' => 'item',
 //        '#title' => t('Actor'),
 //        '#markup' => $this->getActorDropbutton(FALSE),
 //      );
-      $build[$id]['referer'] = array(
-        '#type' => 'item',
-        '#title' => t('Referer'),
+      $build[$id]['referer'][0] = array(
         '#markup' => l($entity->getReferer(), $entity->getReferer()),
       );
-      $build[$id]['location'] = array(
-        '#type' => 'item',
-        '#title' => t('Location'),
+      $build[$id]['location'][0] = array(
         '#markup' => l($entity->getLocation(), $entity->getLocation()),
       );
 

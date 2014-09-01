@@ -65,7 +65,11 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
       ->setLabel(t('Module'))
       ->setDescription(t('The module that logged this event.'))
       ->setSetting('max_length', 128)
-      ->setReadOnly(TRUE);
+      ->setReadOnly(TRUE)
+      ->setDisplayOptions('view', array(
+        'type' => 'string',
+        'weight' => 1,
+      ));
     $fields['machine_name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Machine name'))
       ->setDescription(t('The machine name of this event.'))
@@ -86,13 +90,25 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
       ->setDescription(t('The session id of the user who triggered the event.'));
     $fields['referer'] = BaseFieldDefinition::create('string')
       ->setLabel('Referer')
-      ->setDescription(t('The referer of the request who triggered the event.'));
+      ->setDescription(t('The referer of the request who triggered the event.'))
+      ->setDisplayOptions('view', array(
+        'type' => 'string',
+        'weight' => 1,
+      ));
     $fields['location'] = BaseFieldDefinition::create('string')
       ->setLabel('Location')
-      ->setDescription(t('The URI of the request that triggered the event.'));
+      ->setDescription(t('The URI of the request that triggered the event.'))
+      ->setDisplayOptions('view', array(
+        'type' => 'string',
+        'weight' => 1,
+      ));
     $fields['message'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Message'))
-      ->setDescription(t('The event log message'));
+      ->setDescription(t('The event log message'))
+      ->setDisplayOptions('view', array(
+        'type' => 'string',
+        'weight' => 1,
+      ));
     $fields['severity'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Severity'))
       ->setDescription(t('The severity of this event.'))
@@ -101,7 +117,11 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
       ->setDefaultValue(PAST_SEVERITY_INFO);
     $fields['timestamp'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Timestamp'))
-      ->setDescription(t('The event timestamp.'));
+      ->setDescription(t('The event timestamp.'))
+      ->setDisplayOptions('view', array(
+        'type' => 'timestamp',
+        'weight' => 1,
+      ));
     $fields['parent_event_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Parent event ID'))
       ->setDescription(t('The parent event ID.'))
