@@ -12,8 +12,6 @@ use Drupal\simpletest\WebTestBase;
 
 /**
  * Base class for Past DB tests.
- *
- * @group past
  */
 abstract class PastDBTestBase extends WebTestBase {
 

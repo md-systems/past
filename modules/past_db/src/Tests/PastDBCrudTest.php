@@ -16,7 +16,7 @@ use Drupal\simpletest\KernelTestBase;
 /**
  * Tests saving and loading past events and event types.
  *
- * @group past_db
+ * @group past
  */
 class PastDBCrudTest extends KernelTestBase {
 
