@@ -6,7 +6,6 @@
  */
 
 namespace Drupal\past_db\Tests;
-use Drupal\Core\Site\Settings;
 use Drupal\field\Entity\FieldInstanceConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\field\FieldInstanceConfigInterface;
@@ -32,9 +31,6 @@ class PastDBTest extends PastDBTestBase {
    */
   public function setUp() {
     parent::setUp();
-    new Settings(array(
-      'past_backend' => 'past_db_backend',
-    ) + Settings::getAll());
     $admin = $this->drupalCreateUser(array(
       'administer past',
       'administer past_event display',

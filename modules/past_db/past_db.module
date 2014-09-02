@@ -5,14 +5,8 @@
  * Module file for the Past DB module.
  */
 
+use Drupal\past\PastEventInterface;
 use \Drupal\past_db\Entity\PastEvent;
-
-/**
- * Standard Past backend factory.
- */
-function past_db_backend() {
-  return PastEvent::create();
-}
 
 /**
  * Entity URI callback for image style.
@@ -354,8 +348,5 @@ function past_db_entity_extra_field_info() {
  *   A new Past event instance.
  */
 function past_db_create_event() {
-  // Only create the entity if the autoloader works.
-  if (class_exists('PastEvent')) {
-    return entity_create('past_event', array());
-  }
+  return entity_create('past_event', array());
 }
