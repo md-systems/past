@@ -28,6 +28,7 @@ class PastEventViewBuilder extends EntityViewBuilder {
 //        '#title' => t('Actor'),
 //        '#markup' => $this->getActorDropbutton(FALSE),
 //      );
+      // Output URLs as links.
       $build[$id]['referer'][0] = array(
         '#markup' => l($entity->getReferer(), $entity->getReferer()),
       );
@@ -35,25 +36,16 @@ class PastEventViewBuilder extends EntityViewBuilder {
         '#markup' => l($entity->getLocation(), $entity->getLocation()),
       );
 
-      // Show all arguments in a vertical_tab.
-      $build[$id]['arguments'] = array(
-        // @todo vertical_tabs element can currently not have parent, uncomment when https://www.drupal.org/node/1016912 is fixed.
-        //'#type' => 'vertical_tabs',
-        '#tree' => TRUE,
-        '#weight' => 99,
-      );
-
+      // @todo Display as vertical_tabs if that is enabled outside forms.
       foreach ($entity->getArguments() as $key => $argument) {
-        $build[$id]['arguments']['fieldset_' . $key] = array(
-          '#type' => 'fieldset',
+        $build[$id]['fieldset_' . $key] = array(
+          '#type' => 'details',
           '#title' => ucfirst($key),
-          '#collapsible' => TRUE,
-          '#collapsed' => FALSE,
-          '#group' => 'arguments',
+          '#open' => TRUE,
           '#tree' => TRUE,
-          '#weight' => -2,
+          '#weight' => 10,
         );
-        $build[$id]['arguments']['fieldset_' . $key]['argument_' . $key] = array(
+        $build[$id]['fieldset_' . $key]['argument_' . $key] = array(
           '#type' => 'item',
           '#markup' => $entity->formatArgument($key, $argument),
         );

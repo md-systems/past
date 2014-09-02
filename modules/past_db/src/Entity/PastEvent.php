@@ -557,7 +557,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
    *   A HTML div describing the value.
    */
   protected function parseObject($obj, $recursive = 0) {
-    $max_recursion = \Drupal::config('past.settings')->get('max_recursion');
+    $max_recursion = \Drupal::config('past_db.settings')->get('max_recursion');
     if ($recursive > $max_recursion) {
       return t('<em>Too many nested objects ( @recursion )</em>', array('@recursion' => $max_recursion));
     }
