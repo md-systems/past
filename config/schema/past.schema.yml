@@ -19,6 +19,9 @@ past.settings:
     log_watchdog:
       type: boolean
       label: 'Log watchdog to past event log'
+    max_recursion:
+      type: integer
+      label: 'Maximum level of recursion when printing an event argument'
     backtrace_include:
       type: sequence
       label: 'Include watchdog severity levels from writing backtraces'

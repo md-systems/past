@@ -3,6 +3,7 @@ exception_handling: false
 log_watchdog: false
 shutdown_handling: true
 log_session_id: true
+max_recursion: 10
 backtrace_include:
   # @todo Convert to string sequence:
   # - PAST_SEVERITY_ERROR

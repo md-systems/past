@@ -22,13 +22,10 @@ class PastEventSimpletest implements PastEventInterface {
 
   protected $arguments;
   protected $child_events = array();
-  protected $max_recursion;
 
   protected static $event_id_counter = 1;
 
   public function __construct(array $values = array()) {
-    $this->max_recursion = \Drupal::config('past_db.settings')->get('max_recursion');
-
     foreach ($values as $key => $value) {
       $this->$key = $value;
     }
@@ -294,8 +291,9 @@ class PastEventSimpletest implements PastEventInterface {
    *   A HTML div describing the value.
    */
   protected function parseObject($obj, $recursive = 0) {
-    if ($recursive > $this->max_recursion) {
-      return t('_Too many nested objects ( @recursion )_', array('@recursion' => $this->max_recursion));
+    $max_recursion = \Drupal::config('past.settings')->get('max_recursion');
+    if ($recursive > $max_recursion) {
+      return t('_Too many nested objects ( @recursion )_', array('@recursion' => $max_recursion));
     }
     if (is_scalar($obj) || is_null($obj)) {
       return is_string($obj) ? trim(strip_tags($obj)) : $obj;
