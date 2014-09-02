@@ -5,6 +5,7 @@
  * Contains \Drupal\past_simpletest\Entity\PastEventSimpletestArgument.
  */
 
+use Drupal\Component\Serialization\Json;
 use Drupal\past\PastEventArgumentInterface;
 
 /**
@@ -57,7 +58,7 @@ class PastEventSimpletestArgument implements PastEventArgumentInterface {
    * {@inheritdoc}
    */
   public function setRaw($data, $json_encode = TRUE) {
-    $this->raw = $json_encode ? drupal_json_encode($data) : $data;
+    $this->raw = $json_encode ? Json::encode($data) : $data;
   }
 
   /**

@@ -5,6 +5,8 @@
  * Module file for the Past Simpletest Backend.
  */
 
+use Drupal\past\PastEventInterface;
+
 /**
  * Creates a new past simpletest event object.
  *

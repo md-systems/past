@@ -18,6 +18,9 @@ class PastEventSimpletest implements PastEventInterface {
   public $message;
   public $severity;
   public $timestamp;
+  public $sessionId;
+  public $referer;
+  public $location;
   public $uid;
 
   protected $arguments;
@@ -185,6 +188,7 @@ class PastEventSimpletest implements PastEventInterface {
    */
   public function setParentEventId($event_id) {
     $this->parent_event_id = $event_id;
+    return $this;
   }
 
   /**
@@ -192,6 +196,7 @@ class PastEventSimpletest implements PastEventInterface {
    */
   public function setSeverity($severity) {
     $this->severity = $severity;
+    return $this;
   }
 
   /**
@@ -199,6 +204,7 @@ class PastEventSimpletest implements PastEventInterface {
    */
   public function setMessage($message) {
     $this->message = $message;
+    return $this;
   }
 
   /**
@@ -206,6 +212,52 @@ class PastEventSimpletest implements PastEventInterface {
    */
   public function setTimestamp($timestamp) {
     $this->timestamp = $timestamp;
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSessionId() {
+    return $this->sessionId;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setSessionId($session_id) {
+    $this->sessionId = $session_id;
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getReferer() {
+    return $this->referer;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setReferer($referer) {
+    $this->referer = $referer;
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getLocation() {
+    return $this->location;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setLocation($location) {
+    $this->location = $location;
+    return $this;
   }
 
   /**
@@ -228,6 +280,7 @@ class PastEventSimpletest implements PastEventInterface {
    */
   public function setMachineName($machine_name) {
     $this->machine_name = $machine_name;
+    return $this;
   }
 
   /**
@@ -235,6 +288,7 @@ class PastEventSimpletest implements PastEventInterface {
    */
   public function setModule($module) {
     $this->module = $module;
+    return $this;
   }
 
   /**
