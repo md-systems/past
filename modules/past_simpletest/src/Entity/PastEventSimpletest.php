@@ -2,10 +2,11 @@
 
 /**
  * @file
- * Contains the entity classes for Past Simpletest backend.
+ * Contains \Drupal\past_simpletest\Entity\PastEventSimpletest.
  */
 
 use Drupal\Core\Utility\Error;
+use Drupal\past\PastEventInterface;
 
 /**
  * The main Event class for the Past Simpletest backend.
@@ -305,87 +306,5 @@ class PastEventSimpletest implements PastEventInterface {
       $back .= chr(10) . str_repeat(' ', $recursive * 2) . '     [' . strip_tags($k) . '] => (' . gettype($v) . ') ' . $this->parseObject($v, $recursive + 1);
     }
     return $back;
-  }
-}
-
-/**
- * The Arguments Entity class for the Past Simpletest backend.
- */
-class PastEventSimpletestArgument implements PastEventArgumentInterface {
-
-  public $argument_id;
-  public $event_id;
-  protected $original_data;
-  public $name;
-  public $type;
-  public $raw;
-
-  public function __construct(array $values = array()) {
-    foreach ($values as $key => $value) {
-      $this->$key = $value;
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getData() {
-    return $this->original_data;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getKey() {
-    return $this->name;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getRaw() {
-    return $this->raw;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getType() {
-    return $this->type;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setRaw($data, $json_encode = TRUE) {
-    $this->raw = $json_encode ? drupal_json_encode($data) : $data;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getOriginalData() {
-    return $this->original_data;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function ensureType() {
-    if (isset($this->original_data)) {
-      if (is_object($this->original_data)) {
-        $this->type = get_class($this->original_data);
-      }
-      else {
-        $this->type = gettype($this->original_data);
-      }
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function defaultLabel() {
-    return $this->getKey();
   }
 }
