@@ -78,7 +78,6 @@ class PastDBCrudTest extends KernelTestBase {
     $this->assertEqual($loaded->getMachineName(), 'testEvent1');
     $this->assertEqual($loaded->bundle(), 'past_event');
     $this->assertNull($loaded->getSessionId());
-    $this->assertIdentical(strpos($loaded->getReferer(), 'http'), 0);
     $this->assertIdentical(strpos($loaded->getLocation(), 'http'), 0);
     $this->assertNull($loaded->getMessage());
     $this->assertEqual($loaded->getSeverity(), PAST_SEVERITY_INFO);
