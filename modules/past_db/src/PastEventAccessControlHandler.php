@@ -22,7 +22,7 @@ class PastEventAccessControlHandler extends EntityAccessControlHandler {
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, $langcode, AccountInterface $account) {
-    return user_access('administer past', $account);
+    return $account->hasPermission('administer past');
   }
 
 }

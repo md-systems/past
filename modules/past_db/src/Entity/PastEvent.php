@@ -39,7 +39,7 @@ use Exception;
  *     "uuid" = "uuid"
  *   },
  *   links = {
- *     "canonical" = "admin/reports/past/{past_event}",
+ *     "canonical" = "past_db.event",
  *   },
  *   bundle_entity_type = "past_event_type",
  *   field_ui_base_route = "past_db.event_type.manage",
@@ -432,7 +432,7 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
   /**
    * {@inheritdoc}
    */
-  public function defaultLabel() {
+  public function label() {
     if (!empty($this->defaultLabel)) {
       return $this->defaultLabel;
     }

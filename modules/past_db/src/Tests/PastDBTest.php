@@ -283,6 +283,11 @@ class PastDBTest extends PastDBTestBase {
       'bundle' => $bundle,
     ));
     $field_instance->save();
+    entity_get_display('past_event', $bundle, 'default')
+      ->setComponent('field_fieldtest', array(
+        'type' => 'entity_reference_label',
+      ))
+      ->save();
     return $field_instance;
   }
 }
