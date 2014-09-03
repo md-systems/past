@@ -13,14 +13,14 @@ use Drupal\past\Entity\PastEventNull;
  * Severities correspond to Log message severity from WATCHDOG.
  * @see bootstrap.inc
  */
-define('PAST_SEVERITY_EMERGENCY', 0);
-define('PAST_SEVERITY_ALERT', 1);
-define('PAST_SEVERITY_CRITICAL', 2);
-define('PAST_SEVERITY_ERROR', 3);
-define('PAST_SEVERITY_WARNING', 4);
-define('PAST_SEVERITY_NOTICE', 5);
-define('PAST_SEVERITY_INFO', 6);
-define('PAST_SEVERITY_DEBUG', 7);
+const PAST_SEVERITY_EMERGENCY = 0;
+const PAST_SEVERITY_ALERT = 1;
+const PAST_SEVERITY_CRITICAL = 2;
+const PAST_SEVERITY_ERROR = 3;
+const PAST_SEVERITY_WARNING = 4;
+const PAST_SEVERITY_NOTICE = 5;
+const PAST_SEVERITY_INFO = 6;
+const PAST_SEVERITY_DEBUG = 7;
 
 /**
  * Creates and saves a past event.
