@@ -1,5 +1,5 @@
 events_expire: 0
-exception_handling: false
+exception_handling: true
 log_watchdog: false
 shutdown_handling: true
 log_session_id: true

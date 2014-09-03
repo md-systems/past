@@ -84,7 +84,7 @@ function past_event_create($module, $machine_name, $message = NULL, array $optio
   if (function_exists($backend_factory)) {
     $event = $backend_factory();
   }
-  else {
+  if (empty($event)) {
     // Misconfigured backend. This is covered by requirements hook; do not log.
     return new PastEventNull();
   }

@@ -348,5 +348,7 @@ function past_db_entity_extra_field_info() {
  *   A new Past event instance.
  */
 function past_db_create_event() {
-  return entity_create('past_event', array());
+  if (\Drupal::entityManager()->hasDefinition('past_event')) {
+    return entity_create('past_event', array());
+  }
 }
