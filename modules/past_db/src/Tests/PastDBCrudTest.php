@@ -26,6 +26,7 @@ class PastDBCrudTest extends KernelTestBase {
    * @var string[]
    */
   public static $modules = array(
+    'past',
     'past_db',
     'user',
     'field',
@@ -69,16 +70,16 @@ class PastDBCrudTest extends KernelTestBase {
    */
   public function testEvent() {
     // Minimal event - test default values.
-    $created = PastEvent::create();
+    $created = past_event_create('past_db', 'testEvent1');
     $created->save();
     /** @var PastEvent $loaded */
     $loaded = PastEvent::load($created->id());
-    $this->assertNull($loaded->getModule());
-    $this->assertNull($loaded->getMachineName());
+    $this->assertEqual($loaded->getModule(), 'past_db');
+    $this->assertEqual($loaded->getMachineName(), 'testEvent1');
     $this->assertEqual($loaded->bundle(), 'past_event');
     $this->assertNull($loaded->getSessionId());
-    $this->assertNull($loaded->getReferer());
-    $this->assertNull($loaded->getLocation());
+    $this->assertIdentical(strpos($loaded->getReferer(), 'http'), 0);
+    $this->assertIdentical(strpos($loaded->getLocation(), 'http'), 0);
     $this->assertNull($loaded->getMessage());
     $this->assertEqual($loaded->getSeverity(), PAST_SEVERITY_INFO);
     $this->assertNotNull($loaded->getTimestamp());
@@ -86,27 +87,20 @@ class PastDBCrudTest extends KernelTestBase {
 
     // Full event - test defined values.
     $values = array(
-      'module' => $this->randomMachineName(),
-      'machine_name' => $this->randomMachineName(),
       'session_id' => $this->randomMachineName(),
-      'referer' => 'http://foo.example.com',
-      'location' => 'http://bar.example.com',
-      'message' => $this->randomString(),
       'severity' => PAST_SEVERITY_ERROR,
       'timestamp' => 1337,
       'uid' => 2,
       // @todo Can we set current user in a KernelTest?
     );
-    $created = PastEvent::create($values);
-    $created->save();
+    $message = $this->randomString(40);
+    $created = past_event_save('past_db', 'testEvent2', $message, array(), $values);
     $loaded = PastEvent::load($created->id());
-    $this->assertEqual($loaded->getModule(), $values['module']);
-    $this->assertEqual($loaded->getMachineName(), $values['machine_name']);
+    $this->assertEqual($loaded->getModule(), 'past_db');
+    $this->assertEqual($loaded->getMachineName(), 'testEvent2');
     $this->assertEqual($loaded->bundle(), 'past_event');
     $this->assertEqual($loaded->getSessionId(), $values['session_id']);
-    $this->assertEqual($loaded->getReferer(), $values['referer']);
-    $this->assertEqual($loaded->getLocation(), $values['location']);
-    $this->assertEqual($loaded->getMessage(), $values['message']);
+    $this->assertEqual($loaded->getMessage(), $message);
     $this->assertEqual($loaded->getSeverity(), $values['severity']);
     $this->assertEqual($loaded->getTimestamp(), $values['timestamp']);
     $this->assertEqual($loaded->getUid(), $values['uid']);
@@ -123,9 +117,8 @@ class PastDBCrudTest extends KernelTestBase {
     $type->save();
 
     // Create an event of the type.
-    $created = PastEvent::create(array(
-      'type' => $type->id(),
-    ));
+    $created = past_event_create('past_db', 'testUseEventType');
+    $created->type = $type->id();
     $created->save();
 
     // Assert the bundle property is set.
@@ -160,10 +153,8 @@ class PastDBCrudTest extends KernelTestBase {
 
     // Create an event using the field.
     $field_value = $this->randomString();
-    $created = PastEvent::create(array(
-      'type' => $type->id(),
-      $field_name => $field_value,
-    ));
+    $created = past_event_create('past_db', 'testFieldability', NULL, array('type' => $type->id()));
+    $created->set($field_name, $field_value);
     $created->save();
 
     // Assert the field value is retrieved.
@@ -192,7 +183,7 @@ class PastDBCrudTest extends KernelTestBase {
     // @todo Recursive object as argument.
 
     // Entity as argument.
-    $this->assertArgumentPersists(PastEvent::create(), 'entity');
+    $this->assertArgumentPersists(past_event_create('past_db', 'testArgument'), 'entity');
   }
 
   /**
@@ -205,7 +196,7 @@ class PastDBCrudTest extends KernelTestBase {
    */
   protected function assertArgumentPersists($data, $name) {
     /** @var PastEvent $created */
-    $created = PastEvent::create();
+    $created = past_event_create('past_db', 'assertArgumentPersists');
     $created->addArgument($name, $data);
     $created->save();
 
