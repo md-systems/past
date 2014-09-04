@@ -6,6 +6,7 @@
  */
 
 namespace Drupal\past_db\Tests;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\field\Entity\FieldInstanceConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\field\FieldInstanceConfigInterface;
@@ -27,6 +28,13 @@ class PastDBTest extends PastDBTestBase {
   );
 
   /**
+   * A user with the 'view past reports' permission.
+   *
+   * @var AccountInterface
+   */
+  protected $viewUser;
+
+  /**
    * Creates an administrator user and sample events.
    */
   public function setUp() {
@@ -35,14 +43,18 @@ class PastDBTest extends PastDBTestBase {
       'administer past',
       'administer past_event display',
       'administer past_event fields',
-      'view past reports',
     ));
     $this->drupalLogin($admin);
+    $this->viewUser = $this->drupalCreateUser(array(
+      'view past reports',
+    ));
     $this->createEvents();
   }
 
   /**
    * Tests event bundles.
+   *
+   * @todo Move to kernel test
    */
   public function testEventBundles() {
     $event_type = past_event_type_create('test_event', 'Test event');
@@ -107,6 +119,8 @@ class PastDBTest extends PastDBTestBase {
     /* @var PastEvent $event */
     $event = entity_create('past_event', $values);
     $event->save();
+
+    $this->drupalLogin($this->viewUser);
     $this->drupalGet('admin/reports/past/' . $event->id());
     $this->assertText($values['message']);
     $this->assertText($values['module']);
@@ -154,6 +168,7 @@ class PastDBTest extends PastDBTestBase {
     $event = entity_load('past_event', $event->id());
     $this->assertEqual($event->type->target_id, $bundle, 'Created event uses test bundle.');
 
+    $this->drupalLogin($this->viewUser);
     // Check if the created fields shows up on the event display.
     $this->drupalGet('admin/reports/past/' . $event->id());
     // Check field label display.
@@ -166,6 +181,7 @@ class PastDBTest extends PastDBTestBase {
    * Tests the Past event log UI.
    */
   public function testAdminUI() {
+    $this->drupalLogin($this->viewUser);
     // Open the event log.
     $this->drupalGet('admin/reports/past');
 
