@@ -25,4 +25,4 @@ past_db.event:
   defaults:
     _entity_view: past_event
   requirements:
-    _permission: 'administer past'
+    _permission: 'view past reports'
