@@ -54,18 +54,7 @@ class PastWebTest extends WebTestBase {
     $account = $this->drupalCreateUser();
     $this->drupalLogin($account);
 
-    // Let's produce an exception, the exception handler is disabled by default.
-    $this->drupalGet('past_trigger_error/Exception');
-    $this->assertText(t('The website has encountered an error. Please try again later.'));
-    $this->assertText('Exception: This is an exception.');
-
-    // No exception should have been logged.
-    $event = $this->getLastEventByMachinename('unhandled_exception');
-    $this->assertNull($event);
-
-    // Now turn on exception handling and try again.
-    $this->config->set('exception_handling', TRUE)->save();
-
+    // Let's produce an exception, the exception handler is enabled by default.
     $this->drupalGet('past_trigger_error/Exception');
     $this->assertText(t('The website has encountered an error. Please try again later.'));
     $this->assertText('Exception: This is an exception.');
