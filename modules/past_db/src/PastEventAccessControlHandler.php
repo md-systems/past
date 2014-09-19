@@ -7,6 +7,7 @@
 
 namespace Drupal\past_db;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -22,7 +23,7 @@ class PastEventAccessControlHandler extends EntityAccessControlHandler {
    * {@inheritdoc}
    */
   protected function checkAccess(EntityInterface $entity, $operation, $langcode, AccountInterface $account) {
-    return $account->hasPermission('view past reports');
+    return AccessResult::allowedIfHasPermission($account, 'view past reports');
   }
 
 }

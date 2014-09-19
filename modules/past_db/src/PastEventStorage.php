@@ -8,28 +8,20 @@
 namespace Drupal\past_db;
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\Query\QueryInterface;
-use Drupal\Core\Entity\ContentEntityDatabaseStorage;
+use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 use Drupal\past_db\Entity\PastEvent;
 use Drupal\past_db\Entity\PastEventArgument;
 
 /**
  * Defines a Controller class for past events.
  */
-class PastEventStorage extends ContentEntityDatabaseStorage {
-
-  /**
-   * Overrides Drupal\Core\Entity\DatabaseStorageController::buildPropertyQuery().
-   */
-  protected function buildPropertyQuery(QueryInterface $entity_query, array $values) {
-    // @todo - any query customisations?
-    parent::buildPropertyQuery($entity_query, $values);
-  }
+class PastEventStorage extends SqlContentEntityStorage {
 
   /**
    * {@inheritdoc}
    */
   public function getSchema() {
+    // @todo move to a storage_schema handler.
     $schema = parent::getSchema();
     $schema['past_event']['indexes']['severity'] = array('severity');
     $schema['past_event']['indexes']['module'] = array('module');
@@ -40,10 +32,10 @@ class PastEventStorage extends ContentEntityDatabaseStorage {
   }
 
   /**
-   * Overrides Drupal\Core\Entity\DatabaseStorageController::postDelete().
+   * {@inheritdoc}
    */
   protected function postDelete($entities) {
-    db_delete('past_event_argument')
+    $this->database->delete('past_event_argument')
       ->condition('event_id', array_keys($entities))
       ->execute();
   }
@@ -59,7 +51,7 @@ class PastEventStorage extends ContentEntityDatabaseStorage {
     foreach ($entity->getArguments() as $argument) {
       /** @var PastEventArgument $argument */
       $argument->ensureType();
-      $insert = db_insert('past_event_argument')
+      $insert = $this->database->insert('past_event_argument')
         ->fields(array(
           'event_id' => $entity->id(),
           'name' => $argument->getKey(),
@@ -81,7 +73,7 @@ class PastEventStorage extends ContentEntityDatabaseStorage {
 
     // Update child events to use the parent_event_id.
     if ($child_events = $entity->getChildEvents()) {
-      db_update('past_event')
+      $this->database->update('past_event')
           ->fields(array(
             'parent_event_id' => $entity->id(),
           ))
@@ -101,7 +93,7 @@ class PastEventStorage extends ContentEntityDatabaseStorage {
    *   (optional) Id of the parent data, if data is nested.
    */
   protected function insertData($argument_id, $data, $parent_data_id = 0) {
-    $insert = db_insert('past_event_data')
+    $insert = $this->database->insert('past_event_data')
       ->fields(array('argument_id', 'parent_data_id', 'type', 'name', 'value', 'serialized'));
     if (is_array($data) || is_object($data)) {
       foreach ($data as $name => $value) {
@@ -121,7 +113,8 @@ class PastEventStorage extends ContentEntityDatabaseStorage {
           'serialized' => is_scalar($value) ? 0 : 1,
         ));
       }
-    } else {
+    }
+    else {
       $insert->values(array(
         'argument_id' => $argument_id,
         'parent_data_id' => 0,
@@ -139,11 +132,4 @@ class PastEventStorage extends ContentEntityDatabaseStorage {
     }
   }
 
-  /**
-   * Overrides Drupal\Core\Entity\DatabaseStorageController::resetCache().
-   */
-  public function resetCache(array $ids = NULL) {
-    // @todo - any cache reset?
-    parent::resetCache($ids);
-  }
 }
