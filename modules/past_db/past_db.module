@@ -210,14 +210,6 @@ function past_db_event_view($event) {
   return entity_view($event->entityType(), array($event), 'full', NULL, TRUE);
 }
 
-function past_db_form_views_exposed_form_alter(&$form, $form_state, $form_id) {
-  $form['reset'] = array(
-    '#type' => 'markup',
-    '#weight' => 1000,
-    '#markup' => '<input '. drupal_attributes(array('type' => 'reset', 'value' => t('Reset') )) .' class="form-submit" onClick="javascript:jQuery(this.form).find(\':input\').each(function(){if(this.type==\'text\' || this.type==\'select-multiple\' || this.type==\'select\'){jQuery(this).val(\'\');this.setAttribute(\'value\',\'\');}});this.form.submit();" />',
-  );
-}
-
 /**
  * Implements hook_views_api().
  */
