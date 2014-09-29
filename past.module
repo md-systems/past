@@ -173,20 +173,6 @@ function past_event_severities() {
 }
 
 /**
- * Implements hook_permission().
- */
-function past_permission() {
-  return array(
-    'administer past' => array(
-      'title' => t('Administer Past'),
-    ),
-    'view past reports' => array(
-      'title' => t('View Past reports'),
-    ),
-  );
-}
-
-/**
  * Implements hook_form_alter().
  * ??????
  */
