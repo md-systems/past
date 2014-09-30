@@ -31,7 +31,6 @@ use Exception;
  *     "views_data" = "Drupal\past_db\PastEventViewsData",
  *   },
  *   base_table = "past_event",
- *   fieldable = TRUE,
  *   entity_keys = {
  *     "id" = "event_id",
  *     "bundle" = "type",
