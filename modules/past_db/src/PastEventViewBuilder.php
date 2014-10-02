@@ -7,6 +7,7 @@
 namespace Drupal\past_db;
 
 use Drupal\Core\Entity\EntityViewBuilder;
+use Drupal\Core\Url;
 use Drupal\past_db\Entity\PastEvent;
 
 /**
@@ -29,12 +30,16 @@ class PastEventViewBuilder extends EntityViewBuilder {
 //        '#markup' => $this->getActorDropbutton(FALSE),
 //      );
       // Output URLs as links.
-      $build[$id]['referer'][0] = array(
-        '#markup' => l($entity->getReferer(), $entity->getReferer()),
-      );
-      $build[$id]['location'][0] = array(
-        '#markup' => l($entity->getLocation(), $entity->getLocation()),
-      );
+      if ($entity->getReferer()) {
+        $build[$id]['referer'][0] = array(
+          '#markup' => \Drupal::l($entity->getReferer(), Url::fromUri($entity->getReferer())),
+        );
+      }
+      if ($entity->getLocation()) {
+        $build[$id]['location'][0] = array(
+          '#markup' => \Drupal::l($entity->getLocation(), Url::fromUri($entity->getLocation())),
+        );
+      }
 
       // @todo Display as vertical_tabs if that is enabled outside forms.
       foreach ($entity->getArguments() as $key => $argument) {

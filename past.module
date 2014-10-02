@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Site\Settings;
+use Drupal\Core\Url;
 use Drupal\past\PastEventInterface;
 use Drupal\past\Entity\PastEventNull;
 
@@ -178,7 +179,7 @@ function past_event_severities() {
  */
 function past_form_system_logging_settings_alter(&$form, &$form_state) {
   $form['past_info']['#prefix'] = t('See also <a href="!settings_url">past settings</a>',
-    array('!settings_url' => url('admin/config/development/past/settings')));
+    array('!settings_url' => Url::fromRoute('past.settings')->toString()));
   return $form;
 }
 
