@@ -88,9 +88,9 @@ class PastEventTypeForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  public function submit(array $form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     // Save and go back.
-    parent::submit($form, $form_state);
+    parent::submitForm($form, $form_state);
     $this->entity->save();
     $form_state->setRedirect('past_db.event_type.list');
   }

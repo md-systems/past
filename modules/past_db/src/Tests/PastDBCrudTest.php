@@ -7,7 +7,7 @@
 namespace Drupal\past_db\Tests;
 
 use Drupal\Core\Entity\Entity;
-use Drupal\field\Entity\FieldInstanceConfig;
+use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\past_db\Entity\PastEvent;
 use Drupal\past_db\Entity\PastEventType;
@@ -138,12 +138,12 @@ class PastDBCrudTest extends KernelTestBase {
     // Attach a field to the type.
     $field_name = 'field_test';
     $field_storage = FieldStorageConfig::create(array(
-      'name' => $field_name,
+      'field_name' => $field_name,
       'type' => 'string',
       'entity_type' => 'past_event',
     ));
     $field_storage->save();
-    $field_instance = FieldInstanceConfig::create(array(
+    $field_instance = FieldConfig::create(array(
       'field_name' => $field_name,
       'entity_type' => 'past_event',
       'bundle' => $type->id(),

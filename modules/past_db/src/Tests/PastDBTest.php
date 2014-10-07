@@ -7,9 +7,8 @@
 
 namespace Drupal\past_db\Tests;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\field\Entity\FieldInstanceConfig;
+use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
-use Drupal\field\FieldInstanceConfigInterface;
 use Drupal\past_db\Entity\PastEvent;
 
 /**
@@ -280,20 +279,20 @@ class PastDBTest extends PastDBTestBase {
    * @param string $bundle
    *   The bundle name.
    *
-   * @return FieldInstanceConfigInterface
+   * @return \Drupal\Core\Field\FieldConfigInterface
    *   The definition of the field instance.
    */
   protected function addField($bundle) {
     $field_storage = FieldStorageConfig::create(array(
       'entity_type' => 'past_event',
-      'name' => 'field_fieldtest',
+      'field_name' => 'field_fieldtest',
       'type' => 'entity_reference',
       'settings' => array(
         'target_type' => 'past_event',
       ),
     ));
     $field_storage->save();
-    $field_instance = FieldInstanceConfig::create(array(
+    $field_instance = FieldConfig::create(array(
       'label' => 'test entity reference',
       'field_storage' => $field_storage,
       'bundle' => $bundle,
