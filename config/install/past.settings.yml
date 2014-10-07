@@ -1,4 +1,4 @@
-events_expire: 0
+events_expire: 2419200
 exception_handling: true
 log_watchdog: false
 shutdown_handling: true
