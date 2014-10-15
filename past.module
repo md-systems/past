@@ -5,6 +5,7 @@
  * Module file for the past project.
  */
 
+use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
 use Drupal\past\PastEventInterface;
@@ -191,11 +192,11 @@ function past_form_system_logging_settings_alter(&$form, &$form_state) {
  */
 function _past_watchdog_severity_defaults() {
   return drupal_map_assoc(array(
-    'WATCHDOG_SEVERITY_' . WATCHDOG_EMERGENCY,
-    'WATCHDOG_SEVERITY_' . WATCHDOG_ALERT,
-    'WATCHDOG_SEVERITY_' . WATCHDOG_CRITICAL,
-    'WATCHDOG_SEVERITY_' . WATCHDOG_ERROR,
-    'WATCHDOG_SEVERITY_' . WATCHDOG_NOTICE,
+    'WATCHDOG_SEVERITY_' . RfcLogLevel::EMERGENCY,
+    'WATCHDOG_SEVERITY_' . RfcLogLevel::ALERT,
+    'WATCHDOG_SEVERITY_' . RfcLogLevel::CRITICAL,
+    'WATCHDOG_SEVERITY_' . RfcLogLevel::ERROR,
+    'WATCHDOG_SEVERITY_' . RfcLogLevel::NOTICE,
   ));
 }
 

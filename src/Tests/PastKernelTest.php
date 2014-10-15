@@ -7,6 +7,7 @@
 
 namespace Drupal\past\Tests;
 
+use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Utility\Error;
 use Drupal\simpletest\KernelTestBase;
 use Drupal\past\PastEventInterface;
@@ -182,7 +183,7 @@ class PastKernelTest extends KernelTestBase {
     $this->assertNotNull($event, 'Watchdog call caused an event.');
     $this->assertEqual('watchdog', $event->getModule());
     $this->assertEqual($msg, $event->getMessage());
-    $this->assertEqual(WATCHDOG_INFO, $event->getSeverity());
+    $this->assertEqual(RfcLogLevel::INFO, $event->getSeverity());
     $this->assertEqual(1, count($event->getArguments()));
     $this->assertNotNull($event->getArgument('watchdog_args'));
     $this->assertEqual($event->getLocation(), 'http://localhost/');
@@ -199,7 +200,7 @@ class PastKernelTest extends KernelTestBase {
     $event = $this->getLastEventByMachinename($machine_name);
     $this->assertEqual('watchdog', $event->getModule());
     $this->assertEqual($msg, $event->getMessage());
-    $this->assertEqual(WATCHDOG_NOTICE, $event->getSeverity());
+    $this->assertEqual(RfcLogLevel::NOTICE, $event->getSeverity());
     // A notice generates a backtrace and there's an additional link
     // argument, so there are three arguments.
     $this->assertEqual(3, count($event->getArguments()));
