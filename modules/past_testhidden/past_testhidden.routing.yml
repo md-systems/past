@@ -1,7 +1,7 @@
 past_testhidden.trigger_error:
   path: /past_trigger_error/{type}
   defaults:
-    _content: '\Drupal\past_testhidden\Controller\ErrorTrigger::trigger'
+    _controller: '\Drupal\past_testhidden\Controller\ErrorTrigger::trigger'
   requirements:
     _access: 'TRUE'
 
