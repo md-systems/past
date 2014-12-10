@@ -1,0 +1,9 @@
+name=Past Guzzle Logadapter
+description=Past logadapter for the guzzle log plugin.
+package = Logging
+core=7.x
+
+dependencies[]=past
+
+files[]=past_guzzle.adapter.inc
+
