@@ -230,7 +230,7 @@ function past_db_add_row_colors(&$vars) {
 function past_db_views_pre_render(\Drupal\views\ViewExecutable $view) {
   if (array_key_exists('past_event', $view->getBaseTables())) {
     // Attach severity styling.
-    $view->element['#attached']['css'][drupal_get_path('module', 'past_db') . '/past_db.css'] = array();
+    $view->element['#attached']['library'][] = 'past_db/severity';
   }
 }
 
