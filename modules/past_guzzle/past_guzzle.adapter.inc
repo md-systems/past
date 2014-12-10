@@ -27,6 +27,14 @@ class PastGuzzleLogAdapter implements LogAdapterInterface {
   const PAST_MACHINE_NAME = 'request_log';
 
   /**
+   * Format string for the log message.
+   *
+   * @var string
+   * @see \Guzzle\Log\MessageFormatter
+   */
+  const MESSAGE_FORMAT = '{method} {url} {code} {phrase} {total_time}s';
+
+  /**
    * Mapping of log severities.
    *
    * @var int[]
