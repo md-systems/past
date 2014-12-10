@@ -5,3 +5,15 @@
  * Main bootstrap file for past_guzzle.
  */
 
+use Guzzle\Plugin\Log\LogPlugin;
+
+/**
+ * Gets the guzzle log plugin.
+ *
+ * @return Guzzle\Plugin\Log\LogPlugin
+ *   An instances of a guzzle log plugin configured with the Past Guzzle
+ *   adapter.
+ */
+function past_guzzle_plugin() {
+  return drupal_static(__FUNCTION__, new LogPlugin(new \PastGuzzleLogAdapter(), \PastGuzzleLogAdapter::MESSAGE_FORMAT));
+}
