@@ -82,10 +82,7 @@ class PastGuzzleTest extends DrupalWebTestCase {
     $plugin = past_guzzle_plugin();
     $this->client->addSubscriber($plugin);
 
-    // Prepare a mocked HTTP response.
-    $this->httpMock->addResponse(new Response(200, self::$responseHeaders, self::$responseBody));
-    // Execute a request. Triggers the request to be logged.
-    $this->client->get('foo')->send();
+    $this->triggerRequest();
 
     // Get logged request event.
     $events = entity_load('past_event');
@@ -131,9 +128,105 @@ class PastGuzzleTest extends DrupalWebTestCase {
     }
 
     // A second request adds another past event.
-    $this->httpMock->addResponse(new Response(200, self::$responseHeaders, self::$responseBody));
-    $this->client->get('foo')->send();
+    $this->triggerRequest();
     $events = entity_load('past_event', FALSE, array(), TRUE);
     $this->assertEqual(count($events), 2, 'Found a second Past event');
+  }
+
+  /**
+   * Tests the compact adapter with a single request.
+   */
+  function testCompactAdapterSingleRequest() {
+    $plugin = past_guzzle_plugin(PAST_GUZZLE_COMPACT);
+    $this->client->addSubscriber($plugin);
+
+    $this->triggerRequest();
+
+    $events = entity_load('past_event', FALSE, array(), TRUE);
+    $this->assertEqual(count($events), 0, 'Found no Past events');
+
+    $this->triggerCommit();
+
+    $events = entity_load('past_event', FALSE, array(), TRUE);
+    $this->assertEqual(count($events), 1, 'Found one Past event');
+    /* @var PastEvent $event */
+    $event = reset($events);
+
+    // Assert event message.
+    $message = $event->getMessage();
+    $expected = '/Tracked one Guzzle request with a severity of (Debug|Info|Notice|Warning|Error|Emergency|Alert|Critical)/';
+    $this->assertTrue(preg_match($expected, $message), 'Event message matches expectation');
+
+    $this->assertTrue($requests = $event->getArgument('requests'), 'Event has a requests argument');
+    $requests = $requests->getData();
+    $this->assertEqual(count($requests), 1, 'The requests argument has one entry');
+
+    $request = reset($requests);
+    $request_attributes = array(
+      'response',
+      'request',
+      'message',
+      'severity',
+    );
+    foreach ($request_attributes as $attribute) {
+      $this->assertTrue(array_key_exists($attribute, $request), "The request argument contains key '$attribute'");
+    }
+  }
+
+  /**
+   * Tests the compact adapter with multiple requests.
+   */
+  function testCompactAdapterMultipleRequests() {
+    $plugin = past_guzzle_plugin(PAST_GUZZLE_COMPACT);
+    $this->client->addSubscriber($plugin);
+
+    $this->triggerRequest();
+
+    $events = entity_load('past_event', FALSE, array(), TRUE);
+    $this->assertEqual(count($events), 0, 'Found no Past events');
+
+    $this->triggerRequest();
+
+    $events = entity_load('past_event', FALSE, array(), TRUE);
+    $this->assertEqual(count($events), 0, 'Found no Past events');
+
+    $this->triggerCommit();
+
+    $events = entity_load('past_event', FALSE, array(), TRUE);
+    $this->assertEqual(count($events), 1, 'Found one Past event');
+    /* @var PastEvent $event */
+    $event = reset($events);
+
+    // Assert event message.
+    $message = $event->getMessage();
+    $expected = '/Tracked 2 Guzzle requests with the highest severity of (Debug|Info|Notice|Warning|Error|Emergency|Alert|Critical)/';
+    $this->assertTrue(preg_match($expected, $message), 'Event message matches expectation');
+  }
+
+  /**
+   * Triggers a http request.
+   */
+  protected function triggerRequest() {
+    $this->httpMock->addResponse(new Response(200, self::$responseHeaders, self::$responseBody));
+    $this->client->get('foo')->send();
+  }
+
+  /**
+   * Triggers a commit of the compact log adapter.
+   */
+  protected function triggerCommit() {
+    // Iterate through the registered shutdown functions to find the one
+    // registered in past_guzzle_plugin().
+    $shutdown_functions = drupal_register_shutdown_function();
+    foreach ($shutdown_functions as $shutdown_function) {
+      if (is_array($shutdown_function['callback'])
+        && ($callback = $shutdown_function['callback'])
+        && isset($callback[1])
+        && ($callback[1] == 'commit')
+        && ($callback[0] instanceof \CompactPastGuzzleLogAdapter)) {
+        call_user_func($callback);
+        break;
+      }
+    }
   }
 }

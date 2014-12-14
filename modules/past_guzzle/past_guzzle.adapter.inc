@@ -48,26 +48,8 @@ abstract class PastGuzzleLogAdapter implements LogAdapterInterface {
     LOG_INFO => PAST_SEVERITY_INFO,
     LOG_DEBUG => PAST_SEVERITY_DEBUG,
   );
-}
 
-/**
- * A simple Guzzle log adapter for past.
- *
- * Writes a past record for every single log event.
- */
-class SimplePastGuzzleLogAdapter extends PastGuzzleLogAdapter {
-
-  /**
-   * The past event machine name.
-   *
-   * @var string
-   */
-  const PAST_MACHINE_NAME = 'request_log';
-
-  /**
-   * {@inheritdoc}
-   */
-  public function log($message, $priority = LOG_INFO, $extras = array()) {
+  protected function prepareArgument(array $extras){
     $arguments = array('request' => NULL, 'response' => NULL);
 
     // Extract the request details.
@@ -89,6 +71,7 @@ class SimplePastGuzzleLogAdapter extends PastGuzzleLogAdapter {
         $arguments['request']['body'] = (string) $request->getBody();
       }
     }
+
     // Extract the details of the response.
     /* @var \Guzzle\Http\Message\Response $response */
     if (isset($extras['response']) && ($response = $extras['response']) && $response instanceof \Guzzle\Http\Message\Response) {
@@ -105,7 +88,29 @@ class SimplePastGuzzleLogAdapter extends PastGuzzleLogAdapter {
       );
     }
 
-    past_event_save(self::PAST_MODULE, self::PAST_MACHINE_NAME, $message, $arguments, array(
+    return $arguments;
+  }
+}
+
+/**
+ * A simple Guzzle log adapter for past.
+ *
+ * Writes a past record for every single log event.
+ */
+class SimplePastGuzzleLogAdapter extends PastGuzzleLogAdapter {
+
+  /**
+   * The past event machine name.
+   *
+   * @var string
+   */
+  const PAST_MACHINE_NAME = 'request_log';
+
+  /**
+   * {@inheritdoc}
+   */
+  public function log($message, $priority = LOG_INFO, $extras = array()) {
+    past_event_save(self::PAST_MODULE, self::PAST_MACHINE_NAME, $message, $this->prepareArgument($extras), array(
       'severity' => self::$severityMap[$priority],
     ));
   }
@@ -119,9 +124,75 @@ class SimplePastGuzzleLogAdapter extends PastGuzzleLogAdapter {
 class CompactPastGuzzleLogAdapter extends PastGuzzleLogAdapter {
 
   /**
+   * The past event machine name.
+   *
+   * @var string
+   */
+  const PAST_MACHINE_NAME = 'aggregated_request_log';
+
+  /**
+   * @var array
+   */
+  protected $events = array();
+
+  /**
+   * The resulting event severity.
+   *
+   * @var int
+   */
+  protected $severity = PAST_SEVERITY_DEBUG;
+
+  /**
    * {@inheritdoc}
    */
   public function log($message, $priority = LOG_INFO, $extras = array()) {
-    throw new Exception('Method not implemented');
+    $event = $this->prepareArgument($extras);
+    $event['message'] = $message;
+    $severities = past_event_severities();
+    $event['severity'] = $severities[self::$severityMap[$priority]];
+    $this->events[] = $event;
+    $this->updateSeverity($priority);
+  }
+
+  /**
+   * Updates the event severity.
+   *
+   * Compares the current severity with the new one. The severity gets updated
+   * if the new one has a higher severity than the current.
+   *
+   * @param int $priority
+   *   Priority of message (use the \LOG_* constants of 0 - 7)
+   */
+  protected function updateSeverity($priority) {
+    $severity = self::$severityMap[$priority];
+    if ($this->severity > $severity) {
+      $this->severity = $severity;
+    }
+  }
+
+  /**
+   * Commits the past event.
+   *
+   * Checks if there is a past event present and triggers a save. Create a new
+   * event afterwards.
+   */
+  public function commit() {
+    if (!empty($this->events)) {
+      $arguments = array('requests' => $this->events);
+      $severities = past_event_severities();
+      $message = format_plural(
+        count($this->events),
+        'Tracked one Guzzle request with a severity of @severity',
+        'Tracked @count Guzzle requests with the highest severity of @severity',
+        array('@severity' => $severities[$this->severity])
+      );
+      past_event_save(self::PAST_MODULE, self::PAST_MACHINE_NAME, $message, $arguments, array(
+        'severity' => $this->severity,
+      ));
+    }
+
+    // Reset the internal state.
+    $this->events = array();
+    $this->severity = PAST_SEVERITY_DEBUG;
   }
 }
