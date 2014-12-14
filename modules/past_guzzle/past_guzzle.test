@@ -201,6 +201,62 @@ class PastGuzzleTest extends DrupalWebTestCase {
     $message = $event->getMessage();
     $expected = '/Tracked 2 Guzzle requests with the highest severity of (Debug|Info|Notice|Warning|Error|Emergency|Alert|Critical)/';
     $this->assertTrue(preg_match($expected, $message), 'Event message matches expectation');
+
+  }
+
+  /**
+   * Test the aggregation of request stats in the compact log adapter.
+   *
+   * Requests done with active mock plugin have empty request stats. For this
+   * we are doing real requests here using the 'example.com' domain.
+   */
+  function testRequestStats() {
+    $client = new Client('http://example.com');
+    $plugin = past_guzzle_plugin(PAST_GUZZLE_COMPACT);
+    $client->addSubscriber($plugin);
+
+    $client->get()->send();
+    $client->get()->send();
+    $client->get()->send();
+
+    $this->triggerCommit();
+
+    $events = entity_load('past_event', FALSE, array(), TRUE);
+    $this->assertEqual(count($events), 1, 'Found one Past event');
+    /* @var PastEvent $event */
+    $event = reset($events);
+
+    $stats = array(
+      'total_time' => 0,
+      'namelookup_time' => 0,
+      'connect_time' => 0,
+      'pretransfer_time' => 0,
+      'size_upload' => 0,
+      'size_download' => 0,
+      'speed_download' => 0,
+      'speed_upload' => 0,
+      'download_content_length' => 0,
+      'upload_content_length' => 0,
+      'starttransfer_time' => 0,
+      'redirect_time' => 0,
+    );
+
+    foreach ($event->getArgument('requests')->getData() as $data) {
+      $info = $data['response']['info'];
+      foreach (array_keys($stats) as $stat) {
+        $stats[$stat] += $info[$stat];
+      }
+    }
+
+    $this->assertTrue($event_stats = $event->getArgument('stats'), 'Event has a stats argument');
+    $event_stats = $event_stats->getData();
+
+    $this->assertEqual(array_keys($stats), array_keys($event_stats), 'Stats has expected metrics');
+    foreach (array_keys($stats) as $stat) {
+      // Using round here to prevent random test fails due to calculation
+      // differences.
+      $this->assertEqual(round($stats[$stat], 6), round($event_stats[$stat],6), "Found expected value for metric '$stat'");
+    }
   }
 
   /**

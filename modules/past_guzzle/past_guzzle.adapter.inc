@@ -133,14 +133,28 @@ class CompactPastGuzzleLogAdapter extends PastGuzzleLogAdapter {
   /**
    * @var array
    */
-  protected $events = array();
+  protected $events;
 
   /**
    * The resulting event severity.
    *
    * @var int
    */
-  protected $severity = PAST_SEVERITY_DEBUG;
+  protected $severity;
+
+  /**
+   * Aggregated request statistics.
+   *
+   * @var int[]
+   */
+  protected $stats;
+
+  /**
+   * Constructor.
+   */
+  function __construct() {
+    $this->reset();
+  }
 
   /**
    * {@inheritdoc}
@@ -152,6 +166,7 @@ class CompactPastGuzzleLogAdapter extends PastGuzzleLogAdapter {
     $event['severity'] = $severities[self::$severityMap[$priority]];
     $this->events[] = $event;
     $this->updateSeverity($priority);
+    $this->updateStats($event['response']['info']);
   }
 
   /**
@@ -171,6 +186,20 @@ class CompactPastGuzzleLogAdapter extends PastGuzzleLogAdapter {
   }
 
   /**
+   * Updates the aggregated request statistics.
+   *
+   * @param array $info
+   *   The response info array.
+   */
+  protected function updateStats(array $info) {
+    foreach (array_keys($this->stats) as $stat) {
+      if (isset($info[$stat])) {
+        $this->stats[$stat] += $info[$stat];
+      }
+    }
+  }
+
+  /**
    * Commits the past event.
    *
    * Checks if there is a past event present and triggers a save. Create a new
@@ -178,7 +207,10 @@ class CompactPastGuzzleLogAdapter extends PastGuzzleLogAdapter {
    */
   public function commit() {
     if (!empty($this->events)) {
-      $arguments = array('requests' => $this->events);
+      $arguments = array(
+        'requests' => $this->events,
+        'stats' => $this->stats,
+      );
       $severities = past_event_severities();
       $message = format_plural(
         count($this->events),
@@ -190,9 +222,26 @@ class CompactPastGuzzleLogAdapter extends PastGuzzleLogAdapter {
         'severity' => $this->severity,
       ));
     }
+    $this->reset();
+  }
 
+  protected function reset() {
     // Reset the internal state.
     $this->events = array();
     $this->severity = PAST_SEVERITY_DEBUG;
+    $this->stats = array(
+      'total_time' => 0,
+      'namelookup_time' => 0,
+      'connect_time' => 0,
+      'pretransfer_time' => 0,
+      'size_upload' => 0,
+      'size_download' => 0,
+      'speed_download' => 0,
+      'speed_upload' => 0,
+      'download_content_length' => 0,
+      'upload_content_length' => 0,
+      'starttransfer_time' => 0,
+      'redirect_time' => 0,
+    );
   }
 }
