@@ -61,17 +61,23 @@ class PastGuzzleTest extends DrupalWebTestCase {
   /**
    * Tests past_guzzle_plugin()
    */
-  function xtestPluginGetter() {
+  function testPluginGetter() {
     $plugin = past_guzzle_plugin();
     $this->assertTrue($plugin instanceof LogPlugin, 'past_guzzle_plugin() returns an instance of LogPlugin');
     $plugin_again = past_guzzle_plugin();
     $this->assertEqual($plugin, $plugin_again, 'past_guzzle_plugin() returns a singleton');
+
+    $plugin_simple = past_guzzle_plugin(PAST_GUZZLE_SIMPLE);
+    $this->assertEqual($plugin, $plugin_simple, 'The simple adapter matches the default one');
+
+    $plugin_compact = past_guzzle_plugin(PAST_GUZZLE_COMPACT);
+    $this->assertNotEqual($plugin, $plugin_compact, 'The compact adapter adapter differs from the default one');
   }
 
   /**
-   * Tests the log adapter.
+   * Tests the simple log adapter.
    */
-  function testAdapter() {
+  function testSimpleAdapter() {
     // Prepare the log plugin.
     $plugin = past_guzzle_plugin();
     $this->client->addSubscriber($plugin);
@@ -123,5 +129,11 @@ class PastGuzzleTest extends DrupalWebTestCase {
     foreach ($response_attributes as $attribute) {
       $this->assertTrue(array_key_exists($attribute, $response), "The response argument contains key '$attribute'");
     }
+
+    // A second request adds another past event.
+    $this->httpMock->addResponse(new Response(200, self::$responseHeaders, self::$responseBody));
+    $this->client->get('foo')->send();
+    $events = entity_load('past_event', FALSE, array(), TRUE);
+    $this->assertEqual(count($events), 2, 'Found a second Past event');
   }
 }

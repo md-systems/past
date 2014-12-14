@@ -6,11 +6,12 @@
 use Guzzle\Log\LogAdapterInterface;
 
 /**
- * A Guzzle log adapter for past.
+ * Abstract Guzzle log adapter.
  *
- * Writes a past record for every single log event.
+ * Takes care of stuff common to SimplePastGuzzleLogAdapter and
+ * CompactPastGuzzleLogAdapter.
  */
-class PastGuzzleLogAdapter implements LogAdapterInterface {
+abstract class PastGuzzleLogAdapter implements LogAdapterInterface {
 
   /**
    * The past event module string.
@@ -18,13 +19,6 @@ class PastGuzzleLogAdapter implements LogAdapterInterface {
    * @var string
    */
   const PAST_MODULE = 'past_guzzle';
-
-  /**
-   * The past event machine name.
-   *
-   * @var string
-   */
-  const PAST_MACHINE_NAME = 'request_log';
 
   /**
    * Format string for the log message.
@@ -54,6 +48,21 @@ class PastGuzzleLogAdapter implements LogAdapterInterface {
     LOG_INFO => PAST_SEVERITY_INFO,
     LOG_DEBUG => PAST_SEVERITY_DEBUG,
   );
+}
+
+/**
+ * A simple Guzzle log adapter for past.
+ *
+ * Writes a past record for every single log event.
+ */
+class SimplePastGuzzleLogAdapter extends PastGuzzleLogAdapter {
+
+  /**
+   * The past event machine name.
+   *
+   * @var string
+   */
+  const PAST_MACHINE_NAME = 'request_log';
 
   /**
    * {@inheritdoc}
@@ -99,5 +108,20 @@ class PastGuzzleLogAdapter implements LogAdapterInterface {
     past_event_save(self::PAST_MODULE, self::PAST_MACHINE_NAME, $message, $arguments, array(
       'severity' => self::$severityMap[$priority],
     ));
+  }
+}
+
+/**
+ * A compact Guzzle log adapter for past.
+ *
+ * Aggregates all log events into one single past event.
+ */
+class CompactPastGuzzleLogAdapter extends PastGuzzleLogAdapter {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function log($message, $priority = LOG_INFO, $extras = array()) {
+    throw new Exception('Method not implemented');
   }
 }

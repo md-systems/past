@@ -7,13 +7,19 @@
 
 use Guzzle\Plugin\Log\LogPlugin;
 
+define('PAST_GUZZLE_SIMPLE', '\SimplePastGuzzleLogAdapter');
+define('PAST_GUZZLE_COMPACT', '\CompactPastGuzzleLogAdapter');
+
 /**
  * Gets the guzzle log plugin.
+ *
+ * @param string $adapter
+ *   The class name of the plugin adapter used in the log plugin.
  *
  * @return Guzzle\Plugin\Log\LogPlugin
  *   An instances of a guzzle log plugin configured with the Past Guzzle
  *   adapter.
  */
-function past_guzzle_plugin() {
-  return drupal_static(__FUNCTION__, new LogPlugin(new \PastGuzzleLogAdapter(), \PastGuzzleLogAdapter::MESSAGE_FORMAT));
+function past_guzzle_plugin($adapter = PAST_GUZZLE_SIMPLE) {
+  return drupal_static($adapter, new LogPlugin(new $adapter(), \PastGuzzleLogAdapter::MESSAGE_FORMAT));
 }
