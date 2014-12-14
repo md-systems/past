@@ -6,9 +6,9 @@
 use Guzzle\Log\LogAdapterInterface;
 
 /**
- * Class PastGuzzleLogAdapter
- *
  * A Guzzle log adapter for past.
+ *
+ * Writes a past record for every single log event.
  */
 class PastGuzzleLogAdapter implements LogAdapterInterface {
 
@@ -38,6 +38,11 @@ class PastGuzzleLogAdapter implements LogAdapterInterface {
    * Mapping of log severities.
    *
    * @var int[]
+   *
+   * @todo Check necessity for this mapping
+   *   PHPs LOG_* and pasts PAST_SEVERITY_* has identical values. We can simply
+   *   omit this mapping. This would risk unpredictable behaviour in the event
+   *   either PHP or Past changes the values behind its severity variables.
    */
   protected static $severityMap = array(
     LOG_EMERG => PAST_SEVERITY_EMERGENCY,
@@ -54,10 +59,9 @@ class PastGuzzleLogAdapter implements LogAdapterInterface {
    * {@inheritdoc}
    */
   public function log($message, $priority = LOG_INFO, $extras = array()) {
-    $arguments = array(
-      'request' => NULL,
-      'response' => NULL,
-    );
+    $arguments = array('request' => NULL, 'response' => NULL);
+
+    // Extract the request details.
     /* @var \Guzzle\Http\Message\Request $request */
     if (isset($extras['request']) && ($request = $extras['request']) && $request instanceof \Guzzle\Http\Message\Request) {
       $request = $extras['request'];
@@ -70,11 +74,13 @@ class PastGuzzleLogAdapter implements LogAdapterInterface {
         'protocol' => $request->getScheme() . '/' . $request->getProtocolVersion(),
         'url' => $request->getUrl(),
       );
+      // Get the request body if there is one.
       if ($request instanceof \Guzzle\Http\Message\EntityEnclosingRequest) {
         /* @var \Guzzle\Http\Message\EntityEnclosingRequest $request */
         $arguments['request']['body'] = (string) $request->getBody();
       }
     }
+    // Extract the details of the response.
     /* @var \Guzzle\Http\Message\Response $response */
     if (isset($extras['response']) && ($response = $extras['response']) && $response instanceof \Guzzle\Http\Message\Response) {
       $arguments['response'] = array(
