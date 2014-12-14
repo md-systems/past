@@ -3,6 +3,7 @@ description=Past logadapter for the guzzle log plugin.
 package = Logging
 core=7.x
 
+dependencies[]=composer_manager
 dependencies[]=past
 
 files[]=past_guzzle.adapter.inc
