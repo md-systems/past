@@ -85,7 +85,7 @@ class PastGuzzleLogAdapter implements LogAdapterInterface {
     if (isset($extras['response']) && ($response = $extras['response']) && $response instanceof \Guzzle\Http\Message\Response) {
       $arguments['response'] = array(
         'effective_url' => $response->getEffectiveUrl(),
-        'freshness' => $response->getFreshness(),
+        'freshness' => $response->getFreshness() ? $response->getFreshness() : '',
         'headers' => $response->getHeaderLines(),
         'info' => $response->getInfo(),
         'protocol' => $response->getProtocol() . '/' . $response->getProtocolVersion(),

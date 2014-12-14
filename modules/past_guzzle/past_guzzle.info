@@ -7,4 +7,5 @@ dependencies[]=composer_manager
 dependencies[]=past
 
 files[]=past_guzzle.adapter.inc
+files[]=past_guzzle.test
 

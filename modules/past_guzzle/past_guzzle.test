@@ -1,0 +1,127 @@
+<?php
+
+/**
+ * @file
+ * Past Guzzle tests.
+ */
+
+use Guzzle\Http\Client;
+use Guzzle\Http\Message\Response;
+use Guzzle\Plugin\Log\LogPlugin;
+use Guzzle\Plugin\Mock\MockPlugin;
+
+/**
+ * Test the Past Guzzle log plugin adapter.
+ *
+ * This test uses the domain 'example.com' to make real HTTP requests. The use
+ * the guzzle mock plugin does not work. The mock plugin does
+ */
+class PastGuzzleTest extends DrupalWebTestCase {
+
+  protected static $responseHeaders = array(
+    'Content-Type' => 'text/plain',
+    'Content-Length' => 38,
+  );
+
+  protected static $responseBody = 'Cum sociis natoque penatibus et magnis';
+
+  /**
+   * @var Guzzle\Plugin\Mock\MockPlugin
+   */
+  protected $httpMock;
+
+  /**
+   * @var Guzzle\Http\Client
+   */
+  protected $client;
+
+  /**
+   * {@inheritdoc}
+   */
+  static function getInfo() {
+    return array(
+      'name' => 'Past Guzzle tests',
+      'description' => 'Tests logging of Guzzle http requests of the Past Guzzle module.',
+      'group' => 'Past',
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function setUp() {
+    parent::setUp(array('past_db', 'past_guzzle'));
+    composer_manager_register_autoloader();
+
+    $this->httpMock = new MockPlugin();
+    $this->client = new Client('http://example.com/api/v1/');
+    $this->client->addSubscriber($this->httpMock);
+  }
+
+  /**
+   * Tests past_guzzle_plugin()
+   */
+  function xtestPluginGetter() {
+    $plugin = past_guzzle_plugin();
+    $this->assertTrue($plugin instanceof LogPlugin, 'past_guzzle_plugin() returns an instance of LogPlugin');
+    $plugin_again = past_guzzle_plugin();
+    $this->assertEqual($plugin, $plugin_again, 'past_guzzle_plugin() returns a singleton');
+  }
+
+  /**
+   * Tests the log adapter.
+   */
+  function testAdapter() {
+    // Prepare the log plugin.
+    $plugin = past_guzzle_plugin();
+    $this->client->addSubscriber($plugin);
+
+    // Prepare a mocked HTTP response.
+    $this->httpMock->addResponse(new Response(200, self::$responseHeaders, self::$responseBody));
+    // Execute a request. Triggers the request to be logged.
+    $this->client->get('foo')->send();
+
+    // Get logged request event.
+    $events = entity_load('past_event');
+    $this->assertEqual(count($events), 1, 'Found one Past event');
+    /* @var PastEvent $event */
+    $event = reset($events);
+
+    // Assert event message.
+    $message = $event->getMessage();
+    $expected = '|GET http://example.com/api/v1/foo 200 OK [0-9\.]?+s|';
+    $this->assertTrue(preg_match($expected, $message), 'Event message matches expectation');
+
+    $this->assertTrue($request = $event->getArgument('request'), 'Event has a request argument');
+    $this->assertTrue($response = $event->getArgument('response'), 'Event has a response argument');
+
+    $request = $request->getData();
+    $response = $response->getData();
+    $request_attributes = array(
+      'curl_options',
+      'headers',
+      'method',
+      'params',
+      'port',
+      'protocol',
+      'url',
+    );
+    foreach ($request_attributes as $attribute) {
+      $this->assertTrue(array_key_exists($attribute, $request), "The request argument contains key '$attribute'");
+    }
+    $response_attributes = array(
+      'effective_url',
+      'freshness',
+      'headers',
+      'info',
+      'protocol',
+      'reason_phrase',
+      'redirect_count',
+      'status_code',
+      'body'
+    );
+    foreach ($response_attributes as $attribute) {
+      $this->assertTrue(array_key_exists($attribute, $response), "The response argument contains key '$attribute'");
+    }
+  }
+}
