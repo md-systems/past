@@ -11,10 +11,7 @@ use Guzzle\Plugin\Log\LogPlugin;
 use Guzzle\Plugin\Mock\MockPlugin;
 
 /**
- * Test the Past Guzzle log plugin adapter.
- *
- * This test uses the domain 'example.com' to make real HTTP requests. The use
- * the guzzle mock plugin does not work. The mock plugin does
+ * Tests the Past Guzzle log plugin adapter.
  */
 class PastGuzzleTest extends DrupalWebTestCase {
 
@@ -65,13 +62,13 @@ class PastGuzzleTest extends DrupalWebTestCase {
     $plugin = past_guzzle_plugin();
     $this->assertTrue($plugin instanceof LogPlugin, 'past_guzzle_plugin() returns an instance of LogPlugin');
     $plugin_again = past_guzzle_plugin();
-    $this->assertEqual($plugin, $plugin_again, 'past_guzzle_plugin() returns a singleton');
+    $this->assertIdentical($plugin, $plugin_again, 'past_guzzle_plugin() returns a singleton');
 
-    $plugin_simple = past_guzzle_plugin(PAST_GUZZLE_SIMPLE);
-    $this->assertEqual($plugin, $plugin_simple, 'The simple adapter matches the default one');
+    $plugin_simple = past_guzzle_plugin(PAST_GUZZLE_SIMPLE_CLASS);
+    $this->assertIdentical($plugin, $plugin_simple, 'The simple adapter matches the default one');
 
-    $plugin_compact = past_guzzle_plugin(PAST_GUZZLE_COMPACT);
-    $this->assertNotEqual($plugin, $plugin_compact, 'The compact adapter adapter differs from the default one');
+    $plugin_compact = past_guzzle_plugin(PAST_GUZZLE_COMPACT_CLASS);
+    $this->assertNotIdentical($plugin, $plugin_compact, 'The compact adapter adapter differs from the default one');
   }
 
   /**
@@ -83,23 +80,19 @@ class PastGuzzleTest extends DrupalWebTestCase {
     $this->client->addSubscriber($plugin);
 
     $this->triggerRequest();
-
-    // Get logged request event.
-    $events = entity_load('past_event');
-    $this->assertEqual(count($events), 1, 'Found one Past event');
-    /* @var PastEvent $event */
-    $event = reset($events);
+    $this->assertPastEventCount(1);
 
     // Assert event message.
+    $event = $this->getLastPastEvent();
     $message = $event->getMessage();
     $expected = 'GET http://example.com/api/v1/foo 200 OK 0.44994s';
     $this->assertEqual($message, $expected, 'Event message matches expectation');
 
-    $this->assertTrue($request = $event->getArgument('request'), 'Event has a request argument');
-    $this->assertTrue($response = $event->getArgument('response'), 'Event has a response argument');
+    $this->assertTrue($request_argument = $event->getArgument('request'), 'Event has a request argument');
+    $this->assertTrue($response_argument = $event->getArgument('response'), 'Event has a response argument');
 
-    $request = $request->getData();
-    $response = $response->getData();
+    $request = $request_argument->getData();
+    $response = $response_argument->getData();
     $request_attributes = array(
       'curl_options',
       'headers',
@@ -129,36 +122,29 @@ class PastGuzzleTest extends DrupalWebTestCase {
 
     // A second request adds another past event.
     $this->triggerRequest();
-    $events = entity_load('past_event', FALSE, array(), TRUE);
-    $this->assertEqual(count($events), 2, 'Found a second Past event');
+    $this->assertPastEventCount(2);
   }
 
   /**
    * Tests the compact adapter with a single request.
    */
   function testCompactAdapterSingleRequest() {
-    $plugin = past_guzzle_plugin(PAST_GUZZLE_COMPACT);
+    $plugin = past_guzzle_plugin(PAST_GUZZLE_COMPACT_CLASS);
     $this->client->addSubscriber($plugin);
 
     $this->triggerRequest();
-
-    $events = entity_load('past_event', FALSE, array(), TRUE);
-    $this->assertEqual(count($events), 0, 'Found no Past events');
-
+    $this->assertPastEventCount(0);
     $this->triggerCommit();
-
-    $events = entity_load('past_event', FALSE, array(), TRUE);
-    $this->assertEqual(count($events), 1, 'Found one Past event');
-    /* @var PastEvent $event */
-    $event = reset($events);
+    $this->assertPastEventCount(1);
 
     // Assert event message.
+    $event = $this->getLastPastEvent();
     $message = $event->getMessage();
     $expected = 'Tracked one Guzzle request with a severity of Debug';
     $this->assertEqual($expected, $message, 'Event message matches expectation');
 
-    $this->assertTrue($requests = $event->getArgument('requests'), 'Event has a requests argument');
-    $requests = $requests->getData();
+    $this->assertTrue($requests_argument = $event->getArgument('requests'), 'Event has a requests argument');
+    $requests = $requests_argument->getData();
     $this->assertEqual(count($requests), 1, 'The requests argument has one entry');
 
     $request = reset($requests);
@@ -177,27 +163,18 @@ class PastGuzzleTest extends DrupalWebTestCase {
    * Tests the compact adapter with multiple requests.
    */
   function testCompactAdapterMultipleRequests() {
-    $plugin = past_guzzle_plugin(PAST_GUZZLE_COMPACT);
+    $plugin = past_guzzle_plugin(PAST_GUZZLE_COMPACT_CLASS);
     $this->client->addSubscriber($plugin);
 
     $this->triggerRequest();
-
-    $events = entity_load('past_event', FALSE, array(), TRUE);
-    $this->assertEqual(count($events), 0, 'Found no Past events');
-
+    $this->assertPastEventCount(0);
     $this->triggerRequest();
-
-    $events = entity_load('past_event', FALSE, array(), TRUE);
-    $this->assertEqual(count($events), 0, 'Found no Past events');
-
+    $this->assertPastEventCount(0);
     $this->triggerCommit();
-
-    $events = entity_load('past_event', FALSE, array(), TRUE);
-    $this->assertEqual(count($events), 1, 'Found one Past event');
-    /* @var PastEvent $event */
-    $event = reset($events);
+    $this->assertPastEventCount(1);
 
     // Assert event message.
+    $event = $this->getLastPastEvent();
     $message = $event->getMessage();
     $expected = 'Tracked 2 Guzzle requests with the highest severity of Debug';
     $this->assertEqual($expected, $message, 'Event message matches expectation');
@@ -207,7 +184,7 @@ class PastGuzzleTest extends DrupalWebTestCase {
    * Test the aggregation of request stats in the compact log adapter.
    */
   function testRequestStats() {
-    $plugin = past_guzzle_plugin(PAST_GUZZLE_COMPACT);
+    $plugin = past_guzzle_plugin(PAST_GUZZLE_COMPACT_CLASS);
     $this->client->addSubscriber($plugin);
 
     $this->triggerRequest(array(
@@ -224,11 +201,7 @@ class PastGuzzleTest extends DrupalWebTestCase {
     ));
 
     $this->triggerCommit();
-
-    $events = entity_load('past_event', FALSE, array(), TRUE);
-    $this->assertEqual(count($events), 1, 'Found one Past event');
-    /* @var PastEvent $event */
-    $event = reset($events);
+    $this->assertPastEventCount(1);
 
     $expected = array(
       'total_time' => '1.34982',
@@ -245,6 +218,7 @@ class PastGuzzleTest extends DrupalWebTestCase {
       'redirect_time' => '0.03',
     );
 
+    $event = $this->getLastPastEvent();
     $this->assertTrue($stats_argument = $event->getArgument('stats'), 'Event has a stats argument');
     $stats = $stats_argument->getData();
 
@@ -252,7 +226,7 @@ class PastGuzzleTest extends DrupalWebTestCase {
     foreach (array_keys($expected) as $stat) {
       // Using round here to prevent random test fails due to calculation
       // differences.
-      $this->assertEqual(round($expected[$stat], 6), round($stats[$stat],6), "Found expected value for metric '$stat'");
+      $this->assertEqual(round($expected[$stat], 6), round($stats[$stat], 6), "Found expected value for metric '$stat'");
     }
   }
 
@@ -304,5 +278,33 @@ class PastGuzzleTest extends DrupalWebTestCase {
         break;
       }
     }
+  }
+
+  /**
+   * Asserts a number of Past events.
+   *
+   * @param int $count
+   *   The number of expected Past events.
+   */
+  public function assertPastEventCount($count = 0) {
+    $events = entity_load('past_event', FALSE, array(), TRUE);
+    if ($count > 0) {
+      $message = format_plural($count, 'Found one Past event', 'Found @count Past Events');
+    }
+    else {
+      $message = 'Found no Past events';
+    }
+    $this->assertEqual(count($events), $count, $message);
+  }
+
+  /**
+   * Gets the latest Past event.
+   *
+   * @return PastEvent
+   *   The latest Past event.
+   */
+  public function getLastPastEvent() {
+    $events = entity_load('past_event', FALSE, array(), TRUE);
+    return reset($events);
   }
 }

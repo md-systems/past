@@ -1,5 +1,5 @@
-name=Past Guzzle Logadapter
-description=Past logadapter for the guzzle log plugin.
+name=Past Guzzle Log Adapter
+description=Past log adapter for the Guzzle log plugin.
 package = Logging
 core=7.x
 

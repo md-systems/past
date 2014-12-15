@@ -8,8 +8,14 @@ use Guzzle\Log\LogAdapterInterface;
 /**
  * Abstract Guzzle log adapter.
  *
- * Takes care of stuff common to SimplePastGuzzleLogAdapter and
- * CompactPastGuzzleLogAdapter.
+ * Provides common functionality for both adapters. This includes:
+ *   - Message format template.
+ *   - Severity mapping between Past and PHP core.
+ *   - A helper method to extract the useful information form the logged
+ *     request and response.
+ *
+ * @see \SimplePastGuzzleLogAdapter
+ * @see \CompactPastGuzzleLogAdapter
  */
 abstract class PastGuzzleLogAdapter implements LogAdapterInterface {
 
@@ -49,6 +55,17 @@ abstract class PastGuzzleLogAdapter implements LogAdapterInterface {
     LOG_DEBUG => PAST_SEVERITY_DEBUG,
   );
 
+  /**
+   * Prepares the Past event argument.
+   *
+   * Extracts the interesting information form the request and response.
+   *
+   * @param array $extras
+   *   The extras array passed to the log method.
+   *
+   * @return array
+   *   The resulting argument array ready to be added as a Past argument.
+   */
   protected function prepareArgument(array $extras){
     $arguments = array('request' => NULL, 'response' => NULL);
 

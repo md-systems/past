@@ -7,28 +7,31 @@
 
 use Guzzle\Plugin\Log\LogPlugin;
 
-define('PAST_GUZZLE_SIMPLE', '\SimplePastGuzzleLogAdapter');
-define('PAST_GUZZLE_COMPACT', '\CompactPastGuzzleLogAdapter');
+define('PAST_GUZZLE_SIMPLE_CLASS', '\SimplePastGuzzleLogAdapter');
+define('PAST_GUZZLE_COMPACT_CLASS', '\CompactPastGuzzleLogAdapter');
 
 /**
- * Gets the guzzle log plugin.
+ * Gets the Guzzle log plugin.
  *
  * @param string $adapter_class
  *   The class name of the plugin adapter used in the log plugin.
+ *   Possible values are:
+ *     - PAST_GUZZLE_SIMPLE_CLASS
+ *     - PAST_GUZZLE_COMPACT_CLASS
  *
  * @return Guzzle\Plugin\Log\LogPlugin
- *   An instances of a guzzle log plugin configured with the Past Guzzle
+ *   An instance of a Guzzle log plugin configured with the Past Guzzle
  *   adapter.
  */
-function past_guzzle_plugin($adapter_class = PAST_GUZZLE_SIMPLE) {
-  $plugin = drupal_static($adapter_class);
+function past_guzzle_plugin($adapter_class = PAST_GUZZLE_SIMPLE_CLASS) {
+  $plugin = &drupal_static($adapter_class);
 
   if (!$plugin) {
     $adapter = new $adapter_class();
     $plugin = new LogPlugin($adapter, \PastGuzzleLogAdapter::MESSAGE_FORMAT);
 
     // Register the commit method as shutdown function for the compact adapter.
-    if ($adapter_class == PAST_GUZZLE_COMPACT) {
+    if ($adapter_class == PAST_GUZZLE_COMPACT_CLASS) {
       drupal_register_shutdown_function(array($adapter, 'commit'));
     }
   }

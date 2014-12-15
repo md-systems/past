@@ -3,6 +3,9 @@
     "guzzle/log": "~3.9",
     "guzzle/plugin-log": "~3.9"
   },
+  "suggest": {
+    "guzzle/http": "~3.9"
+  },
   "require-dev": {
     "guzzle/http": "~3.9",
     "guzzle/plugin-mock": "~3.9"

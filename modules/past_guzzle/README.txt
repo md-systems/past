@@ -30,17 +30,17 @@ requests events with the "Past" framework.
  FEATURES
  --------
 
-* Provides an simple  adapter class for the Guzzle log plugin creating a "Past"
+* Provides an simple adapter class for the Guzzle log plugin creating a "Past"
   event per request.
-* Provides a compact adapter class for the Guzzle Log plugion creating an
+* Provides a compact adapter class for the Guzzle Log plugin creating an
   aggregation of all requests in one single "Past" event.
 * The compact adapter supports aggregation of requests statistics for all
-  request logged in teh "Past" event.
-* Provides a helper function to create and get a ready for usage configured
-  Guzzle Log plugin singleton instance.
+  request logged in the "Past" event.
+* Provides a helper function to create and get a configured Guzzle Log plugin
+  singleton instance ready for use.
 * Logs all requests headers and if present the request body.
-* Logs all response headers and the response body.  Logs statistics about the
-  request.
+* Logs all response headers and the response body.
+* Logs statistics about the request.
 
  REQUIREMENTS
  ------------
@@ -54,9 +54,12 @@ library.
  INSTALLATION
  ------------
 
-Installation is a simple as enabling this module. If "Past" was not installed
+Installation is as simple as enabling this module. If "Past" was not installed
 before hand, a "Past" backend must be installed too. A good start would be the
 "Past Database Backend"
+
+Enabling "Past Guzzle" will not automatically log all requests done with a
+guzzle client. Logging must be explicitly enabled. See section Usage below.
 
  USAGE
  -----
@@ -78,7 +81,7 @@ Or an aggregation of all requests in one single "Past" event:
  KNOWN ISSUES
  ------------
 
-The log adapter does not yet take care of sanatizing private data like e.g.
+The log adapter does not yet take care of sanitizing private data like e.g.
 access tokens in requests headers. This is subject for a future release. Stay
 tuned. See the issue queue for more.
 
