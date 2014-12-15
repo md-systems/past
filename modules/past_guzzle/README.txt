@@ -22,20 +22,20 @@ acceptable performance of Drupal itself.
 
 As Guzzle uses curl_multi_exec as a wrapper for all http requests, analyzer
 tools like New Relic can not provide any insights on the individual requests.
-This is where Past Guzzle comes in.
+This is where "Past Guzzle" comes in.
 
-Past Guzzle provides adapters for the Guzzle Log Plugin allowing to log
-requests events with the past framework.
+"Past Guzzle" provides adapters for the Guzzle log plugin allowing to log
+requests events with the "Past" framework.
 
  FEATURES
  --------
 
-* Provides an simple  adapter class for the Guzzle Log plugin creating a past
+* Provides an simple  adapter class for the Guzzle log plugin creating a "Past"
   event per request.
 * Provides a compact adapter class for the Guzzle Log plugion creating an
-  aggregation of all requests in one single past event.
+  aggregation of all requests in one single "Past" event.
 * The compact adapter supports aggregation of requests statistics for all
-  request logged in teh past event.
+  request logged in teh "Past" event.
 * Provides a helper function to create and get a ready for usage configured
   Guzzle Log plugin singleton instance.
 * Logs all requests headers and if present the request body.
@@ -45,7 +45,7 @@ requests events with the past framework.
  REQUIREMENTS
  ------------
 
-"Past Guzzle" is submodule of "Past" and can only work if Past itself is
+"Past Guzzle" is submodule of "Past" and can only work if "Past" itself is
 installed and correctly configured.
 
 This module further relies on composer manager to get access to the Guzzle
@@ -55,20 +55,20 @@ library.
  ------------
 
 Installation is a simple as enabling this module. If "Past" was not installed
-before hand, a past backend must be installed too. A good start would be the
+before hand, a "Past" backend must be installed too. A good start would be the
 "Past Database Backend"
 
  USAGE
  -----
 
-For simple logging with one past event per request:
+For simple logging with one "Past" event per request:
 
     $log_plugin = past_guzzle_plugin();
     $client = new \Guzzle\Http\Client('http://example.com');
     $client->addSubscriber($log_plugin);
     $response = $client->get('api/foo')->send()
 
-Or an aggregation of all requests in one single past event:
+Or an aggregation of all requests in one single "Past" event:
 
     $log_plugin = past_guzzle_plugin(PAST_GUZZLE_COMPACT);
     $client = new \Guzzle\Http\Client('http://example.com');

@@ -14,7 +14,7 @@ use Guzzle\Log\LogAdapterInterface;
 abstract class PastGuzzleLogAdapter implements LogAdapterInterface {
 
   /**
-   * The past event module string.
+   * The Past event module string.
    *
    * @var string
    */
@@ -93,14 +93,14 @@ abstract class PastGuzzleLogAdapter implements LogAdapterInterface {
 }
 
 /**
- * A simple Guzzle log adapter for past.
+ * A simple Guzzle log adapter for Past.
  *
- * Writes a past record for every single log event.
+ * Writes a Past record for every single log event.
  */
 class SimplePastGuzzleLogAdapter extends PastGuzzleLogAdapter {
 
   /**
-   * The past event machine name.
+   * The Past event machine name.
    *
    * @var string
    */
@@ -117,14 +117,14 @@ class SimplePastGuzzleLogAdapter extends PastGuzzleLogAdapter {
 }
 
 /**
- * A compact Guzzle log adapter for past.
+ * A compact Guzzle log adapter for Past.
  *
- * Aggregates all log events into one single past event.
+ * Aggregates all log events into one single Past event.
  */
 class CompactPastGuzzleLogAdapter extends PastGuzzleLogAdapter {
 
   /**
-   * The past event machine name.
+   * The Past event machine name.
    *
    * @var string
    */
@@ -200,9 +200,9 @@ class CompactPastGuzzleLogAdapter extends PastGuzzleLogAdapter {
   }
 
   /**
-   * Commits the past event.
+   * Commits the Past event.
    *
-   * Checks if there is a past event present and triggers a save. Create a new
+   * Checks if there is a Past event present and triggers a save. Create a new
    * event afterwards.
    */
   public function commit() {
