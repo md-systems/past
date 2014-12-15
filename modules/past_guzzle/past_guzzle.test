@@ -143,11 +143,11 @@ class PastGuzzleTest extends DrupalWebTestCase {
     $expected = 'Tracked one Guzzle request with a severity of Debug';
     $this->assertEqual($expected, $message, 'Event message matches expectation');
 
-    $this->assertTrue($requests_argument = $event->getArgument('requests'), 'Event has a requests argument');
-    $requests = $requests_argument->getData();
-    $this->assertEqual(count($requests), 1, 'The requests argument has one entry');
+    $this->assertTrue($request_argument = $event->getArgument('request:0'), 'Event has a request argument');
+    // There is one request entry plus the stats argument.
+    $this->assertEqual(count($event->getArguments()), 2, 'The requests argument has one entry');
 
-    $request = reset($requests);
+    $request = $request_argument->getData();
     $request_attributes = array(
       'response',
       'request',
@@ -178,6 +178,8 @@ class PastGuzzleTest extends DrupalWebTestCase {
     $message = $event->getMessage();
     $expected = 'Tracked 2 Guzzle requests with the highest severity of Debug';
     $this->assertEqual($expected, $message, 'Event message matches expectation');
+    $this->assertTrue($request_argument = $event->getArgument('request:0'), 'Event has a first request argument');
+    $this->assertTrue($request_argument = $event->getArgument('request:1'), 'Event has a second request argument');
   }
 
   /**

@@ -224,12 +224,11 @@ class CompactPastGuzzleLogAdapter extends PastGuzzleLogAdapter {
    */
   public function commit() {
     if (!empty($this->events)) {
+      // Calculate speed averages.
       $this->stats['speed_download'] = $this->stats['speed_download'] / count($this->events);
       $this->stats['speed_upload'] = $this->stats['speed_upload'] / count($this->events);
-      $arguments = array(
-        'requests' => $this->events,
-        'stats' => $this->stats,
-      );
+
+      // Build event message.
       $severities = past_event_severities();
       $message = format_plural(
         count($this->events),
@@ -237,9 +236,13 @@ class CompactPastGuzzleLogAdapter extends PastGuzzleLogAdapter {
         'Tracked @count Guzzle requests with the highest severity of @severity',
         array('@severity' => $severities[$this->severity])
       );
-      past_event_save(self::PAST_MODULE, self::PAST_MACHINE_NAME, $message, $arguments, array(
-        'severity' => $this->severity,
-      ));
+
+      // Create and save Past event.
+      $event = past_event_create(self::PAST_MODULE, self::PAST_MACHINE_NAME, $message);
+      $event->addArgumentArray('request', $this->events);
+      $event->addArgument('stats', $this->stats);
+      $event->setSeverity($this->severity);
+      $event->save();
     }
     $this->reset();
   }
