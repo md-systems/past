@@ -207,6 +207,8 @@ class CompactPastGuzzleLogAdapter extends PastGuzzleLogAdapter {
    */
   public function commit() {
     if (!empty($this->events)) {
+      $this->stats['speed_download'] = $this->stats['speed_download'] / count($this->events);
+      $this->stats['speed_upload'] = $this->stats['speed_upload'] / count($this->events);
       $arguments = array(
         'requests' => $this->events,
         'stats' => $this->stats,

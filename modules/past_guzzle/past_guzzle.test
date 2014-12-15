@@ -92,8 +92,8 @@ class PastGuzzleTest extends DrupalWebTestCase {
 
     // Assert event message.
     $message = $event->getMessage();
-    $expected = '|GET http://example.com/api/v1/foo 200 OK [0-9\.]?+s|';
-    $this->assertTrue(preg_match($expected, $message), 'Event message matches expectation');
+    $expected = 'GET http://example.com/api/v1/foo 200 OK 0.44994s';
+    $this->assertEqual($message, $expected, 'Event message matches expectation');
 
     $this->assertTrue($request = $event->getArgument('request'), 'Event has a request argument');
     $this->assertTrue($response = $event->getArgument('response'), 'Event has a response argument');
@@ -154,8 +154,8 @@ class PastGuzzleTest extends DrupalWebTestCase {
 
     // Assert event message.
     $message = $event->getMessage();
-    $expected = '/Tracked one Guzzle request with a severity of (Debug|Info|Notice|Warning|Error|Emergency|Alert|Critical)/';
-    $this->assertTrue(preg_match($expected, $message), 'Event message matches expectation');
+    $expected = 'Tracked one Guzzle request with a severity of Debug';
+    $this->assertEqual($expected, $message, 'Event message matches expectation');
 
     $this->assertTrue($requests = $event->getArgument('requests'), 'Event has a requests argument');
     $requests = $requests->getData();
@@ -199,25 +199,29 @@ class PastGuzzleTest extends DrupalWebTestCase {
 
     // Assert event message.
     $message = $event->getMessage();
-    $expected = '/Tracked 2 Guzzle requests with the highest severity of (Debug|Info|Notice|Warning|Error|Emergency|Alert|Critical)/';
-    $this->assertTrue(preg_match($expected, $message), 'Event message matches expectation');
-
+    $expected = 'Tracked 2 Guzzle requests with the highest severity of Debug';
+    $this->assertEqual($expected, $message, 'Event message matches expectation');
   }
 
   /**
    * Test the aggregation of request stats in the compact log adapter.
-   *
-   * Requests done with active mock plugin have empty request stats. For this
-   * we are doing real requests here using the 'example.com' domain.
    */
   function testRequestStats() {
-    $client = new Client('http://example.com');
     $plugin = past_guzzle_plugin(PAST_GUZZLE_COMPACT);
-    $client->addSubscriber($plugin);
+    $this->client->addSubscriber($plugin);
 
-    $client->get()->send();
-    $client->get()->send();
-    $client->get()->send();
+    $this->triggerRequest(array(
+      'speed_download' => '28743',
+      'speed_upload' => '14423',
+    ));
+    $this->triggerRequest(array(
+      'speed_download' => '28561',
+      'speed_upload' => '14241',
+    ));
+    $this->triggerRequest(array(
+      'speed_download' => '28834',
+      'speed_upload' => '14514',
+    ));
 
     $this->triggerCommit();
 
@@ -226,44 +230,60 @@ class PastGuzzleTest extends DrupalWebTestCase {
     /* @var PastEvent $event */
     $event = reset($events);
 
-    $stats = array(
-      'total_time' => 0,
-      'namelookup_time' => 0,
-      'connect_time' => 0,
-      'pretransfer_time' => 0,
-      'size_upload' => 0,
-      'size_download' => 0,
-      'speed_download' => 0,
-      'speed_upload' => 0,
-      'download_content_length' => 0,
-      'upload_content_length' => 0,
-      'starttransfer_time' => 0,
-      'redirect_time' => 0,
+    $expected = array(
+      'total_time' => '1.34982',
+      'namelookup_time' => '0.023058',
+      'connect_time' => '0.343242',
+      'pretransfer_time' => '0.343809',
+      'size_upload' => '114',
+      'size_download' => '11430',
+      'speed_download' => '28712.666667',
+      'speed_upload' => '14392.666667',
+      'download_content_length' => '11430',
+      'upload_content_length' => '114',
+      'starttransfer_time' => '1.328379',
+      'redirect_time' => '0.03',
     );
 
-    foreach ($event->getArgument('requests')->getData() as $data) {
-      $info = $data['response']['info'];
-      foreach (array_keys($stats) as $stat) {
-        $stats[$stat] += $info[$stat];
-      }
-    }
+    $this->assertTrue($stats_argument = $event->getArgument('stats'), 'Event has a stats argument');
+    $stats = $stats_argument->getData();
 
-    $this->assertTrue($event_stats = $event->getArgument('stats'), 'Event has a stats argument');
-    $event_stats = $event_stats->getData();
-
-    $this->assertEqual(array_keys($stats), array_keys($event_stats), 'Stats has expected metrics');
-    foreach (array_keys($stats) as $stat) {
+    $this->assertEqual(array_keys($expected), array_keys($stats), 'Stats has expected metrics');
+    foreach (array_keys($expected) as $stat) {
       // Using round here to prevent random test fails due to calculation
       // differences.
-      $this->assertEqual(round($stats[$stat], 6), round($event_stats[$stat],6), "Found expected value for metric '$stat'");
+      $this->assertEqual(round($expected[$stat], 6), round($stats[$stat],6), "Found expected value for metric '$stat'");
     }
   }
 
   /**
    * Triggers a http request.
+   *
+   * @param array $info
+   *   (optional) Info array part of the response containing e.g. requests
+   *   statistics. Defaults to empty array. Some hardcoded stats will be added
+   *   if not set in the array.
    */
-  protected function triggerRequest() {
-    $this->httpMock->addResponse(new Response(200, self::$responseHeaders, self::$responseBody));
+  protected function triggerRequest($info = array()) {
+    $response = new Response(200, self::$responseHeaders, self::$responseBody);
+    $info += array(
+      'total_time' => 0.44994,
+      'namelookup_time' => 0.007686,
+      'connect_time' => 0.114414,
+      'pretransfer_time' => 0.114603,
+      'size_upload' => 38,
+      'size_download' => 3810,
+      'speed_download' => 28652,
+      'speed_upload' => 14332,
+      'download_content_length' => 3810,
+      'upload_content_length' => 38,
+      'starttransfer_time' => 0.442793,
+      'redirect_time' => 0.01,
+    );
+
+    $response->setInfo($info);
+
+    $this->httpMock->addResponse($response);
     $this->client->get('foo')->send();
   }
 
