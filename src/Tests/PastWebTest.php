@@ -16,7 +16,6 @@ use Drupal\past\PastEventInterface;
  * @group past
  */
 class PastWebTest extends WebTestBase {
-  // @todo Maybe clear error.log in tearDown to avoid fails for expected errors.
 
   protected $profile = 'testing';
 
@@ -44,6 +43,16 @@ class PastWebTest extends WebTestBase {
   public function setUp() {
     parent::setUp();
     $this->config = \Drupal::config('past.settings');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function tearDown() {
+    // Empty the logfile, our fatal errors are expected.
+    $filename = DRUPAL_ROOT . '/sites/simpletest/' . substr($this->databasePrefix, 10) . '/error.log';
+    file_put_contents($filename, '');
+    parent::tearDown();
   }
 
   /*

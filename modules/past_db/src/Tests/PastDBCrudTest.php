@@ -143,16 +143,17 @@ class PastDBCrudTest extends KernelTestBase {
       'entity_type' => 'past_event',
     ));
     $field_storage->save();
-    $field_instance = FieldConfig::create(array(
-      'field_name' => $field_name,
+    $field = FieldConfig::create(array(
+      'field_storage' => $field_storage,
       'entity_type' => 'past_event',
       'bundle' => $type->id(),
     ));
-    $field_instance->save();
+    $field->save();
 
     // Create an event using the field.
     $field_value = $this->randomString();
     $created = past_event_create('past_db', 'testFieldability', NULL, array('type' => $type->id()));
+    debug($created->toArray());
     $created->set($field_name, $field_value);
     $created->save();
 

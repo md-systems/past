@@ -9,4 +9,4 @@ past_form.settings:
     past_form_ignored_values:
       type: sequence
       sequence:
-        type: string
+        - type: string

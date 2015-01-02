@@ -1,9 +1,13 @@
-uuid: 740d0763-4988-415a-9600-d688c767e7c4
 langcode: en
 status: true
 dependencies:
+  config:
+    - system.menu.admin
   module:
     - user
+  enforced:
+    module:
+      - past_db
 id: past_event_log
 label: 'Past event log'
 module: views
@@ -18,18 +22,14 @@ display:
     id: default
     display_title: Master
     position: 0
-    provider: views
     display_options:
       access:
         type: perm
         options:
           perm: 'view past reports'
-        provider: user
       cache:
         type: none
         options: {  }
-        provider: views
-        dependencies: {  }
       query:
         type: views_query
         options:
@@ -38,8 +38,6 @@ display:
           replica: false
           query_comment: false
           query_tags: {  }
-        provider: views
-        dependencies: {  }
       exposed_form:
         type: basic
         options:
@@ -50,8 +48,6 @@ display:
           expose_sort_order: true
           sort_asc_label: Asc
           sort_desc_label: Desc
-        provider: views
-        dependencies: {  }
       pager:
         type: full
         options:
@@ -73,8 +69,6 @@ display:
             offset: false
             offset_label: Offset
           quantity: 9
-        provider: views
-        dependencies: {  }
       style:
         type: table
         options:
@@ -146,7 +140,6 @@ display:
               responsive: ''
           default: '-1'
           empty_table: false
-        provider: views
       row:
         type: fields
         options:
@@ -154,8 +147,6 @@ display:
           separator: ''
           hide_empty: false
           default_field_elements: true
-        provider: views
-        dependencies: {  }
       fields:
         event_id:
           id: event_id
@@ -164,9 +155,6 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          dependencies:
-            module:
-              - views
           label: ID
           exclude: false
           alter:
@@ -218,7 +206,6 @@ display:
           prefix: ''
           suffix: ''
           plugin_id: numeric
-          provider: views
         severity:
           id: severity
           table: past_event
@@ -226,9 +213,6 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          dependencies:
-            module:
-              - views
           label: Severity
           exclude: false
           alter:
@@ -280,7 +264,6 @@ display:
           prefix: ''
           suffix: ''
           plugin_id: numeric
-          provider: views
         module:
           id: module
           table: past_event
@@ -288,9 +271,6 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          dependencies:
-            module:
-              - views
           label: Module
           exclude: false
           alter:
@@ -333,7 +313,6 @@ display:
           empty_zero: false
           hide_alter_empty: true
           plugin_id: standard
-          provider: views
         machine_name:
           id: machine_name
           table: past_event
@@ -341,9 +320,6 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          dependencies:
-            module:
-              - views
           label: 'Machine name'
           exclude: false
           alter:
@@ -386,7 +362,6 @@ display:
           empty_zero: false
           hide_alter_empty: true
           plugin_id: standard
-          provider: views
         message:
           id: message
           table: past_event
@@ -394,9 +369,6 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          dependencies:
-            module:
-              - views
           label: Message
           exclude: false
           alter:
@@ -439,7 +411,6 @@ display:
           empty_zero: false
           hide_alter_empty: true
           plugin_id: standard
-          provider: views
         timestamp:
           id: timestamp
           table: past_event
@@ -447,9 +418,6 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          dependencies:
-            module:
-              - views
           label: Timestamp
           exclude: false
           alter:
@@ -495,7 +463,6 @@ display:
           custom_date_format: ''
           timezone: ''
           plugin_id: date
-          provider: views
         name:
           id: name
           table: users_field_data
@@ -503,10 +470,6 @@ display:
           relationship: uid
           group_type: group
           admin_label: ''
-          dependencies:
-            module:
-              - user
-              - user
           label: User
           exclude: false
           alter:
@@ -553,7 +516,6 @@ display:
           anonymous_text: ''
           format_username: true
           plugin_id: user_name
-          provider: user
       filters:
         module:
           id: module
@@ -562,9 +524,6 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          dependencies:
-            module:
-              - views
           operator: contains
           value: ''
           group: 1
@@ -596,7 +555,6 @@ display:
             default_group_multiple: {  }
             group_items: {  }
           plugin_id: string
-          provider: views
         message:
           id: message
           table: past_event
@@ -604,9 +562,6 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          dependencies:
-            module:
-              - views
           operator: allwords
           value: ''
           group: 1
@@ -638,7 +593,6 @@ display:
             default_group_multiple: {  }
             group_items: {  }
           plugin_id: string
-          provider: views
         severity:
           id: severity
           table: past_event
@@ -646,9 +600,6 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          dependencies:
-            module:
-              - views
           operator: '='
           value:
             min: ''
@@ -683,7 +634,6 @@ display:
             default_group_multiple: {  }
             group_items: {  }
           plugin_id: numeric
-          provider: views
         uid:
           id: uid
           table: users
@@ -691,11 +641,8 @@ display:
           relationship: uid
           group_type: group
           admin_label: ''
-          dependencies:
-            module:
-              - user
           operator: in
-          value: ''
+          value: { }
           group: 1
           exposed: true
           expose:
@@ -726,7 +673,6 @@ display:
             default_group_multiple: {  }
             group_items: {  }
           plugin_id: user_name
-          provider: user
       sorts:
         event_id:
           id: event_id
@@ -735,15 +681,11 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          dependencies:
-            module:
-              - views
           order: DESC
           exposed: false
           expose:
             label: ''
           plugin_id: standard
-          provider: views
       header: {  }
       footer: {  }
       empty: {  }
@@ -755,12 +697,8 @@ display:
           relationship: none
           group_type: group
           admin_label: User
-          dependencies:
-            module:
-              - views
           required: false
           plugin_id: standard
-          provider: views
       arguments:
         event_id:
           id: event_id
@@ -769,9 +707,6 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          dependencies:
-            module:
-              - views
           default_action: ignore
           exception:
             value: all
@@ -800,7 +735,6 @@ display:
           break_phrase: false
           not: false
           plugin_id: numeric
-          provider: views
       field_langcode: '***LANGUAGE_language_content***'
       field_langcode_add_to_query: null
       title: 'Past event log'
@@ -808,12 +742,12 @@ display:
         operator: AND
         groups:
           1: AND
+      display_extenders: {  }
   page_1:
     display_plugin: page
     id: page_1
     display_title: Page
     position: 1
-    provider: views
     display_options:
       field_langcode: '***LANGUAGE_language_content***'
       field_langcode_add_to_query: null
@@ -822,14 +756,13 @@ display:
         type: normal
         title: 'Past event log'
         description: ''
-        weight: 0
-        context: '0'
-        parent: null
-        menu_name: ''
+        weight: 5
+        parent: 'admin:system.admin_reports'
+        menu_name: admin
       tab_options:
         type: normal
         title: 'Past event log'
         description: ''
-        name: admin
         weight: 0
       exposed_block: false
+      display_extenders: {  }
