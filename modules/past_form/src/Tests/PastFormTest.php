@@ -724,7 +724,7 @@ class PastFormTest extends WebTestBase {
       if (!empty($values)) {
         $arg_values = $first->getArgument('values')->getData();
         foreach ($values as $k => $v) {
-          if ($arg_values[$k] != $v) {
+          if (!isset($arg_values[$k]) || $arg_values[$k] != $v) {
             $mismatch[] = 'value: ' . $v;
           }
         }
@@ -733,7 +733,7 @@ class PastFormTest extends WebTestBase {
       if (!empty($errors)) {
         $arg_errors = $first->getArgument('errors')->getData();
         foreach ($errors as $k => $v) {
-          if ($arg_errors[$k] != $v) {
+          if (!isset($arg_errors[$k]) || $arg_errors[$k] != $v) {
             $mismatch[] = 'error value: ' . $v;
           }
         }
