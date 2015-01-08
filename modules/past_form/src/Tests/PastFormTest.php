@@ -6,6 +6,7 @@
 
 namespace Drupal\past_form\Tests;
 
+use Drupal\past\Entity\PastEventNull;
 use Drupal\past\PastEventInterface;
 use Drupal\past_db\Entity\PastEvent;
 use Drupal\simpletest\WebTestBase;
@@ -654,6 +655,8 @@ class PastFormTest extends WebTestBase {
     if ($event_id) {
       return entity_load('past_event', $event_id);
     }
+    // Return null event to avoid fatal errors.
+    return new PastEventNull();
   }
 
   /**
