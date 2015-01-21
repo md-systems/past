@@ -269,49 +269,6 @@ class PastKernelTest extends KernelTestBase {
   }
 
   /**
-   * Overrides DrupalWebTestCase::curlHeaderCallback().
-   *
-   * Does not report errors from the client site as exceptions as we are
-   * expecting them and they're required for our test.
-   *
-   * @param $curlHandler
-   *   The cURL handler.
-   * @param $header
-   *   An header.
-   */
-  protected function curlHeaderCallback($curlHandler, $header) {
-    // Header fields can be extended over multiple lines by preceding each
-    // extra line with at least one SP or HT. They should be joined on receive.
-    // Details are in RFC2616 section 4.
-    if ($header[0] == ' ' || $header[0] == "\t") {
-      // Normalize whitespace between chucks.
-      $this->headers[] = array_pop($this->headers) . ' ' . trim($header);
-    }
-    else {
-      $this->headers[] = $header;
-    }
-
-    // Save cookies.
-    if (preg_match('/^Set-Cookie: ([^=]+)=(.+)/', $header, $matches)) {
-      $name = $matches[1];
-      $parts = array_map('trim', explode(';', $matches[2]));
-      $value = array_shift($parts);
-      $this->cookies[$name] = array('value' => $value, 'secure' => in_array('secure', $parts));
-      if ($name == $this->session_name) {
-        if ($value != 'deleted') {
-          $this->session_id = $value;
-        }
-        else {
-          $this->session_id = NULL;
-        }
-      }
-    }
-
-    // This is required by cURL.
-    return strlen($header);
-  }
-
-  /**
    * Returns the last event with a given machine name.
    *
    * @param string $machine_name

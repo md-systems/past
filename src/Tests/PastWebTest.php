@@ -217,12 +217,12 @@ class PastWebTest extends WebTestBase {
       $parts = array_map('trim', explode(';', $matches[2]));
       $value = array_shift($parts);
       $this->cookies[$name] = array('value' => $value, 'secure' => in_array('secure', $parts));
-      if ($name == $this->session_name) {
+      if ($name == $this->sessionName) {
         if ($value != 'deleted') {
-          $this->session_id = $value;
+          $this->sessionId = $value;
         }
         else {
-          $this->session_id = NULL;
+          $this->sessionId = NULL;
         }
       }
     }
