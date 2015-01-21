@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\past_db\Entity;
+namespace Drupal\past_db;
 
 use \Drupal\past\PastEventDataInterface;
 

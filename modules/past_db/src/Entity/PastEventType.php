@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Contains \Drupal\past_db\Entity\PastEventType.
+ */
+
 namespace Drupal\past_db\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
@@ -29,13 +34,6 @@ class PastEventType extends ConfigEntityBase {
   public $id;
   public $label;
   public $weight = 0;
-
-  /**
-   * {@inheritdoc}
-   */
-  public function id() {
-    return $this->id;
-  }
 
   /**
    * Returns whether the past_event type is locked.

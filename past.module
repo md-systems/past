@@ -9,7 +9,7 @@ use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
 use Drupal\past\PastEventInterface;
-use Drupal\past\Entity\PastEventNull;
+use Drupal\past\PastEventNull;
 
 /**
  * Severities correspond to Log message severity from WATCHDOG.

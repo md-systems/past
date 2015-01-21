@@ -17,15 +17,6 @@ use Drupal\past\PastEventInterface;
  */
 class PastWebTest extends WebTestBase {
 
-  protected $profile = 'testing';
-
-  /**
-   * The Past configuration object.
-   *
-   * @var \Drupal\Core\Config\Config
-   */
-  protected $config;
-
   /**
    * Modules required to run the tests.
    *
@@ -36,14 +27,6 @@ class PastWebTest extends WebTestBase {
     'past_db',
     'past_testhidden',
   );
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setUp() {
-    parent::setUp();
-    $this->config = \Drupal::config('past.settings');
-  }
 
   /**
    * {@inheritdoc}
@@ -79,7 +62,9 @@ class PastWebTest extends WebTestBase {
     $this->assertEqual($account->id(), $event->getUid());
 
     // Disable exception handling and re-throw the exception.
-    $this->config->set('exception_handling', 0)->save();
+    $this->config('past.settings')
+      ->set('exception_handling', 0)
+      ->save();
     $this->drupalGet('past_trigger_error/Exception');
     $this->assertText(t('The website has encountered an error. Please try again later.'));
     $this->assertText('Exception: This is an exception.');
@@ -121,7 +106,9 @@ class PastWebTest extends WebTestBase {
    */
   public function testErrors() {
     // Enable hook_watchdog capture.
-    $this->config->set('log_watchdog', 1)->save();
+    $this->config('past.settings')
+      ->set('log_watchdog', 1)
+      ->save();
 
     $this->drupalGet('past_trigger_error/E_COMPILE_ERROR');
     $event = $this->getLastEventByMachinename('php');

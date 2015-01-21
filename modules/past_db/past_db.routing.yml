@@ -20,8 +20,8 @@ past_db.event_type.add:
   requirements:
     _permission: 'administer past'
 
-past_db.event:
-  path: admin/reports/past/{past_event}
+entity.past_event.canonical:
+  path: '/admin/reports/past/{past_event}'
   defaults:
     _entity_view: past_event
   requirements:

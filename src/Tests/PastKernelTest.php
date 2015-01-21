@@ -22,13 +22,6 @@ class PastKernelTest extends KernelTestBase {
   protected $profile = 'testing';
 
   /**
-   * The Past configuration object.
-   *
-   * @var \Drupal\Core\Config\Config
-   */
-  protected $config;
-
-  /**
    * Modules required to run the tests.
    *
    * @var string[]
@@ -50,7 +43,6 @@ class PastKernelTest extends KernelTestBase {
     $this->installConfig(array('past', 'past_db'));
     $this->installSchema('past_db', array('past_event_argument', 'past_event_data'));
     $this->installSchema('system', 'sequences');
-    $this->config = \Drupal::config('past.settings');
   }
 
   /**
@@ -169,7 +161,9 @@ class PastKernelTest extends KernelTestBase {
     $logger = \Drupal::logger('test_watchdog');
 
     // First enable watchdog logging.
-    $this->config->set('log_watchdog', 1);
+    $this->config('past.settings')
+      ->set('log_watchdog', 1)
+      ->save();
     $machine_name = 'test_watchdog';
 
     // Simpletest does not cleanly mock these _SERVER variables.
@@ -209,7 +203,9 @@ class PastKernelTest extends KernelTestBase {
     $this->assertEqual($nice_url, $event->getArgument('link')->getData());
 
     // Now we disable watchdog logging.
-    $this->config->set('log_watchdog', 0);
+    $this->config('past.settings')
+      ->set('log_watchdog', 0)
+      ->save();
     $logger->info('something Past will not see');
     $event = $this->getLastEventByMachinename($machine_name);
     // And still the previous message should be found.
@@ -241,7 +237,9 @@ class PastKernelTest extends KernelTestBase {
     $event = $this->getLastEventByMachinename('test_ssid');
     $this->assertEqual($user->ssid, $event->getSessionId());
 
-    $this->config->set('log_session_id', 0);
+    $this->config('past.settings')
+      ->set('log_session_id', 0)
+      ->save();
     past_event_save('past', 'test1', 'Another test log entry');
     $event = $this->getLastEventByMachinename('test1');
     $this->assertEqual('', $event->getSessionId());
@@ -252,7 +250,9 @@ class PastKernelTest extends KernelTestBase {
     $event = $this->getLastEventByMachinename('test2');
     $this->assertEqual('trace me', $event->getSessionId());
 
-    $this->config->set('log_session_id', 1);
+    $this->config('past.settings')
+      ->set('log_session_id', 1)
+      ->save();
     $event = past_event_create('past', 'test3', 'And Yet Another test log entry');
     $event->setSessionId('trace me too');
     $event->save();
@@ -264,7 +264,9 @@ class PastKernelTest extends KernelTestBase {
    * Test that watchdog logs of type 'php' don't produce notices.
    */
   public function testErrorArray() {
-    $this->config->set('log_watchdog', TRUE);
+    $this->config('past.settings')
+      ->set('log_watchdog', TRUE)
+      ->save();
     \Drupal::logger('php')->notice('This is some test watchdog log of type php');
   }
 

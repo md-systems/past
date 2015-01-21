@@ -1,10 +1,11 @@
 <?php
 /**
  * @file
- * Contains \Drupal\past\Entity\PastEventArgumentNull.
+ * Contains \Drupal\past\PastEventArgumentNull.
  */
 
-namespace Drupal\past\Entity;
+namespace Drupal\past;
+
 use Drupal\past\PastEventArgumentInterface;
 
 /**

@@ -5,7 +5,7 @@
  */
 
 namespace Drupal\past\Tests;
-use Drupal\past\Entity\PastEventNull;
+use Drupal\past\PastEventNull;
 use Drupal\simpletest\KernelTestBase;
 
 /**

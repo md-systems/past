@@ -18,17 +18,24 @@ use Drupal\Core\StringTranslation\TranslationWrapper;
 class PastSettingsForm extends ConfigFormBase {
 
   /**
-   * Implements \Drupal\Core\Form\FormInterface::getFormID().
+   * {@inheritdoc}
    */
   public function getFormID() {
     return 'past_settings';
   }
 
   /**
-   * Implements \Drupal\Core\Form\FormInterface::buildForm().
+   * {@inheritdoc}
+   */
+  protected function getEditableConfigNames() {
+    return ['past.settings'];
+  }
+
+  /**
+   * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $config = \Drupal::config('past.settings');
+    $config = $this->config('past.settings');
     $date_formatter = \Drupal::service('date.formatter');
 
     // Options for events_expire
@@ -86,16 +93,14 @@ class PastSettingsForm extends ConfigFormBase {
   }
 
   /**
-   * Implements \Drupal\Core\Form\FormInterface:validateForm()
+   * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     parent::validateForm($form, $form_state);
   }
 
   /**
-   * Implements \Drupal\Core\Form\FormInterface:submitForm()
-   *
-   * @see book_remove_button_submit()
+   * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $included_severity_levels = array();
@@ -104,7 +109,7 @@ class PastSettingsForm extends ConfigFormBase {
         $included_severity_levels[] = $level;
       }
     }
-    \Drupal::config('past.settings')
+    $this->config('past.settings')
       ->set('events_expire', $form_state->getValue('events_expire'))
       ->set('exception_handling', $form_state->getValue('exception_handling'))
       ->set('log_watchdog', $form_state->getValue('log_watchdog'))

@@ -1,11 +1,10 @@
 <?php
 /**
  * @file
- * Contains \Drupal\past\Entity\PastEventNull.
+ * Contains \Drupal\past\PastEventNull.
  */
 
-namespace Drupal\past\Entity;
-use Drupal\past\PastEventInterface;
+namespace Drupal\past;
 
 /**
  * Null implementation that is used as a fallback or when logging is disabled.
@@ -43,7 +42,7 @@ class PastEventNull implements PastEventInterface {
   /**
    * {@inheritdoc}
    */
-  public function addException(Exception $exception, array $options = array()) {
+  public function addException(\Exception $exception, array $options = array()) {
 
   }
 

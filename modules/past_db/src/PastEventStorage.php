@@ -10,7 +10,7 @@ namespace Drupal\past_db;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 use Drupal\past_db\Entity\PastEvent;
-use Drupal\past_db\Entity\PastEventArgument;
+use Drupal\past_db\PastEventArgument;
 
 /**
  * Defines a Controller class for past events.

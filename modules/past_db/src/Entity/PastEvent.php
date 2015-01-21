@@ -16,6 +16,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Utility\Error;
 use Drupal\past\PastEventArgumentInterface;
 use Drupal\past\PastEventInterface;
+use Drupal\past_db\PastEventArgument;
 use Exception;
 
 /**
@@ -38,7 +39,7 @@ use Exception;
  *     "uuid" = "uuid"
  *   },
  *   links = {
- *     "canonical" = "past_db.event",
+ *     "canonical" = "/admin/reports/past/{past_event}",
  *   },
  *   bundle_entity_type = "past_event_type",
  *   field_ui_base_route = "past_db.event_type.manage",
