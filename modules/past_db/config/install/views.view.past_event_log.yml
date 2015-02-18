@@ -735,8 +735,6 @@ display:
           break_phrase: false
           not: false
           plugin_id: numeric
-      field_langcode: '***LANGUAGE_language_content***'
-      field_langcode_add_to_query: null
       title: 'Past event log'
       filter_groups:
         operator: AND
@@ -749,8 +747,6 @@ display:
     display_title: Page
     position: 1
     display_options:
-      field_langcode: '***LANGUAGE_language_content***'
-      field_langcode_add_to_query: null
       path: admin/reports/past
       menu:
         type: normal

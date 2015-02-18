@@ -9,6 +9,7 @@ namespace Drupal\past\EventSubscriber;
 use Drupal\Core\Utility\Error;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -52,6 +53,10 @@ class PastSubscriber implements EventSubscriberInterface {
    */
   public function onKernelException(GetResponseForExceptionEvent $event) {
     if (!\Drupal::config('past.settings')->get('exception_handling')) {
+      return;
+    }
+    // Do not log 404 and 403 exceptions.
+    if ($event->getException() instanceof HttpException) {
       return;
     }
     try{

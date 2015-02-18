@@ -57,6 +57,12 @@ class PastWebTest extends WebTestBase {
     $this->assertEqual('unhandled_exception', $event->getMachineName());
     $this->assertEqual(PAST_SEVERITY_ERROR, $event->getSeverity());
     $this->assertEqual(1, count($event->getArguments()));
+
+    $this->drupalGet('test');
+    // Test for not displaying 403 and 404 logs.
+    $event_404 = $this->getLastEventByMachinename('unhandled_exception');
+    $this->assertEqual($event->id(), $event_404->id(), 'No 403 and 404 logs were displayed');
+
     $data = $event->getArgument('exception')->getData();
     $this->assertTrue(array_key_exists('backtrace', $data));
     $this->assertEqual($account->id(), $event->getUid());
