@@ -216,7 +216,7 @@ function _past_get_formatted_backtrace($severity_level, $slice = 5) {
   $config = \Drupal::config('past.settings');
   $log_backtrace = $config->get('backtrace_include');
   $severity_keyvalue = 'WATCHDOG_SEVERITY_' . $severity_level;
-  if (empty($log_backtrace[$severity_keyvalue])) {
+  if (!is_null($severity_level) && empty($log_backtrace[$severity_keyvalue])) {
     return NULL;
   }
 

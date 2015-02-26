@@ -8,3 +8,7 @@ services:
     arguments: ['@logger.log_message_parser']
     tags:
       - {name: logger}
+  past.cache_tag_logger:
+    class: Drupal\past\PastCacheTagLogger
+    tags:
+      - { name: cache_tags_invalidator }

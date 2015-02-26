@@ -19,6 +19,9 @@ past.settings:
     log_watchdog:
       type: boolean
       label: 'Log watchdog to past event log'
+    log_cache_tags:
+      type: boolean
+      label: 'Log cache tag invalidations'
     max_recursion:
       type: integer
       label: 'Maximum level of recursion when printing an event argument'

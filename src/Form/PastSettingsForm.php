@@ -89,6 +89,13 @@ class PastSettingsForm extends ConfigFormBase {
       '#states' => array('visible' => array('input[name="log_watchdog"]' => array('checked' => TRUE))),
     );
 
+    $form['log_cache_tags'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Log cache tag invalidations'),
+      '#default_value' => $config->get('log_cache_tags'),
+      '#description' => t('When enabled, Past will log cache tag invalidations including a backtrace. This should only be used to debug invalidations and can be slow when a lot of cache tag invalidations happen.'),
+    );
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -113,6 +120,7 @@ class PastSettingsForm extends ConfigFormBase {
       ->set('events_expire', $form_state->getValue('events_expire'))
       ->set('exception_handling', $form_state->getValue('exception_handling'))
       ->set('log_watchdog', $form_state->getValue('log_watchdog'))
+      ->set('log_cache_tags', $form_state->getValue('log_cache_tags'))
       ->set('backtrace_include', $included_severity_levels)
       ->set('shutdown_handling', $form_state->getValue('shutdown_handling'))
       ->set('log_session_id', $form_state->getValue('log_session_id'))
