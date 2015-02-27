@@ -6,6 +6,7 @@
 
 namespace Drupal\past_db;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityViewBuilder;
 use Drupal\Core\Url;
 use Drupal\past_db\Entity\PastEvent;
@@ -57,6 +58,16 @@ class PastEventViewBuilder extends EntityViewBuilder {
       }
 
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getBuildDefaults(EntityInterface $entity, $view_mode, $langcode) {
+    $build = parent::getBuildDefaults($entity, $view_mode, $langcode);
+    // There is no template, unset it to avoid a watchdog notice.
+    unset($build['#theme']);
+    return $build;
   }
 
 }

@@ -216,7 +216,7 @@ class PastKernelTest extends KernelTestBase {
    * Tests the session id behavior.
    */
   public function testSessionIdBehavior() {
-    global $user;
+    $user = \Drupal::currentUser();
 
     // Test a global user object without a session ID.
     $user->sid = NULL;
