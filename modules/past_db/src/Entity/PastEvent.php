@@ -7,7 +7,7 @@
 
 namespace Drupal\past_db\Entity;
 
-use Drupal\Component\Utility\String;
+use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -534,13 +534,13 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
     $data = $argument->getData();
     if (is_array($data) || is_object($data)) {
       foreach ($data as $k => $v) {
-        $back .= '<div style="padding-left:10px;">[<strong>' . String::checkPlain($k) . '</strong>] (<em>' . gettype($v) . '</em>): ' . $this->parseObject($v) . '</div>';
+        $back .= '<div style="padding-left:10px;">[<strong>' . SafeMarkup::checkPlain($k) . '</strong>] (<em>' . gettype($v) . '</em>): ' . $this->parseObject($v) . '</div>';
       }
     }
     else {
-      $back = nl2br(String::checkPlain($data));
+      $back = nl2br(SafeMarkup::checkPlain($data));
     }
-    $back = '<div><strong>' . String::checkPlain($name) . '</strong> (<em>' . gettype($data) . '</em>): ' . $back . '</div>';
+    $back = '<div><strong>' . SafeMarkup::checkPlain($name) . '</strong> (<em>' . gettype($data) . '</em>): ' . $back . '</div>';
     return $back;
   }
 
@@ -562,13 +562,13 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
       return t('<em>Too many nested objects ( @recursion )</em>', array('@recursion' => $max_recursion));
     }
     if (is_scalar($obj) || is_null($obj)) {
-      return is_string($obj) ? nl2br(trim(String::checkPlain($obj))) : $obj;
+      return is_string($obj) ? nl2br(trim(SafeMarkup::checkPlain($obj))) : $obj;
     }
 
     $back = '';
     $css = 'style="padding-left:' . ($recursive + 10) . 'px;"';
     foreach ($obj as $k => $v) {
-      $back .= '<div ' . $css . ' >[<strong>' . String::checkPlain($k) . '</strong>] (<em>' . gettype($v) . '</em>): ' . $this->parseObject($v, $recursive + 1) . '</div>';
+      $back .= '<div ' . $css . ' >[<strong>' . SafeMarkup::checkPlain($k) . '</strong>] (<em>' . gettype($v) . '</em>): ' . $this->parseObject($v, $recursive + 1) . '</div>';
     }
     return $back;
   }

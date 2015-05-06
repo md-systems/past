@@ -102,17 +102,7 @@ function past_event_create($module, $machine_name, $message = NULL, array $optio
   if (\Drupal::config('past.settings')->get('log_session_id') &&
     !array_key_exists('session_id', $options)) {
     // Add session id if not in options.
-    $user = \Drupal::currentUser();
-    if ($user->getSecureSessionId()) {
-      // HTTPS Session.
-      $event->setSessionId($user->getSecureSessionId());
-    }
-    elseif ($user->getSessionId()) {
-      $event->setSessionId($user->getSessionId());
-    }
-    else {
-      $event->setSessionId(session_id());
-    }
+    $event->setSessionId(session_id());
   }
   // Compile the full URI from protocol, host, port, uri.
   if (isset($_SERVER['HTTP_HOST']) && isset($_SERVER['REQUEST_URI'])) {
