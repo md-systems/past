@@ -21,6 +21,11 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "id" = "id",
  *     "label" = "label",
  *   },
+ *   config_export = {
+ *     "label",
+ *     "id",
+ *     "weight",
+ *   },
  *   handlers = {
  *     "list_builder" = "Drupal\past_db\EventTypeListBuilder",
  *     "form" = {

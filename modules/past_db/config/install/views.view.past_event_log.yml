@@ -36,7 +36,7 @@ display:
           disable_sql_rewrite: false
           distinct: false
           replica: false
-          query_comment: false
+          query_comment: 'false'
           query_tags: {  }
       exposed_form:
         type: basic
@@ -174,7 +174,7 @@ display:
             suffix: ''
             target: ''
             nl2br: false
-            max_length: ''
+            max_length: 0
             word_boundary: true
             ellipsis: true
             more_link: false
@@ -201,8 +201,7 @@ display:
           decimal: .
           separator: ''
           format_plural: false
-          format_plural_singular: '1'
-          format_plural_plural: '@count'
+          format_plural_string: 1\x03@count
           prefix: ''
           suffix: ''
           plugin_id: numeric
@@ -232,7 +231,7 @@ display:
             suffix: ''
             target: ''
             nl2br: false
-            max_length: ''
+            max_length: 0
             word_boundary: true
             ellipsis: true
             more_link: false
@@ -259,8 +258,7 @@ display:
           decimal: .
           separator: ','
           format_plural: false
-          format_plural_singular: '1'
-          format_plural_plural: '@count'
+          format_plural_string: 1\x03@count
           prefix: ''
           suffix: ''
           plugin_id: numeric
@@ -290,7 +288,7 @@ display:
             suffix: ''
             target: ''
             nl2br: false
-            max_length: ''
+            max_length: 0
             word_boundary: true
             ellipsis: true
             more_link: false
@@ -339,7 +337,7 @@ display:
             suffix: ''
             target: ''
             nl2br: false
-            max_length: ''
+            max_length: 0
             word_boundary: true
             ellipsis: true
             more_link: false
@@ -388,7 +386,7 @@ display:
             suffix: ''
             target: ''
             nl2br: false
-            max_length: ''
+            max_length: 0
             word_boundary: true
             ellipsis: true
             more_link: false
@@ -437,7 +435,7 @@ display:
             suffix: ''
             target: ''
             nl2br: false
-            max_length: ''
+            max_length: 0
             word_boundary: true
             ellipsis: true
             more_link: false
@@ -489,7 +487,7 @@ display:
             suffix: ''
             target: ''
             nl2br: false
-            max_length: ''
+            max_length: 0
             word_boundary: true
             ellipsis: true
             more_link: false
@@ -511,10 +509,6 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          link_to_user: true
-          overwrite_anonymous: false
-          anonymous_text: ''
-          format_username: true
           plugin_id: user_name
       filters:
         module:
@@ -642,7 +636,7 @@ display:
           group_type: group
           admin_label: ''
           operator: in
-          value: { }
+          value: {  }
           group: 1
           exposed: true
           expose:
@@ -741,6 +735,12 @@ display:
         groups:
           1: AND
       display_extenders: {  }
+    cache_metadata:
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - url
+      cacheable: false
   page_1:
     display_plugin: page
     id: page_1
@@ -762,3 +762,9 @@ display:
         weight: 0
       exposed_block: false
       display_extenders: {  }
+    cache_metadata:
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - url
+      cacheable: false
