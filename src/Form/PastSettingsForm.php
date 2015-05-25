@@ -20,7 +20,7 @@ class PastSettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function getFormID() {
+  public function getFormId() {
     return 'past_settings';
   }
 
