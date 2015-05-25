@@ -29,4 +29,4 @@ past.settings:
       type: sequence
       label: 'Include watchdog severity levels from writing backtraces'
       sequence:
-        - type: string
+        type: string
