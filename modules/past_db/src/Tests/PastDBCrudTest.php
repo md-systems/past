@@ -30,6 +30,7 @@ class PastDBCrudTest extends KernelTestBase {
     'past_db',
     'user',
     'field',
+    'options'
   );
 
   /**

@@ -31,6 +31,7 @@ class PastKernelTest extends KernelTestBase {
     'past_db',
     'system',
     'user',
+    'options'
   );
 
   /**

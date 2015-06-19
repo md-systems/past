@@ -3,11 +3,13 @@ status: true
 dependencies:
   config:
     - system.menu.admin
-  module:
-    - user
   enforced:
     module:
       - past_db
+  module:
+    - options
+    - past_db
+    - user
 id: past_event_log
 label: 'Past event log'
 module: views
@@ -36,13 +38,13 @@ display:
           disable_sql_rewrite: false
           distinct: false
           replica: false
-          query_comment: 'false'
+          query_comment: ''
           query_tags: {  }
       exposed_form:
         type: basic
         options:
           submit_button: Apply
-          reset_button: false
+          reset_button: true
           reset_button_label: Reset
           exposed_sorts_label: 'Sort by'
           expose_sort_order: true
@@ -373,7 +375,7 @@ display:
             alter_text: false
             text: ''
             make_link: true
-            path: 'admin/reports/past/[event_id]'
+            path: 'admin/reports/past/{{ event_id }}'
             absolute: false
             external: false
             replace_spaces: false
@@ -610,23 +612,81 @@ display:
             identifier: severity
             required: false
             remember: false
-            multiple: false
+            multiple: true
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
               administrator: '0'
-          is_grouped: false
+          is_grouped: true
           group_info:
-            label: ''
+            label: Severity
             description: ''
-            identifier: ''
+            identifier: severity
             optional: true
             widget: select
             multiple: false
             remember: false
             default_group: All
             default_group_multiple: {  }
-            group_items: {  }
+            group_items:
+              1:
+                title: Emergency
+                operator: '='
+                value:
+                  value: '0'
+                  min: ''
+                  max: ''
+              2:
+                title: Alert
+                operator: '='
+                value:
+                  value: '1'
+                  min: ''
+                  max: ''
+              3:
+                title: Critical
+                operator: '='
+                value:
+                  value: '2'
+                  min: ''
+                  max: ''
+              4:
+                title: Error
+                operator: '='
+                value:
+                  value: '3'
+                  min: ''
+                  max: ''
+              5:
+                title: Warning
+                operator: '='
+                value:
+                  value: '4'
+                  min: ''
+                  max: ''
+              6:
+                title: Notice
+                operator: '='
+                value:
+                  value: '5'
+                  min: ''
+                  max: ''
+              7:
+                title: Info
+                operator: '='
+                value:
+                  value: '6'
+                  min: ''
+                  max: ''
+              8:
+                title: Debug
+                operator: '='
+                value:
+                  value: '7'
+                  min: ''
+                  max: ''
+          entity_type: past_event
+          entity_field: severity
           plugin_id: numeric
         uid:
           id: uid
@@ -667,6 +727,46 @@ display:
             default_group_multiple: {  }
             group_items: {  }
           plugin_id: user_name
+        machine_name:
+          id: machine_name
+          table: past_event
+          field: machine_name
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: machine_name_op
+            label: 'Machine name'
+            description: ''
+            use_operator: false
+            operator: machine_name_op
+            identifier: machine_name
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              administrator: '0'
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          entity_type: past_event
+          entity_field: machine_name
+          plugin_id: string
       sorts:
         event_id:
           id: event_id
@@ -740,6 +840,10 @@ display:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url
+        - 'url.query_args.pagers:0'
+        - 'url.query_args:order'
+        - 'url.query_args:sort'
+        - user.permissions
       cacheable: false
   page_1:
     display_plugin: page
@@ -752,8 +856,9 @@ display:
         type: normal
         title: 'Past event log'
         description: ''
+        parent: system.admin_reports
         weight: 5
-        parent: 'admin:system.admin_reports'
+        context: '0'
         menu_name: admin
       tab_options:
         type: normal
@@ -767,4 +872,8 @@ display:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url
+        - 'url.query_args.pagers:0'
+        - 'url.query_args:order'
+        - 'url.query_args:sort'
+        - user.permissions
       cacheable: false

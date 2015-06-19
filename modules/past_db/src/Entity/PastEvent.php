@@ -109,11 +109,13 @@ class PastEvent extends ContentEntityBase implements PastEventInterface {
         'type' => 'string',
         'weight' => 1,
       ));
-    $fields['severity'] = BaseFieldDefinition::create('integer')
+
+    $fields['severity'] = BaseFieldDefinition::create('list_integer')
       ->setLabel(t('Severity'))
       ->setDescription(t('The severity of this event.'))
       ->setSetting('size', 'small')
       ->setRequired(TRUE)
+      ->setSetting('allowed_values', past_event_severities())
       ->setDefaultValue(PAST_SEVERITY_INFO);
     $fields['timestamp'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Timestamp'))

@@ -218,8 +218,8 @@ function past_db_add_row_colors(&$vars) {
   // Add the corresponding class to the row.
   $class_names = past_db_severity_css_classes_map();
   foreach ($vars['rows'] as $num => $row) {
-    if (isset($vars['result'][$num]->past_event_severity) && !empty($class_names[$vars['result'][$num]->past_event_severity])) {
-      $vars['rows'][$num]['attributes']->addClass($class_names[$vars['result'][$num]->past_event_severity]);
+    if (isset($vars['result'][$num]->_entity->severity->value) && !empty($class_names[$vars['result'][$num]->_entity->severity->value])) {
+      $vars['rows'][$num]['attributes']->addClass($class_names[$vars['result'][$num]->_entity->severity->value]);
     }
   }
 }
