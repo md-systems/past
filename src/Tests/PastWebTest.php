@@ -48,7 +48,7 @@ class PastWebTest extends WebTestBase {
 
     // Let's produce an exception, the exception handler is enabled by default.
     $this->drupalGet('past_trigger_error/Exception');
-    $this->assertText(t('The website has encountered an error. Please try again later.'));
+    $this->assertText(t('The website encountered an unexpected error. Please try again later.'));
     $this->assertText('Exception: This is an exception.');
 
     // Now we should have a log event, assert it.
@@ -72,7 +72,7 @@ class PastWebTest extends WebTestBase {
       ->set('exception_handling', 0)
       ->save();
     $this->drupalGet('past_trigger_error/Exception');
-    $this->assertText(t('The website has encountered an error. Please try again later.'));
+    $this->assertText(t('The website encountered an unexpected error. Please try again later.'));
     $this->assertText('Exception: This is an exception.');
 
     // No new exception should have been logged.

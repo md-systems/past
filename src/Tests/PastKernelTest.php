@@ -30,6 +30,7 @@ class PastKernelTest extends KernelTestBase {
     'past',
     'past_db',
     'system',
+    'views',
     'user',
     'options'
   );
@@ -217,27 +218,12 @@ class PastKernelTest extends KernelTestBase {
    * Tests the session id behavior.
    */
   public function testSessionIdBehavior() {
-    $user = \Drupal::currentUser();
-
-    // Test a global user object without a session ID.
-    $user->sid = NULL;
+    // By default, the global session ID should be stored.
     past_event_save('past', 'test', 'A test log entry');
     $event = $this->getLastEventByMachinename('test');
     $this->assertEqual(session_id(), $event->getSessionId());
 
-    // Set a session ID on the user object.
-    $user->sid = 'session id';
-    past_event_save('past', 'test_sid', 'A test log entry');
-    $event = $this->getLastEventByMachinename('test_sid');
-    $this->assertEqual($user->sid, $event->getSessionId());
-
-    // Set a secure session ID on the user object, this should be used if
-    // present.
-    $user->ssid = 'securesession id';
-    past_event_save('past', 'test_ssid', 'A test log entry');
-    $event = $this->getLastEventByMachinename('test_ssid');
-    $this->assertEqual($user->ssid, $event->getSessionId());
-
+    // Global session ID should only be stored if enabled in config.
     $this->config('past.settings')
       ->set('log_session_id', 0)
       ->save();
@@ -245,12 +231,14 @@ class PastKernelTest extends KernelTestBase {
     $event = $this->getLastEventByMachinename('test1');
     $this->assertEqual('', $event->getSessionId());
 
+    // Explicitly set session ID should be stored in any case.
     $event = past_event_create('past', 'test2', 'And Another test log entry');
     $event->setSessionId('trace me');
     $event->save();
     $event = $this->getLastEventByMachinename('test2');
     $this->assertEqual('trace me', $event->getSessionId());
 
+    // Explicitly set session ID should be used in favor of the global one.
     $this->config('past.settings')
       ->set('log_session_id', 1)
       ->save();
