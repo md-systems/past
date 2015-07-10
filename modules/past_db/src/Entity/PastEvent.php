@@ -8,6 +8,7 @@
 namespace Drupal\past_db\Entity;
 
 use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -47,6 +48,22 @@ use Exception;
  * )
  */
 class PastEvent extends ContentEntityBase implements PastEventInterface {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function invalidateTagsOnSave($update) {
+    // An entity was created or updated: invalidate its list cache tags. (An
+    // updated entity may start to appear in a listing because it now meets that
+    // listing's filtering requirements. A newly created entity may start to
+    // appear in listings because it did not exist before.)
+    $tags = $this->getEntityType()->getListCacheTags();
+
+    // Existing entities are not updated and are not publicly available, no need
+    // to clear the 4xx-cache tags and the entity specific cache tags.
+
+    Cache::invalidateTags($tags);
+  }
 
   /**
    * {@inheritdoc}
